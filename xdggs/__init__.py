@@ -8,6 +8,6 @@ try:
     __version__ = version("xdggs")
 except PackageNotFoundError:  # noqa
     # package is not installed
-    pass
+    __version__ = "9999"
 
 __all__ = ["__version__", "DGGSIndex", "HealpixIndex"]
