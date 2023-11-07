@@ -47,6 +47,9 @@ class DGGSIndex(Index):
         """convert cell centers to latitude / longitude."""
         raise NotImplementedError()
 
+    def _geom2cellid(self, geom, options):
+        raise NotImplementedError()
+
     @property
     def cell_centers(self):
         return self._cellid2latlon(self._pd_index.index.values)

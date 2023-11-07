@@ -1,3 +1,4 @@
+import numpy as np
 import xarray as xr
 
 from xdggs.index import DGGSIndex
@@ -18,6 +19,12 @@ class DGGSAccessor:
         """Point-wise, nearest-neighbor selection from lat/lon data."""
 
         cell_indexers = {self._name: self._index._latlon2cellid(lat, lon)}
+        return self._obj.sel(cell_indexers)
+
+    def query(self, geom, **options):
+        cell_ids = self._index._geom2cellid(geom, options)
+        mask = np.isin(cell_ids, self._index._pd_index.index.values)
+        cell_indexers = {self._name: cell_ids[mask]}
         return self._obj.sel(cell_indexers)
 
     def assign_latlon_coords(self):
