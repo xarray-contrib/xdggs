@@ -7,3 +7,5 @@ dependencies:
   - healpy
   - ruff
   - pytest
+  - h5netcdf
+  - netcdf4
