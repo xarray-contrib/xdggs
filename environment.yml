@@ -1,0 +1,9 @@
+name: xdggs_dev
+channels:
+  - conda-forge
+dependencies:
+  - xarray
+  - h3
+  - healpy
+  - ruff
+  - pytest
