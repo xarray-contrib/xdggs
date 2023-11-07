@@ -5,6 +5,7 @@ def register_dggs(name):
     def inner(cls):
         GRID_REGISTRY[name] = cls
         return cls
+
     return inner
 
 

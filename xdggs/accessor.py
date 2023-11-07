@@ -1,20 +1,17 @@
 import xarray as xr
 
-from .index import DGGSIndex
+from xdggs.index import DGGSIndex
 
 
 @xr.register_dataset_accessor("dggs")
 class DGGSAccessor:
-
     def __init__(self, obj):
         self._obj = obj
-        
-        indexes = {
-            k: idx for k, idx in obj.xindexes.items() if isinstance(idx, DGGSIndex)
-        }
+
+        indexes = {k: idx for k, idx in obj.xindexes.items() if isinstance(idx, DGGSIndex)}
         if len(indexes) > 1:
             raise ValueError("Only one DGGSIndex per object is supported")
-        
+
         self._name, self._index = next(iter(indexes.items()))
 
     def sel_latlon(self, lat, lon):

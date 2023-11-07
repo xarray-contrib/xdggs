@@ -3,18 +3,7 @@ from xarray.indexes import Index, PandasIndex
 from .utils import GRID_REGISTRY, _extract_cell_id_variable
 
 
-def _extract_cell_id_variable(variables):
-    # TODO: only one variable supported (raise otherwise)
-    name, var = next(iter(variables.items()))
-
-    # TODO: only 1-d variable supported (raise otherwise)
-    dim = next(iter(var.dims))
-
-    return name, var, dim
-
-
 class DGGSIndex(Index):
-
     def __init__(self, cell_ids, dim):
         self._dim = dim
 
@@ -31,7 +20,7 @@ class DGGSIndex(Index):
         cls = GRID_REGISTRY[grid_name]
 
         return cls.from_variables(variables, options=options)
-    
+
     def create_variables(self, variables=None):
         return self._pd_index.create_variables(variables)
 
@@ -41,7 +30,7 @@ class DGGSIndex(Index):
             return self._replace(new_pd_index)
         else:
             return None
-    
+
     def sel(self, labels, method=None, tolerance=None):
         if method == "nearest":
             raise ValueError("finding nearest grid cell has no meaning")
@@ -49,7 +38,7 @@ class DGGSIndex(Index):
 
     def _replace(self, new_pd_index):
         raise NotImplementedError()
-    
+
     def _latlon2cellid(self, lat, lon):
         """convert latitude / longitude points to cell ids."""
         raise NotImplementedError()

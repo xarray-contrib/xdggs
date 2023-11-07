@@ -65,12 +65,12 @@ select = [
     "F",
     # Pycodestyle
     "E",
-    "W",
     # isort
     "I",
     # Pyupgrade
     "UP",
 ]
+line-length = 100
 
 [tool.ruff.isort]
 known-first-party = ["xdggs"]
@@ -79,6 +79,3 @@ known-third-party=[
     "healpy",
     "h3",
 ]
-
-[tool.ruff.format]
-line-length = 100

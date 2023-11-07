@@ -1,12 +1,11 @@
 import healpy
 
-from .index import DGGSIndex
-from .utils import register_dggs, _extract_cell_id_variable
+from xdggs.index import DGGSIndex
+from xdggs.utils import _extract_cell_id_variable, register_dggs
 
 
 @register_dggs("healpix")
 class HealpixIndex(DGGSIndex):
-
     def __init__(self, cell_ids, dim, nside, nest, rot_latlon):
         super().__init__(cell_ids, dim)
 
@@ -20,13 +19,13 @@ class HealpixIndex(DGGSIndex):
 
         nside = var.attrs.get("nside", options.get("nside"))
         nest = var.attrs.get("nest", options.get("nest", False))
-        rot_latlon = var.attrs.get("rot_latlon", options.get("rot_latlon", (0., 0.)))
-        
+        rot_latlon = var.attrs.get("rot_latlon", options.get("rot_latlon", (0.0, 0.0)))
+
         return cls(var.data, dim, nside, nest, rot_latlon)
 
     def _replace(self, new_pd_index):
         return type(self)(new_pd_index, self._dim, self._nside, self._nest, self._rot_latlon)
-    
+
     def _latlon2cellid(self, lat, lon):
         return healpy.ang2pix(self._nside, -lon, lat, lonlat=True, nest=self._nest)
 
@@ -35,4 +34,6 @@ class HealpixIndex(DGGSIndex):
         return lat, -lon
 
     def _repr_inline_(self, max_width):
-        return f"HealpixIndex(nside={self._nside}, nest={self._nest}, rot_latlon={self._rot_latlon!r})"
+        return (
+            f"HealpixIndex(nside={self._nside}, nest={self._nest}, rot_latlon={self._rot_latlon!r})"
+        )

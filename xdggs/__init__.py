@@ -1,9 +1,8 @@
 from importlib.metadata import PackageNotFoundError, version
 
-from .accessor import DGGSAccessor   # noqa
-from .index import DGGSIndex
-from .healpix import HealpixIndex
-
+from xdggs.accessor import DGGSAccessor  # noqa
+from xdggs.healpix import HealpixIndex
+from xdggs.index import DGGSIndex
 
 try:
     __version__ = version("xdggs")
