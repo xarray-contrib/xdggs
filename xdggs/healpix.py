@@ -1,4 +1,5 @@
 import healpy
+import shapely
 
 from xdggs.index import DGGSIndex
 from xdggs.utils import _extract_cell_id_variable, register_dggs
@@ -32,6 +33,14 @@ class HealpixIndex(DGGSIndex):
     def _cellid2latlon(self, cell_ids):
         lon, lat = healpy.pix2ang(self._nside, cell_ids, nest=self._nest, lonlat=True)
         return lat, -lon
+
+    def _geom2cellid(self, geom, options):
+        coords = shapely.get_coordinates(geom)
+
+        lon, lat = coords[:-1, 0], coords[:-1, 1]
+        vertices = healpy.ang2vec(lon, lat, lonlat=True)
+
+        return healpy.query_polygon(self._nside, vertices, nest=self._nest, **options)
 
     def _repr_inline_(self, max_width):
         return (
