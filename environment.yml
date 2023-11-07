@@ -9,3 +9,6 @@ dependencies:
   - pytest
   - h5netcdf
   - netcdf4
+  - pooch
+  - matplotlib-base
+  - shapely
