@@ -19,7 +19,7 @@ class DGGSAccessor:
         for k, idx in obj.xindexes.items():
             if isinstance(idx, DGGSIndex):
                 if index is not None:
-                    raise ValueError("Only one DGGSIndex per object is supported")
+                    raise ValueError("Only one DGGSIndex per dataset or dataarray is supported")
                 index = idx
                 name = k
         self._name = name
@@ -27,9 +27,24 @@ class DGGSAccessor:
 
     @property
     def index(self) -> DGGSIndex:
+        """Returns the DGGSIndex instance for this Dataset or DataArray.
+
+        Raise a ``ValueError`` if no such index is found.
+        """
         if self._index is None:
             raise ValueError("no DGGSIndex found on this Dataset or DataArray")
         return self._index
+
+    @property
+    def coord(self) -> xr.DataArray:
+        """Returns the indexed DGGS (cell ids) coordinate as a DataArray.
+
+        Raise a ``ValueError`` if no such coordinate is found on this Dataset or DataArray.
+
+        """
+        if not self._name:
+            raise ValueError("no coordinate with a DGGSIndex found on this Dataset or DataArray")
+        return self._obj[self._name]
 
     def sel_latlon(
         self, latitude: npt.ArrayLike, longitude: npt.ArrayLike
