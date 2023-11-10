@@ -67,6 +67,8 @@ There no released standard yet regarding DGGS. However, there is a group working
 
 Another draft of DGGS specification can be found here: https://github.com/danlooo/dggs-data-spec.
 
+There are some discrepancies between the proposed standards and popular DGGS libraries (H3, S2, HealPIX). For example regarding the term used to define a grid unit: The two specifications above use "zone", S2/H3 use "cell" and HealPIX uses "pixel". Although in this document we use "cell", the term to choose for `xddgs` is still open for discussion.
+
 ### Backends (Python)
 
 Several Python packages are currently available for handling certain DGGSs. They mostly consist of Python bindings of DGGS implementations written in C/C++/Rust. Here is a list (probably incomplete):
