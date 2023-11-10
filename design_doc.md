@@ -26,7 +26,7 @@ Conversion between DGGS and other grids or vector features may requires specific
 
 `xdggs` should try to follow standards and/or conventions defined for DGGS (see below). However, we may need to depart from them for practical reasons (e.g., common practices in popular DGGS libraries that do not fit well with the proposed standards). Strict adherence to a standard is welcome but shouldn't be enforced by all means.
 
-`xddgs` should also try to fulfill user needs in both GIS and Earth-System communities, which may each use DGGS in slightly different ways (see below).
+`xddgs` should also try to support applications in both GIS and Earth-System communities, which may each use DGGS in slightly different ways (see examples below).
 
 When possible, `xddgs` operations should scale to fine resolutions (millions of cells) leveraging Xarray interoperability with Dask. This might not be always possible, though. Some operations (spatial indexing) may be hard to support at scale and it shouldn't be a high development priority.
 
@@ -42,9 +42,51 @@ Although some DGGS may handle both the spatial and temporal domains in a joint f
 
 ## Discrete Global Grid Systems
 
+A Discrete Global Grid System (DGGS) can be roughly defined as a partitioning or tesselation of the entire Earth's surface into a finite number of "cells" or "zones". The shape and the properties of these cells generally vary from one DGGS to another. Most DGGSs are also hierarchical, i.e., the cells are aranged on recursively on multiple levels or resolutions. Follow the links in the subsection below for a more strict and detailled definition of a DGGS.
+
+DGGSs may be used in various ways, e.g.,
+
+- Applications in Earth-system modelling seem to use DGGS as grids of contiguous, fixed-resolution cells covering the entire Earth's surface or a region of interest (figure 1). This makes easier the analysis of simulation outputs on large extents of the Earth's surface. DGGS may also be used as pyramid data (multiple stacked datasets at different resolutions)
+- Applications in GIS often consist of using DGGS to display aggregated (vector) data as a collection of cells with a more complex spatial distribution (sparse) and sometimes with mixed resolutions (figures 2 and 3).
+
+![figure1](https://user-images.githubusercontent.com/4160723/281698490-31cb5ce8-64db-4bbf-a0d9-a8d6597bb2df.png)
+Figure 1: DGGS data as contiguous cells of fixed resolution ([source](https://danlooo.github.io/DGGS.jl/))
+
+![figure2](https://github.com/benbovy/xdggs/assets/4160723/430fd646-220a-4027-8212-1d927bb339ba)
+
+Figure 2: Data aggreated on DGGS (H3) sparsely distributed cells of fixed resolution ([source](https://medium.com/@jesse.b.nestler/how-to-convert-h3-cell-boundaries-to-shapely-polygons-in-python-f7558add2f63)).
+
+![image](https://github.com/benbovy/xdggs/assets/4160723/f2e4ec02-d88e-475e-9067-e93cf185923e)
+
+Figure 3: Raster data converted as DGGS (H3) cells of mixed resolutions ([source](https://github.com/nmandery/h3ronpy)).
+
 ### Standards and Conventions
 
+There no released standard yet regarding DGGS. However, there is a group working on a draft of OGC API for DGGS: https://github.com/opengeospatial/ogcapi-discrete-global-grid-systems.
+
+Another draft of DGGS specification can be found here: https://github.com/danlooo/dggs-data-spec.
+
 ### Backends (Python)
+
+Several Python packages are currently available for handling certain DGGSs. They mostly consist of Python bindings of DGGS implementations written in C/C++/Rust. Here is a list (probably incomplete):
+
+- [healpy](https://github.com/healpy/healpy): Python bindings of [HealPix](https://healpix.sourceforge.io/)
+  - mostly vectorized
+- [rhealpixdggs-py](https://github.com/manaakiwhenua/rhealpixdggs-py): Python/Numpy implementation of rHEALPix
+- [h3-py](https://github.com/uber/h3-py): "official" Python bindings of [H3](https://h3geo.org/)
+  - experimental and incomplete vectorized version of H3's API (removed in the forthcoming v4 release?)
+- [h3pandas](https://github.com/DahnJ/H3-Pandas): integration of h3-py (non-vectorized) with pandas and geopandas
+- [h3ronpy](https://github.com/nmandery/h3ronpy): Python bindings of [h3o](https://github.com/HydroniumLabs/h3o) (Rust implementation of H3)
+  - provides high-level features (conversion, etc.) working with arrow, numpy (?), pandas/geopandas and polars
+- [s2geometry](https://github.com/google/s2geometry): Python bindings generated with SWIG
+  - not vectorized nor very "pythonic"
+  - plans to switch to pybind11 (no time frame given)
+- [spherely](https://github.com/benbovy/spherely): Python bindings of S2, mostly copying shapely's API
+  - provides numpy-like universal functions
+  - not yest ready for use
+- [dggrid4py](https://github.com/allixender/dggrid4py): Python wrapper for [DGGRID](https://github.com/sahrk/DGGRID)
+  - DGGRID implements many DGGS variants!
+  - DGGRID current design makes it hardly reusable from within Python in an optimal way (the dggrid wrapper communicates with DGGRID through OS processes and I/O generated files)
 
 ## Representation of DGGS data in xdggs
 
