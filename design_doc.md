@@ -63,7 +63,7 @@ Figure 3: Raster data converted as DGGS (H3) cells of mixed resolutions ([source
 
 ### Standards and Conventions
 
-There no released standard yet regarding DGGS. However, there is a group working on a draft of OGC API for DGGS: https://github.com/opengeospatial/ogcapi-discrete-global-grid-systems.
+There is no released standard yet regarding DGGS. However, there is a group working on a draft of OGC API for DGGS: https://github.com/opengeospatial/ogcapi-discrete-global-grid-systems.
 
 Another draft of DGGS specification can be found here: https://github.com/danlooo/dggs-data-spec.
 
