@@ -13,6 +13,7 @@ Examples of common DGGS features that `xdggs` should provide or facilitate:
 - convert between different cell id representations of a same DGGS (e.g., uint64 vs. string)
 - select data on a DGGS by cell ids or by geometries (spatial indexing)
 - change DGGS resolution (upgrade or downgrade)
+- operations between similar DGGS (with auto-alignment)
 - re-organize cell ids (e.g., spatial shuffling / partitioning)
 - plotting
 
@@ -88,7 +89,7 @@ Several Python packages are currently available for handling certain DGGSs. They
   - DGGRID implements many DGGS variants!
   - DGGRID current design makes it hardly reusable from within Python in an optimal way (the dggrid wrapper communicates with DGGRID through OS processes and I/O generated files)
 
-## Representation of DGGS data in xdggs
+## Representation of DGGS Data in Xdggs
 
 `xdggs` represents a DGGS as an Xarray Dataset or DataArray containing a 1-dimensional coordinate with cell ids as labels and with grid name, resolution & parameters (optional) as attributes. This coordinate is indexed using a custom, Xarray-compatible `DGGSIndex`.
 
@@ -137,9 +138,120 @@ ds.set_xindex("cell", xdggs.H3Index, resolution=3)
 
 The DGGSIndex is set automatically when converting a gridded or vector dataset to a DGGS dataset (see below).
 
-## Conversion
+## Conversion from/to DGGS
 
-## Data Selection
+DGGS data may be created from various sources, e.g.,
+
+- regridded from a latitude/longitude rectilinear grid
+- regridded from an unstructured grid
+- regridded and reprojected from a raster
+- aggregated from vector point data
+- filled from polygon data
+
+Conversely, DGGS data may be converted to various forms, e.g.,
+
+- regridded on a latitude/longitude rectilinear grid
+- rasterized (resampling / projection)
+- conversion to vector point data (cell centroids)
+- conversion to vector polygon data (cell boundaries)
+
+Here is a tentative API based on Dataset/DataArray `.dggs` accessors (note: other options are discussed in [this issue](https://github.com/benbovy/xdggs/issues/13)):
+
+```python
+# "convert" directly from existing cell ids coordinate to DGGS
+# basically an alias to ds.set_xindex(..., DGGSIndex)
+ds.dggs.from_cell_ids(...)
+
+# convert from lat/lon grid
+ds.dggs.from_latlon_grid(...)
+
+# convert from raster
+ds.dggs.from_raster(...)
+
+# convert from point data
+ds.dggs.from_points(...)
+
+# convert from point data (with aggregation)
+ds.dggs.from_points_aggregate(...)
+
+# convert from point data (with aggregation using Xarray API)
+ds.dggs.from_points(...).groupby(...).mean()
+
+# convert to lat/lon grid
+ds.dggs.to_latlon_grid(...)
+
+# convert to raster
+ds.dggs.to_raster(...)
+
+# convert to points (cell centroids)
+ds.dggs.to_points(...)
+
+# convert to polygons (cell boundaries)
+ds.dggs.to_polygons(...)
+```
+
+In the API methods above, the "dggs" accessor name serves as a prefix.
+
+Those methods are all called from an existing xarray Dataset (DataArray) and should all return another Dataset (DataArray):
+
+- Xarray has built-in support for regular grids
+- for rasters, we could return objects that are [rioxarray](https://github.com/corteva/rioxarray)-friendly
+- for vector data, we could return objects that are [xvec](https://github.com/xarray-contrib/xvec)-friendly (coordinate of shapely objects)
+- etc.
+
+## Extracting DGGS Cell Geometries
+
+DGGS cell geometries could be extracted using the conversion methods proposed above. Alternatively, it would be convenient to get them directly as xarray DataArrays so that we can for example manually assign them as coordinates.
+
+The API may look like:
+
+```python
+# return a DataArray of DGGS cell centroids as shapely.POINT objects
+ds.dggs.cell_centroids()
+
+# return two DataArrays of DGGS cell centroids as lat/lon coordinates
+ds.dggs.cell_centroids_coords()
+
+# return a DataArray of DGGS cell boundaries as shapely.POLYGON objects
+ds.dggs.cell_boundaries()
+
+# return a DataArray of DGGS cell envelopes as shapely.POLYGON objects
+ds.dggs.cell_envelopes()
+```
+
+## Indexing and Selecting DGGS Data
+
+### Selection by Cell IDs
+
+The simplest way to select DGGS data is by cell ids. This can be done directly using Xarray's API (`.sel()`):
+
+```python
+ds.sel(cell=value)
+```
+
+where `value` can be a single cell id (integer or string/token?) or an array-like of cell ids. This is easily supported by the DGGSIndex encapsulating a PandasIndex. We might also want to support other `value` types, e.g.,
+
+- assuming that DGGS cell ids are defined such that contiguous cells in space have contiguous id values, we could provide a `slice` to define a range of cell ids.
+- DGGSIndex might implement some DGGS-aware logic such that it auto-detects if the given input cells are parent cells (lower DGGS resolution) and then selects all child cells accordingly.
+
+We might want to select cell neighbors (i.e., return a new Dataset/DataArray with a new neighbor dimension), probably via a specific API (`.dggs` accessors).
+
+### Selection by Geometries (Spatial Indexing)
+
+Another useful way of selecting DGGS data is from input geometries (spatial queries), e.g.,
+
+- Select all cells that are the closest to a collection of data points
+- Select all cells that intersects with or are fully contained in a polygon
+
+This kind of selection requires spatial indexes as this can not be done with a pandas index (see [this issue](https://github.com/benbovy/xdggs/issues/16)).
+
+If we support spatial indexing directly in `xdggs`, we can hardly reuse Xarray's `.sel()` for spatial queries as `ds.sel(cell=shapely.Polygon(...))` would look quite confusing. Perhaps better would be to align with [xvec](https://github.com/xarray-contrib/xvec) and have a separate `.dggs.query()` method.
+
+Alternatively, we could just get away with the conversion and cell geometry extraction methods proposed above and leave spatial indexes/queries to [xvec](https://github.com/xarray-contrib/xvec).
+
+## Operations between similar DGGS (alignment)
+
+TODO
 
 ## Plotting
 
