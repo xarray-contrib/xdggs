@@ -43,7 +43,7 @@ Although some DGGS may handle both the spatial and temporal domains in a joint f
 
 ## Discrete Global Grid Systems
 
-A Discrete Global Grid System (DGGS) can be roughly defined as a partitioning or tesselation of the entire Earth's surface into a finite number of "cells" or "zones". The shape and the properties of these cells generally vary from one DGGS to another. Most DGGSs are also hierarchical, i.e., the cells are aranged on recursively on multiple levels or resolutions. Follow the links in the subsection below for a more strict and detailled definition of a DGGS.
+A Discrete Global Grid System (DGGS) can be roughly defined as a partitioning or tessellation of the entire Earth's surface into a finite number of "cells" or "zones". The shape and the properties of these cells generally vary from one DGGS to another. Most DGGSs are also hierarchical, i.e., the cells are arranged on recursively on multiple levels or resolutions. Follow the links in the subsection below for a more strict and detailed definition of a DGGS.
 
 DGGSs may be used in various ways, e.g.,
 
