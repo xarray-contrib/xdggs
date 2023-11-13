@@ -29,7 +29,7 @@ Conversion between DGGS and other grids or vector features may requires specific
 
 `xdggs` should also try to support applications in both GIS and Earth-System communities, which may each use DGGS in slightly different ways (see examples below).
 
-When possible, `xdggs` operations should scale to fine resolutions (millions of cells) leveraging Xarray interoperability with Dask. This might not be always possible, though. Some operations (spatial indexing) may be hard to support at scale and it shouldn't be a high development priority.
+When possible, `xdggs` operations should scale to fine DGGS resolutions (millions of cells). This can be done vertically using backends with vectorized bindings of DGGS implementations written in low-level languages and/or horizontally leveraging Xarray interoperability with Dask. Some operations like spatial indexing may be hard to scale horizontally, though. For the latter, we should probably focus `xdggs` development first towards good vertical scaling before figuring out how they can be scaled horizontally (for reference, see [dask-geopandas](https://github.com/geopandas/dask-geopandas) and [spatialpandas](https://github.com/holoviz/spatialpandas)).
 
 ## Non-Gloals
 
