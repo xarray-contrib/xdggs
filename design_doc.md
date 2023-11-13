@@ -1,6 +1,6 @@
 # XDGGS - Design document
 
-Xarrays extension for DGGS. Technical specifiactions.
+Xarrays extension for DGGS. Technical specifications.
 
 ## Goals
 
