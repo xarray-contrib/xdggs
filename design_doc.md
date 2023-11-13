@@ -251,9 +251,17 @@ If we support spatial indexing directly in `xdggs`, we can hardly reuse Xarray's
 
 Alternatively, we could just get away with the conversion and cell geometry extraction methods proposed above and leave spatial indexes/queries to [xvec](https://github.com/xarray-contrib/xvec).
 
+## Handling hierarchical DGGS
+
+Even though the DGGS coordinate of a Dataset (DataArray) is limited to cell ids of same resolution (no mixed-resolutions), `xdggs` can still provide functionality to deal with the hierarchical aspect of DGGSs.
+
+Selection by parent cell ids may be in example (see section above). Another example would be to have utility methods to explicitly change the grid resolution (see [issue #18](https://github.com/benbovy/xdggs/issues/18) for more details and discussion).
+
 ## Operations between similar DGGS (alignment)
 
-TODO
+Computation involving multiple DGGS datasets (or dataarrays) often requires to align them together. Sometimes this can be trivial (same DGGS with same resolution and parameter values) but in other cases this can be complex (requires regridding or a change of DGGS resolution).
+
+In Xarray, alignment of datasets (dataarrays) is done primarily via their indexes. Since a DGGSIndex wraps a PandasIndex, it is easy to support alignment by cells ids (trivial case). At the very least, a DGGSIndex should raise an error when trying to align cell ids that do not refer to the exact same DGGS (i.e., same system, resolution and parameter values). For the complex cases, it may be preferable to handle them manually instead of trying to make the DGGSIndex perform the alignment automatically. Regridding and/or changing the resolution of a DGGS (+ data aggregation) often highly depend on the use-case so it might be hard to find a default behavior. Also performing those operations automatically and implicitly would probably feel too magical. That being said, in order to help alignment `xdggs` may provide some utility methods to change the grid resolution (see section above) and/or to convert from one DGGS to another.
 
 ## Plotting
 
