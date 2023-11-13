@@ -263,6 +263,4 @@ Three approaches are possible (non-mutually exclusive):
 2. convert cell data into vector data and plot the latter via, e.g., [xvec](https://github.com/xarray-contrib/xvec) or [geopandas](https://github.com/geopandas/geopandas) API
 3. leverage libraries that support plotting DGGS data, e.g., [lonboard](https://github.com/developmentseed/lonboard) enables interactive plotting in Jupyter via deck.gl, which has support of H3 and S2 cell data.
 
-The first and last approaches may be efficient in plotting large DGGS data. For approach 1, we might want to investigate using [datashader](https://github.com/holoviz/datashader) to set both the resolution and raster extent dynamically. For approach 3 (lonboard), we would only need to transfer cell ids (tokens) and cell data and then let deck.gl render the cells efficiently in the web browser using the GPU.
-
-Although the second approach may not scale as best as the other ones, it is versatile and may produce nice looking graphics.
+The 3rd approach (lonboard) is efficient for plotting large DGGS data: we would only need to transfer cell ids (tokens) and cell data and then let deck.gl render the cells efficiently in the web browser using the GPU. For approach 1, we might want to investigate using [datashader](https://github.com/holoviz/datashader) to set both the resolution and raster extent dynamically. Likewise for approach 2, we could dynamically downgrade the DGGS resolution and aggregate the data before converting it into vector data in order to allow (interactive) plotting of large DGGS data.
