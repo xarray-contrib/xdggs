@@ -86,7 +86,7 @@ Several Python packages are currently available for handling certain DGGSs. They
   - plans to switch to pybind11 (no time frame given)
 - [spherely](https://github.com/benbovy/spherely): Python bindings of S2, mostly copying shapely's API
   - provides numpy-like universal functions
-  - not yest ready for use
+  - not yet ready for use
 - [dggrid4py](https://github.com/allixender/dggrid4py): Python wrapper for [DGGRID](https://github.com/sahrk/DGGRID)
   - DGGRID implements many DGGS variants!
   - DGGRID current design makes it hardly reusable from within Python in an optimal way (the dggrid wrapper communicates with DGGRID through OS processes and I/O generated files)
