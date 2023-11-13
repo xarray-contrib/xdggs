@@ -47,7 +47,7 @@ A Discrete Global Grid System (DGGS) can be roughly defined as a partitioning or
 
 DGGSs may be used in various ways, e.g.,
 
-- Applications in Earth-system modelling seem to use DGGS as grids of contiguous, fixed-resolution cells covering the entire Earth's surface or a region of interest (figure 1). This makes easier the analysis of simulation outputs on large extents of the Earth's surface. DGGS may also be used as pyramid data (multiple stacked datasets at different resolutions)
+- Applications in Earth-system modelling seem to use DGGS as grids of contiguous, fixed-resolution cells covering the entire Earth's surface or a region of interest (figure 1). This makes the analysis of simulation outputs on large extents of the Earth's surface easier. DGGS may also be used as pyramid data (multiple stacked datasets at different resolutions)
 - Applications in GIS often consist of using DGGS to display aggregated (vector) data as a collection of cells with a more complex spatial distribution (sparse) and sometimes with mixed resolutions (figures 2 and 3).
 
 ![figure1](https://user-images.githubusercontent.com/4160723/281698490-31cb5ce8-64db-4bbf-a0d9-a8d6597bb2df.png)
