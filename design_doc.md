@@ -4,7 +4,7 @@ Xarrays extension for DGGS. Technical specifications.
 
 ## Goals
 
-The goal of the `xddgs` library is to facilitate working with multiple Discrete Global Grid Systems (DGGSs) via a unified, high-level and user-friendly API that is deeply integrated with [Xarray](https://xarray.dev).
+The goal of the `xdggs` library is to facilitate working with multiple Discrete Global Grid Systems (DGGSs) via a unified, high-level and user-friendly API that is deeply integrated with [Xarray](https://xarray.dev).
 
 Examples of common DGGS features that `xdggs` should provide or facilitate:
 
@@ -27,15 +27,15 @@ Conversion between DGGS and other grids or vector features may requires specific
 
 `xdggs` should try to follow standards and/or conventions defined for DGGS (see below). However, we may need to depart from them for practical reasons (e.g., common practices in popular DGGS libraries that do not fit well with the proposed standards). Strict adherence to a standard is welcome but shouldn't be enforced by all means.
 
-`xddgs` should also try to support applications in both GIS and Earth-System communities, which may each use DGGS in slightly different ways (see examples below).
+`xdggs` should also try to support applications in both GIS and Earth-System communities, which may each use DGGS in slightly different ways (see examples below).
 
-When possible, `xddgs` operations should scale to fine resolutions (millions of cells) leveraging Xarray interoperability with Dask. This might not be always possible, though. Some operations (spatial indexing) may be hard to support at scale and it shouldn't be a high development priority.
+When possible, `xdggs` operations should scale to fine resolutions (millions of cells) leveraging Xarray interoperability with Dask. This might not be always possible, though. Some operations (spatial indexing) may be hard to support at scale and it shouldn't be a high development priority.
 
 ## Non-Gloals
 
 `xdggs` should focus on providing the core DGGS functionality and operations that are listed above. Higher-level operations that can be implemented by combining together those core operations are out-of-scope and should be implemented in downstream libraries. Likewise, there may be many ways of resampling a grid to a DGGS ; `xdggs` should support the most common methods but not try to support _all of them_.
 
-`xddgs` should try not re-inventing the wheel and delegate to Xarray API when possible.
+`xdggs` should try not re-inventing the wheel and delegate to Xarray API when possible.
 
 `xdggs` does not implement any particular DGGS from scratch. `xdggs` does not aim at providing _all the functionality provided by each grid_ (e.g., some functionality may be very specific to one DGGS and not supported by other DGGSs, or some functionality may not be available yet in one DGGS Python backend).
 
@@ -67,7 +67,7 @@ There is no released standard yet regarding DGGS. However, there is a group work
 
 Another draft of DGGS specification can be found here: https://github.com/danlooo/dggs-data-spec.
 
-There are some discrepancies between the proposed standards and popular DGGS libraries (H3, S2, HealPIX). For example regarding the term used to define a grid unit: The two specifications above use "zone", S2/H3 use "cell" and HealPIX uses "pixel". Although in this document we use "cell", the term to choose for `xddgs` is still open for discussion.
+There are some discrepancies between the proposed standards and popular DGGS libraries (H3, S2, HealPIX). For example regarding the term used to define a grid unit: The two specifications above use "zone", S2/H3 use "cell" and HealPIX uses "pixel". Although in this document we use "cell", the term to choose for `xdggs` is still open for discussion.
 
 ### Backends (Python)
 
@@ -115,7 +115,7 @@ The cell ids in the 1-dimensional coordinate are all relative to the _exact same
   - They can be implemented in subclasses (see below)
   - They are either called from within the DGGSIndex or from the `.dggs` Dataset/DataArray accessors
 
-Each DGGS supported in `xddgs` has its own subclass of `DGGSIndex`, e.g.,
+Each DGGS supported in `xdggs` has its own subclass of `DGGSIndex`, e.g.,
 
 - `HealpixIndex` for Healpix
 - `H3Index` for H3
