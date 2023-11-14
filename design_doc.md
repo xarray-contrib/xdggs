@@ -11,7 +11,6 @@ Examples of common DGGS features that `xdggs` should provide or facilitate:
 
 - convert a DGGS from/to another grid (e.g., a DGGS, a latitude/longitude rectilinear grid, a raster grid, an unstructured mesh)
 - convert a DGGS from/to vector data (points, lines, polygons, envelopes)
-- nearest neighbor search and bounding box queries around a given cell
 - convert between different cell id representations of a same DGGS (e.g., uint64 vs. string)
 - select data on a DGGS by cell ids or by geometries (spatial indexing)
 - expand and reduce the available resolutions of a DGGS using down and upsampling, respectively.
