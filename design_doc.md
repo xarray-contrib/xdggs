@@ -69,7 +69,7 @@ The [OGC abstract specification topic 21](http://www.opengis.net/doc/AS/dggs/2.0
 
 However, there is no consensus yet about the actual specification on how to work with DGGD data.
 [OGC API draft](https://github.com/opengeospatial/ogcapi-discrete-global-grid-systems) defines ways of how to access DGGS data.
-The [DGGS data speification draft](https://github.com/danlooo/dggs-data-spec.) aims to specify the storage format of DGGS data.
+The [DGGS data specification draft](https://github.com/danlooo/dggs-data-spec). aims to specify the storage format of DGGS data.
 
 There are some discrepancies between the proposed standards and popular DGGS libraries (H3, S2, HealPIX). For example regarding the term used to define a grid unit: The two specifications above use "zone", S2/H3 use "cell" and HealPIX uses "pixel".
 OGC abstract specification topic 21 defines the region as a zone and its boundary geometry as a cell.
@@ -99,7 +99,7 @@ Several Python packages are currently available for handling certain DGGSs. They
 
 ## Representation of DGGS Data in Xdggs
 
-`xdggs` represents a DGGS as an Xarray Dataset or DataArray containing a 1-dimensional coordinate with cell ids as labels and with grid name, resolution & parameters (optional) as attributes. This coordinate is indexed using a custom, Xarray-compatible `DGGSIndex`.
+`xdggs` represents a DGGS as an Xarray Dataset or DataArray containing a 1-dimensional coordinate with cell ids as labels and with grid name, resolution & parameters (optional) as attributes. This coordinate is indexed using a custom, Xarray-compatible `DGGSIndex`. Multiple dimensions may be used if the coordinate consists of multiple parts, e.g., polyhedron face, x, and y on that face in DGGRID PROJTRI.
 
 `xdggs` does not support a Dataset or DataArray with multiple coordinates indexed with a `DGGSIndex` (only one DGGS per object is supported).
 
@@ -259,9 +259,15 @@ Alternatively, we could just get away with the conversion and cell geometry extr
 
 ## Handling hierarchical DGGS
 
-Even though the DGGS coordinate of a Dataset (DataArray) is limited to cell ids of same resolution (no mixed-resolutions), `xdggs` can still provide functionality to deal with the hierarchical aspect of DGGSs.
+DGGS are grid systems with grids of the same topology but different spatial resolution.
+There is a hierarchical relationship between grids of different resolutions.
+Even though the coordinate of one grid in the DGGS of a Dataset (DataArray) is limited to cell ids of same resolution (no mixed-resolutions), `xdggs` can still provide functionality to deal with the hierarchical aspect of DGGSs.
 
 Selection by parent cell ids may be in example (see section above). Another example would be to have utility methods to explicitly change the grid resolution (see [issue #18](https://github.com/benbovy/xdggs/issues/18) for more details and discussion).
+One can also store DGGS data at all resolutions as a list of datasets.
+
+However, like in hexagonal grids of aperture 3 or 4 (e.g. DGGRID ISEA4H), the parent child relationship can be also ambiguous.
+The actual spatial aggregation functions in the subclasses might be implemented differently depending on the selected DGGS.
 
 ## Operations between similar DGGS (alignment)
 
