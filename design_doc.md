@@ -30,7 +30,7 @@ Conversion between DGGS and other grids or vector features may requires specific
 
 `xdggs` should also try to support applications in both GIS and Earth-System communities, which may each use DGGS in slightly different ways (see examples below).
 
-When possible, `xdggs` operations must scale to fine DGGS resolutions (billions of cells). This can be done vertically using backends with vectorized bindings of DGGS implementations written in low-level languages and/or horizontally leveraging Xarray interoperability with Dask. Some operations like spatial indexing may be hard to scale horizontally, though. For the latter, we should probably focus `xdggs` development first towards good vertical scaling before figuring out how they can be scaled horizontally (for reference, see [dask-geopandas](https://github.com/geopandas/dask-geopandas) and [spatialpandas](https://github.com/holoviz/spatialpandas)).
+When possible, `xdggs` operations should scale to fine DGGS resolutions (billions of cells). This can be done vertically using backends with vectorized bindings of DGGS implementations written in low-level languages and/or horizontally leveraging Xarray interoperability with Dask. Some operations like spatial indexing may be hard to scale horizontally, though. For the latter, we should probably focus `xdggs` development first towards good vertical scaling before figuring out how they can be scaled horizontally (for reference, see [dask-geopandas](https://github.com/geopandas/dask-geopandas) and [spatialpandas](https://github.com/holoviz/spatialpandas)).
 
 ## Non-Gloals
 
@@ -151,7 +151,7 @@ DGGS data may be created from various sources, e.g.,
 
 - regridded from a latitude/longitude rectilinear grid
 - regridded from an unstructured grid
-- regridded and reprojected from a raster
+- regridded and reprojected from a raster having a local projection
 - aggregated from vector point data
 - filled from polygon data
 
