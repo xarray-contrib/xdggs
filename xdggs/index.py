@@ -5,7 +5,7 @@ import numpy as np
 import xarray as xr
 from xarray.indexes import Index, PandasIndex
 
-from .utils import GRID_REGISTRY, _extract_cell_id_variable
+from xdggs.utils import GRID_REGISTRY, _extract_cell_id_variable
 
 
 class DGGSIndex(Index):
