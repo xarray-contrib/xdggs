@@ -41,7 +41,7 @@ dependencies = [
 
 [project.urls]
 # Home = "https://xdggs.readthedocs.io"
-Repository = "https://github.com/benbovy/xdggs"
+Repository = "https://github.com/xarray-contrib/xdggs"
 
 [tool.ruff]
 target-version = "py311"

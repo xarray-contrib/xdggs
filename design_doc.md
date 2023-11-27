@@ -162,7 +162,7 @@ Conversely, DGGS data may be converted to various forms, e.g.,
 - conversion to vector point data (cell centroids)
 - conversion to vector polygon data (cell boundaries)
 
-Here is a tentative API based on Dataset/DataArray `.dggs` accessors (note: other options are discussed in [this issue](https://github.com/benbovy/xdggs/issues/13)):
+Here is a tentative API based on Dataset/DataArray `.dggs` accessors (note: other options are discussed in [this issue](https://github.com/xarray-contrib/xdggs/issues/13)):
 
 ```python
 # "convert" directly from existing cell ids coordinate to DGGS
@@ -250,7 +250,7 @@ Another useful way of selecting DGGS data is from input geometries (spatial quer
 - Select all cells that are the closest to a collection of data points
 - Select all cells that intersects with or are fully contained in a polygon
 
-This kind of selection requires spatial indexes as this can not be done with a pandas index (see [this issue](https://github.com/benbovy/xdggs/issues/16)).
+This kind of selection requires spatial indexes as this can not be done with a pandas index (see [this issue](https://github.com/xarray-contrib/xdggs/issues/16)).
 
 If we support spatial indexing directly in `xdggs`, we can hardly reuse Xarray's `.sel()` for spatial queries as `ds.sel(cell=shapely.Polygon(...))` would look quite confusing. Perhaps better would be to align with [xvec](https://github.com/xarray-contrib/xvec) and have a separate `.dggs.query()` method.
 
@@ -262,7 +262,7 @@ DGGS are grid systems with grids of the same topology but different spatial reso
 There is a hierarchical relationship between grids of different resolutions.
 Even though the coordinate of one grid in the DGGS of a Dataset (DataArray) is limited to cell ids of same resolution (no mixed-resolutions), `xdggs` can still provide functionality to deal with the hierarchical aspect of DGGSs.
 
-Selection by parent cell ids may be in example (see section above). Another example would be to have utility methods to explicitly change the grid resolution (see [issue #18](https://github.com/benbovy/xdggs/issues/18) for more details and discussion).
+Selection by parent cell ids may be in example (see section above). Another example would be to have utility methods to explicitly change the grid resolution (see [issue #18](https://github.com/xarray-contrib/xdggs/issues/18) for more details and discussion).
 One can also store DGGS data at all resolutions as a list of datasets.
 
 However, like in hexagonal grids of aperture 3 or 4 (e.g. DGGRID ISEA4H), the parent child relationship can be also ambiguous.
