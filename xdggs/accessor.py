@@ -19,7 +19,9 @@ class DGGSAccessor:
         for k, idx in obj.xindexes.items():
             if isinstance(idx, DGGSIndex):
                 if index is not None:
-                    raise ValueError("Only one DGGSIndex per dataset or dataarray is supported")
+                    raise ValueError(
+                        "Only one DGGSIndex per dataset or dataarray is supported"
+                    )
                 index = idx
                 name = k
         self._name = name
@@ -43,7 +45,9 @@ class DGGSAccessor:
 
         """
         if not self._name:
-            raise ValueError("no coordinate with a DGGSIndex found on this Dataset or DataArray")
+            raise ValueError(
+                "no coordinate with a DGGSIndex found on this Dataset or DataArray"
+            )
         return self._obj[self._name]
 
     def sel_latlon(

@@ -42,7 +42,9 @@ class HealpixIndex(DGGSIndex):
         return cls(var.data, dim, nside, nest, rot_latlon)
 
     def _replace(self, new_pd_index: PandasIndex):
-        return type(self)(new_pd_index, self._dim, self._nside, self._nest, self._rot_latlon)
+        return type(self)(
+            new_pd_index, self._dim, self._nside, self._nest, self._rot_latlon
+        )
 
     def _latlon2cellid(self, lat: Any, lon: Any) -> np.ndarray:
         return healpy.ang2pix(self._nside, -lon, lat, lonlat=True, nest=self._nest)
@@ -52,6 +54,4 @@ class HealpixIndex(DGGSIndex):
         return lat, -lon
 
     def _repr_inline_(self, max_width: int):
-        return (
-            f"HealpixIndex(nside={self._nside}, nest={self._nest}, rot_latlon={self._rot_latlon!r})"
-        )
+        return f"HealpixIndex(nside={self._nside}, nest={self._nest}, rot_latlon={self._rot_latlon!r})"
