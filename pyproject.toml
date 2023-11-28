@@ -73,10 +73,14 @@ select = [
 ]
 line-length = 100
 
+[tool.ruff.lint]
+unfixable = ["ALL"]
+
 [tool.ruff.isort]
 known-first-party = ["xdggs"]
 known-third-party=[
     "xarray",
     "healpy",
     "h3",
+    "h3ronpy",
 ]
