@@ -53,5 +53,14 @@ class HealpixIndex(DGGSIndex):
         lon, lat = healpy.pix2ang(self._nside, cell_ids, nest=self._nest, lonlat=True)
         return lat, -lon
 
+    def _cellid2boundaries(self, cell_ids: Any) -> np.ndarray:
+        boundary_vectors = healpy.boundaries(
+            self._nside, cell_ids, step=1, nest=self._nest
+        )
+
+        lon, lat = healpy.vec2ang(np.moveaxis(boundary_vectors, 1, -1), lonlat=True)
+        boundaries = np.reshape(np.stack((-lon, lat), axis=-1), (-1, 4, 2))
+        return boundaries
+
     def _repr_inline_(self, max_width: int):
         return f"HealpixIndex(nside={self._nside}, nest={self._nest}, rot_latlon={self._rot_latlon!r})"
