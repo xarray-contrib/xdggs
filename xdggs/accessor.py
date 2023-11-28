@@ -81,3 +81,16 @@ class DGGSAccessor:
             latitude=(self.index._dim, lat_data),
             longitude=(self.index._dim, lon_data),
         )
+
+    @property
+    def cell_ids(self):
+        return self._obj[self._name]
+
+    @property
+    def cell_boundaries(self):
+        import shapely
+
+        boundaries = shapely.polygons(self.index.cell_boundaries)
+        return xr.DataArray(
+            boundaries, coords={self._name: self.cell_ids}, dims=self.cell_ids.dims
+        )
