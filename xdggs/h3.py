@@ -21,7 +21,7 @@ class H3Index(DGGSIndex):
         resolution: int,
     ):
         super().__init__(cell_ids, dim)
-        self._resolution = resolution
+        self._resolution = int(resolution)
 
     @classmethod
     def from_variables(
