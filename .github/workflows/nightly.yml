@@ -19,7 +19,7 @@ jobs:
     name: detect ci trigger
     runs-on: ubuntu-latest
     if: |
-      github.owner == 'xarray-contrib' && github.event_name == 'pull_request'
+      github.repository_owner == 'xarray-contrib' && github.event_name == 'pull_request'
     outputs:
       triggered: ${{ steps.detect-trigger.outputs.trigger-found }}
     steps:
@@ -93,7 +93,7 @@ jobs:
           failure()
           && steps.run-tests.outcome == 'failure'
           && github.event_name == 'schedule'
-          && github.owner == 'xarray-contrib'
+          && github.repository_owner == 'xarray-contrib'
         uses: xarray-contrib/issue-from-pytest-log@v1
         with:
           log-path: output-${{ matrix.python-version }}-log.jsonl

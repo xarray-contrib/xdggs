@@ -16,7 +16,7 @@ jobs:
     name: detect ci trigger
     runs-on: ubuntu-latest
     if: |
-      github.owner == 'xarray-contrib'
+      github.repository_owner == 'xarray-contrib'
       && (github.event_name == 'pull_request' || github.event_name == 'push')
     outputs:
       triggered: ${{ steps.detect-trigger.outputs.trigger-found }}
