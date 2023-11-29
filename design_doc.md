@@ -76,6 +76,8 @@ Although in this document we use "cell", the term to choose for `xdggs` is still
 
 Furthermore, several libraries allow for customised instantiation of a DGGS. This makes it crucial to be able to specify the particular DGGS type and potentially additional parameters. The OGC DGGS working group is discussing how to define a DGGS reference system, analogously to the spatial/coordinate reference systems registries (PROJ, EPSG, ..).
 
+The OGC is [currently discussing](https://github.com/opengeospatial/ogcapi-discrete-global-grid-systems/issues/41) ways to describe and identify unique DGGS types. This is slightly different from storing DGGS data. But the important info here is to be able to store the metadata about the specifics of the used DGGS in form e.g. an identifier, label, link to a detailed definition. This would likely need to include the main type e.g. H3, S2, HEALPIX, RHEALPIX, DGGGRID_ISEAxxx, but also required parameters like HEALPIX (indexing: nested or ring), RHEALPIX (ellipsoid, orientation/rotation ..), DGGRID-icosahedron-based DGGS types (orientation, potentially mixed apertures..), GeoSOT. It would be good to have synergies here and not reinvent the wheel.
+
 ### Backends (Python)
 
 Several Python packages are currently available for handling certain DGGSs. They mostly consist of Python bindings of DGGS implementations written in C/C++/Rust. Here is a list (probably incomplete):
