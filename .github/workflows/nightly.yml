@@ -1,0 +1,99 @@
+name: Upstream-dev CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+    types: [opened, reopened, synchronize, labeled]
+  schedule:
+    - cron: "0 0 * * *" # Daily “At 00:00” UTC
+  workflow_dispatch: # allows you to trigger the workflow run manually
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  detect-ci-trigger:
+    name: detect ci trigger
+    runs-on: ubuntu-latest
+    if: |
+      github.owner == 'xarray-contrib' && github.event_name == 'pull_request'
+    outputs:
+      triggered: ${{ steps.detect-trigger.outputs.trigger-found }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: xarray-contrib/ci-trigger@v1
+        id: detect-trigger
+        with:
+          keyword: "[test-upstream]"
+
+  tests:
+    name: upstream-dev
+    runs-on: ubuntu-latest
+    needs: detect-ci-trigger
+    if: |
+      always()
+      && (
+        (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+        || needs.detect-ci-trigger.outputs.triggered == 'true'
+        || contains( github.event.pull_request.labels.*.name, 'run-upstream')
+      )
+
+    defaults:
+      run:
+        shell: bash -leo pipefail {0} {0}
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        python-version: ["3.11"]
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for all branches and tags
+
+      - name: Setup micromamba
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: ci/environment.yml
+          environment-name: xdggs-tests
+          cache-environment: false
+          create-args: >-
+            python=${{matrix.python-version}}
+            pytest-reportlog
+            conda
+
+      - name: Install upstream versions
+        run: |
+          bash ci/install-upstream-wheels.sh
+
+      - name: Install xdggs
+        run: |
+          python -m pip install --no-deps -e .
+
+      - name: Import xdggs
+        run: |
+          python -c "import xdggs"
+
+      - name: Run tests
+        if: success()
+        id: run-tests
+        run: |
+          python -m pytest --report-log output-${{ matrix.python-version }}-log.jsonl
+
+      - name: Generate and publish a failure report
+        if: |
+          failure()
+          && steps.run-tests.outcome == 'failure'
+          && github.event_name == 'schedule'
+          && github.owner == 'xarray-contrib'
+        uses: xarray-contrib/issue-from-pytest-log@v1
+        with:
+          log-path: output-${{ matrix.python-version }}-log.jsonl
