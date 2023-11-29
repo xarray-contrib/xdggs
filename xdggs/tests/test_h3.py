@@ -7,10 +7,22 @@ from xarray.core.indexes import PandasIndex
 
 from xdggs import h3
 
+# from the h3 gallery, at resolution 3
 cell_ids = [
     np.array([0x832830FFFFFFFFF]),
     np.array([0x832831FFFFFFFFF, 0x832832FFFFFFFFF]),
     np.array([0x832833FFFFFFFFF, 0x832834FFFFFFFFF, 0x832835FFFFFFFFF]),
+]
+cell_centers = [
+    np.array([[38.19320895, -122.19619676]]),
+    np.array([[38.63853196, -123.43390346], [38.82387033, -121.00991811]]),
+    np.array(
+        [
+            [39.27846774, -122.2594399],
+            [37.09786649, -122.13425086],
+            [37.55231005, -123.35925909],
+        ]
+    ),
 ]
 dims = ["cells", "zones"]
 resolutions = [1, 5, 15]
@@ -82,3 +94,27 @@ def test_replace(old_variable, new_variable):
     assert new_index._resolution == index._resolution
     assert new_index._dim == index._dim
     assert new_index._pd_index == new_pandas_index
+
+
+@pytest.mark.parametrize(
+    ["cell_ids", "cell_centers"], list(zip(cell_ids, cell_centers))
+)
+def test_cellid2latlon(cell_ids, cell_centers):
+    index = h3.H3Index(cell_ids=cell_ids, dim="cells", resolution=3)
+
+    actual = index._cellid2latlon(cell_ids)
+    expected = cell_centers
+
+    np.testing.assert_allclose(actual, expected)
+
+
+@pytest.mark.parametrize(
+    ["cell_centers", "cell_ids"], list(zip(cell_centers, cell_ids))
+)
+def test_latlon2cellid(cell_centers, cell_ids):
+    index = h3.H3Index(cell_ids=[0], dim="cells", resolution=3)
+
+    actual = index._latlon2cellid(cell_centers[:, 0], cell_centers[:, 1])
+    expected = cell_ids
+
+    np.testing.assert_equal(actual, expected)
