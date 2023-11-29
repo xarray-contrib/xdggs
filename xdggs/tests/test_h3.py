@@ -118,3 +118,15 @@ def test_latlon2cellid(cell_centers, cell_ids):
     expected = cell_ids
 
     np.testing.assert_equal(actual, expected)
+
+
+@pytest.mark.parametrize("max_width", [20, 50, 80, 120])
+@pytest.mark.parametrize("resolution", resolutions)
+def test_repr_inline(resolution, max_width):
+    index = h3.H3Index(cell_ids=[0], dim="cells", resolution=resolution)
+
+    actual = index._repr_inline_(max_width)
+
+    assert f"resolution={resolution}" in actual
+    # ignore max_width for now
+    # assert len(actual) <= max_width
