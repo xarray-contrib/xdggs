@@ -66,13 +66,15 @@ Figure 3: Raster data converted as DGGS (H3) cells of mixed resolutions ([source
 
 The [OGC abstract specification topic 21](http://www.opengis.net/doc/AS/dggs/2.0) defines properties of a DGGS including the reference systems of its grids.
 
-However, there is no consensus yet about the actual specification on how to work with DGGD data.
-[OGC API draft](https://github.com/opengeospatial/ogcapi-discrete-global-grid-systems) defines ways of how to access DGGS data.
-The [DGGS data specification draft](https://github.com/danlooo/dggs-data-spec). aims to specify the storage format of DGGS data.
+However, there is no consensus yet about the actual specification on how to work with DGGS-indexed data.
+[OGC API draft](https://github.com/opengeospatial/ogcapi-discrete-global-grid-systems) defines ways of how to access DGGS data via web-based API.
+A [DGGS data specification draft](https://github.com/danlooo/dggs-data-spec) aims to specify the storage format of DGGS data.
 
-There are some discrepancies between the proposed standards and popular DGGS libraries (H3, S2, HealPIX). For example regarding the term used to define a grid unit: The two specifications above use "zone", S2/H3 use "cell" and HealPIX uses "pixel".
+There are discrepancies between the proposed standards and popular DGGS libraries (H3, S2, HealPIX). For example regarding the term used to define a grid unit: The two specifications above use "zone", S2/H3 use "cell" and HealPIX uses "pixel".
 OGC abstract specification topic 21 defines the region as a zone and its boundary geometry as a cell.
 Although in this document we use "cell", the term to choose for `xdggs` is still open for discussion.
+
+Furthermore, several libraries allow for customised instantiation of a DGGS. This makes it crucial to be able to specify the particular DGGS type and potentially additional parameters. The OGC DGGS working group is discussing how to define a DGGS reference system, analogously to the spatial/coordinate reference systems registries (PROJ, EPSG, ..).
 
 ### Backends (Python)
 
