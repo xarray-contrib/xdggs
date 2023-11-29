@@ -47,10 +47,12 @@ def test_init(cell_ids, dim, resolution):
 @pytest.mark.parametrize("variable_name", variable_names)
 @pytest.mark.parametrize("options", [{}])
 def test_from_variables(variable_name, variable, options):
+    expected_resolution = variable.attrs["resolution"]
+
     variables = {variable_name: variable}
     index = h3.H3Index.from_variables(variables, options=options)
 
-    assert index._resolution == variable.attrs["resolution"]
+    assert index._resolution == expected_resolution
     assert (index._dim,) == variable.dims
 
     # TODO: how do we check the index, if at all?
