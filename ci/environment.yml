@@ -4,13 +4,14 @@ channels:
 dependencies:
   - xarray
   - healpy
-  - ruff
-  - pytest
+  - h3-py
   - h5netcdf
   - netcdf4
   - pooch
   - matplotlib-base
   - shapely
+  - pytest
+  - ruff
   - pip
   - pip:
       - h3ronpy
