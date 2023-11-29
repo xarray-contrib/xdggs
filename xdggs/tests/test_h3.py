@@ -18,7 +18,13 @@ variables = [
         dims[0], cell_ids[0], {"grid_type": "h3", "resolution": resolutions[0]}
     ),
     xr.Variable(
-        dims[1], cell_ids[1], {"grid_type": "h3", "resolution": resolutions[2]}
+        dims[1], cell_ids[0], {"grid_type": "h3", "resolution": resolutions[0]}
+    ),
+    xr.Variable(
+        dims[0], cell_ids[1], {"grid_type": "h3", "resolution": resolutions[1]}
+    ),
+    xr.Variable(
+        dims[1], cell_ids[2], {"grid_type": "h3", "resolution": resolutions[2]}
     ),
 ]
 
