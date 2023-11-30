@@ -75,7 +75,6 @@ line-length = 100
 
 [tool.ruff.lint]
 fixable = ["I"]
-unfixable = ["ALL"]
 
 [tool.ruff.isort]
 known-first-party = ["xdggs"]
