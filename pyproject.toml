@@ -73,6 +73,9 @@ select = [
 ]
 line-length = 100
 
+[tool.ruff.lint]
+fixable = ["I"]
+
 [tool.ruff.isort]
 known-first-party = ["xdggs"]
 known-third-party=[
