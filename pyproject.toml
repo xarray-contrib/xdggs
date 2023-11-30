@@ -36,7 +36,7 @@ requires-python = ">=3.10"
 dependencies = [
     "xarray",
     "healpy",
-    "h3",
+    "h3ronpy",
 ]
 
 [project.urls]
