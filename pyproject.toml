@@ -81,6 +81,5 @@ known-first-party = ["xdggs"]
 known-third-party=[
     "xarray",
     "healpy",
-    "h3",
     "h3ronpy",
 ]
