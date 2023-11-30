@@ -1,0 +1,17 @@
+name: xdggs_dev
+channels:
+  - conda-forge
+dependencies:
+  - xarray
+  - healpy
+  - h3-py
+  - h5netcdf
+  - netcdf4
+  - pooch
+  - matplotlib-base
+  - shapely
+  - pytest
+  - ruff
+  - pip
+  - pip:
+      - h3ronpy
