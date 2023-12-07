@@ -13,7 +13,7 @@ cell_ids = [
     np.array([54, 70, 82, 91]),
 ]
 pixel_orderings = ["nested", "ring"]
-resolutions = [0, 1, 3]
+resolutions = [1, 2, 8]
 rotation = [(0, 0)]
 
 options = [{}]
