@@ -12,6 +12,19 @@ cell_ids = [
     np.array([5, 11, 21]),
     np.array([54, 70, 82, 91]),
 ]
+cell_centers = [
+    np.array([[45.0, 14.47751219]]),
+    np.array([[61.875, 19.47122063], [33.75, 24.62431835], [84.375, 41.8103149]]),
+    np.array(
+        [
+            [56.25, 66.44353569],
+            [140.625, 19.47122063],
+            [151.875, 30.0],
+            [147.85714286, 48.14120779],
+        ]
+    ),
+]
+
 pixel_orderings = ["nested", "ring"]
 resolutions = [1, 2, 8]
 rotation = [(0, 0)]
@@ -126,6 +139,34 @@ def test_replace(old_variable, new_variable):
     assert new_index._rot_latlon == index._rot_latlon
     assert new_index._dim == index._dim
     assert new_index._pd_index == new_pandas_index
+
+
+@pytest.mark.parametrize(
+    ["cell_ids", "cell_centers"], list(zip(cell_ids, cell_centers))
+)
+def test_cellid2latlon(cell_ids, cell_centers):
+    index = healpix.HealpixIndex(
+        cell_ids=[0], dim="cells", nside=8, nest=True, rot_latlon=(0, 0)
+    )
+
+    actual = index._cellid2latlon(cell_ids)
+    expected = cell_centers
+
+    np.testing.assert_allclose(actual, expected)
+
+
+@pytest.mark.parametrize(
+    ["cell_centers", "cell_ids"], list(zip(cell_centers, cell_ids))
+)
+def test_latlon2cell_ids(cell_centers, cell_ids):
+    index = healpix.HealpixIndex(
+        cell_ids=[0], dim="cells", nside=8, nest=True, rot_latlon=(0, 0)
+    )
+
+    actual = index._latlon2cellid(cell_centers[:, 0], cell_centers[:, 1])
+    expected = cell_ids
+
+    np.testing.assert_equal(actual, expected)
 
 
 @pytest.mark.parametrize("max_width", [20, 50, 80, 120])
