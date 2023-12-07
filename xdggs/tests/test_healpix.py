@@ -126,3 +126,17 @@ def test_replace(old_variable, new_variable):
     assert new_index._rot_latlon == index._rot_latlon
     assert new_index._dim == index._dim
     assert new_index._pd_index == new_pandas_index
+
+
+@pytest.mark.parametrize("max_width", [20, 50, 80, 120])
+@pytest.mark.parametrize("resolution", resolutions)
+def test_repr_inline(resolution, max_width):
+    index = healpix.HealpixIndex(
+        cell_ids=[0], dim="cells", nside=resolution, nest=True, rot_latlon=(0, 0)
+    )
+
+    actual = index._repr_inline_(max_width)
+
+    assert f"nside={resolution}" in actual
+    # ignore max_width for now
+    # assert len(actual) <= max_width
