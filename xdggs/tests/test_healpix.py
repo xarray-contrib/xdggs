@@ -163,7 +163,7 @@ def test_latlon2cell_ids(cell_centers, cell_ids):
         cell_ids=[0], dim="cells", nside=8, nest=True, rot_latlon=(0, 0)
     )
 
-    actual = index._latlon2cellid(cell_centers[:, 0], cell_centers[:, 1])
+    actual = index._latlon2cellid(lon=cell_centers[:, 0], lat=cell_centers[:, 1])
     expected = cell_ids
 
     np.testing.assert_equal(actual, expected)
