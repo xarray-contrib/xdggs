@@ -64,6 +64,14 @@ class DGGSIndex(Index):
         """convert cell ids to latitude / longitude (cell centers)."""
         raise NotImplementedError()
 
+    def _cellid2boundaries(self, cell_ids: Any) -> np.ndarray:
+        """convert cell ids to the vertices of the cell boundaries"""
+        raise NotImplementedError()
+
     @property
     def cell_centers(self) -> tuple[np.ndarray, np.ndarray]:
         return self._cellid2latlon(self._pd_index.index.values)
+
+    @property
+    def cell_boundaries(self) -> np.ndarray:
+        return self._cellid2boundaries(self._pd_index.index.values)
