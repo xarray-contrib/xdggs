@@ -3,7 +3,6 @@ channels:
   - conda-forge
 dependencies:
   - xarray
-  - h3-py
   - healpy
   - ruff
   - pytest
@@ -12,3 +11,6 @@ dependencies:
   - pooch
   - matplotlib-base
   - shapely
+  - pip
+  - pip:
+      - h3ronpy

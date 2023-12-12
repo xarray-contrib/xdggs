@@ -36,7 +36,7 @@ requires-python = ">=3.10"
 dependencies = [
     "xarray",
     "healpy",
-    "h3",
+    "h3ronpy",
 ]
 
 [project.urls]
@@ -81,5 +81,5 @@ known-first-party = ["xdggs"]
 known-third-party=[
     "xarray",
     "healpy",
-    "h3",
+    "h3ronpy",
 ]

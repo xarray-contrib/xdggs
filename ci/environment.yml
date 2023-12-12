@@ -4,7 +4,6 @@ channels:
 dependencies:
   - xarray
   - healpy
-  - h3-py
   - h5netcdf
   - netcdf4
   - pooch

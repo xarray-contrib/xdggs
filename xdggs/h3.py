@@ -1,11 +1,9 @@
 from collections.abc import Mapping
 from typing import Any
 
-import h3
-import h3.api.numpy_int
-import h3.unstable.vect
 import numpy as np
 import xarray as xr
+from h3ronpy.arrow.vector import cells_to_coordinates, coordinates_to_cells
 from xarray.indexes import PandasIndex
 
 from xdggs.index import DGGSIndex
@@ -23,7 +21,7 @@ class H3Index(DGGSIndex):
         resolution: int,
     ):
         super().__init__(cell_ids, dim)
-        self._resolution = resolution
+        self._resolution = int(resolution)
 
     @classmethod
     def from_variables(
@@ -41,15 +39,10 @@ class H3Index(DGGSIndex):
         return type(self)(new_pd_index, self._dim, self._resolution)
 
     def _latlon2cellid(self, lat: Any, lon: Any) -> np.ndarray:
-        return h3.unstable.vect.geo_to_h3(lat, lon, self._resolution)
+        return coordinates_to_cells(lat, lon, self._resolution, radians=False)
 
     def _cellid2latlon(self, cell_ids: Any) -> tuple[np.ndarray, np.ndarray]:
-        lat = np.empty(cell_ids.size)
-        lon = np.empty(cell_ids.size)
-        for i, cid in enumerate(cell_ids):
-            lat[i], lon[i] = h3.api.numpy_int.h3_to_geo(cid)
-
-        return lat, lon
+        return cells_to_coordinates(cell_ids, radians=False)
 
     def _repr_inline_(self, max_width: int):
         return f"H3Index(resolution={self._resolution})"
