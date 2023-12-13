@@ -73,7 +73,9 @@ class HealpixInfo:
                 ],
             )
 
-        params = {name: group[0][1] for name, group in grouped.items()}
+        params = {
+            name: group[0][1] for name, group in grouped.items() if name != "grid_name"
+        }
 
         return cls(**params)
 
