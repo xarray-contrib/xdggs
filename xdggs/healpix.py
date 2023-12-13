@@ -21,6 +21,19 @@ class HealpixInfo:
 
     rotation: tuple[float, float] = (0.0, 0.0)
 
+    @property
+    def nside(self):
+        return 2**self.resolution
+
+    @property
+    def nest(self):
+        if self.indexing_scheme not in {"nested", "ring"}:
+            raise ValueError(
+                f"cannot convert index scheme {self.indexing_scheme} to `nest`"
+            )
+        else:
+            return self.indexing_scheme == "nested"
+
     @classmethod
     def from_dict(cls, mapping):
         translations = {
