@@ -19,7 +19,7 @@ class HealpixInfo:
 
     indexing_scheme: Literal["nested", "ring", "unique"] = "nested"
 
-    rotation: tuple[int, int] = (0, 0)
+    rotation: tuple[float, float] = (0.0, 0.0)
 
     @classmethod
     def from_dict(cls, mapping):
@@ -31,7 +31,7 @@ class HealpixInfo:
             "nest": ("indexing_scheme", lambda nest: "nested" if nest else "ring"),
             "rot_latlon": (
                 "rotation",
-                lambda rot_latlon: (rot_latlon[0], rot_latlon[1]),
+                lambda rot_latlon: (rot_latlon[1], rot_latlon[0]),
             ),
         }
 
