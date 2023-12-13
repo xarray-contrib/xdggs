@@ -1,5 +1,7 @@
+import operator
 from collections.abc import Mapping
-from typing import Any
+from dataclasses import dataclass
+from typing import Any, Literal
 
 import healpy
 import numpy as np
@@ -7,7 +9,68 @@ import xarray as xr
 from xarray.indexes import PandasIndex
 
 from xdggs.index import DGGSIndex
+from xdggs.itertools import groupby, identity
 from xdggs.utils import _extract_cell_id_variable, register_dggs
+
+
+@dataclass(frozen=True)
+class HealpixInfo:
+    resolution: int
+
+    indexing_scheme: Literal["nested", "ring", "unique"] = "nested"
+
+    rotation: tuple[int, int] = (0, 0)
+
+    @classmethod
+    def from_dict(cls, mapping):
+        translations = {
+            "nside": ("resolution", lambda nside: int(np.log2(nside))),
+            "order": ("resolution", identity),
+            "level": ("resolution", identity),
+            "depth": ("resolution", identity),
+            "nest": ("indexing_scheme", lambda nest: "nested" if nest else "ring"),
+            "rot_latlon": (
+                "rotation",
+                lambda rot_latlon: (rot_latlon[0], rot_latlon[1]),
+            ),
+        }
+
+        def translate(name, value):
+            new_name, translator = translations.get(name, (name, identity))
+
+            return new_name, name, translator(value)
+
+        translated = (translate(name, value) for name, value in mapping.items())
+
+        grouped = {
+            name: [(old_name, value) for _, old_name, value in group]
+            for name, group in groupby(translated, key=operator.itemgetter(0))
+        }
+        duplicated_parameters = {
+            name: group for name, group in grouped.items() if len(group) != 1
+        }
+        if duplicated_parameters:
+            raise ExceptionGroup(
+                "received multiple values for parameters",
+                [
+                    ValueError(
+                        f"Parameter {name} received multiple values: {[n for n, _ in group]}"
+                    )
+                    for name, group in duplicated_parameters.items()
+                ],
+            )
+
+        params = {name: group[0][1] for name, group in grouped.items()}
+
+        return cls(**params)
+
+    def to_dict(self):
+        return {
+            "grid_type": "healpix",
+            "resolution": self.resolution,
+            "indexing_scheme": self.indexing_scheme,
+            "rotation": list(self.rotation),
+        }
 
 
 @register_dggs("healpix")
