@@ -1,11 +1,65 @@
 import itertools
 
+import hypothesis.strategies as st
 import numpy as np
 import pytest
 import xarray as xr
+from hypothesis import given
 from xarray.core.indexes import PandasIndex
 
 from xdggs import healpix
+
+resolutions = st.integers(min_value=0, max_value=60)
+indexing_schemes = st.sampled_from(["nested", "ring", "unique"])
+
+lon_rotation = st.floats(min_value=-180.0, max_value=360.0)
+lat_rotation = st.floats(min_value=-90.0, max_value=90.0)
+rotations = st.tuples(lon_rotation, lat_rotation)
+
+
+class TestHealpixInfo:
+    @given(resolutions, indexing_schemes, rotations)
+    def test_init(self, resolution, indexing_scheme, rotation) -> None:
+        grid = healpix.HealpixInfo(
+            resolution=resolution, indexing_scheme=indexing_scheme, rotation=rotation
+        )
+
+        assert grid.resolution == resolution
+        assert grid.indexing_scheme == indexing_scheme
+        assert grid.rotation == rotation
+
+    @given(resolutions)
+    def test_nside(self, resolution):
+        grid = healpix.HealpixInfo(resolution=resolution)
+
+        assert grid.nside == 2**resolution
+
+    @given(indexing_schemes)
+    def test_nest(self, indexing_scheme):
+        grid = healpix.HealpixInfo(resolution=1, indexing_scheme=indexing_scheme)
+        if indexing_scheme not in {"nested", "ring"}:
+            with pytest.raises(
+                ValueError, match="cannot convert indexing scheme .* to `nest`"
+            ):
+                grid.nest
+            return
+
+        assert grid.nest == (True if indexing_scheme == "nested" else False)
+
+    @given(resolutions, indexing_schemes, rotations)
+    def test_roundtrip(self, resolution, indexing_scheme, rotation):
+        mapping = {
+            "grid_name": "healpix",
+            "resolution": resolution,
+            "indexing_scheme": indexing_scheme,
+            "rotation": rotation,
+        }
+
+        grid = healpix.HealpixInfo.from_dict(mapping)
+        roundtripped = grid.to_dict()
+
+        assert roundtripped == mapping
+
 
 cell_ids = [
     np.array([3]),
