@@ -1,20 +1,23 @@
 import operator
 from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Any, Literal
+from typing import Any, Literal, Self, TypeVar
 
 import healpy
 import numpy as np
 import xarray as xr
 from xarray.indexes import PandasIndex
 
+from xdggs.grid import DGGSInfo
 from xdggs.index import DGGSIndex
 from xdggs.itertools import groupby, identity
 from xdggs.utils import _extract_cell_id_variable, register_dggs
 
+T = TypeVar("T")
+
 
 @dataclass(frozen=True)
-class HealpixInfo:
+class HealpixInfo(DGGSInfo):
     resolution: int
 
     indexing_scheme: Literal["nested", "ring", "unique"] = "nested"
@@ -22,11 +25,11 @@ class HealpixInfo:
     rotation: tuple[float, float] = (0.0, 0.0)
 
     @property
-    def nside(self):
+    def nside(self: Self) -> int:
         return 2**self.resolution
 
     @property
-    def nest(self):
+    def nest(self: Self) -> bool:
         if self.indexing_scheme not in {"nested", "ring"}:
             raise ValueError(
                 f"cannot convert index scheme {self.indexing_scheme} to `nest`"
@@ -35,7 +38,7 @@ class HealpixInfo:
             return self.indexing_scheme == "nested"
 
     @classmethod
-    def from_dict(cls, mapping):
+    def from_dict(cls: type[T], mapping: dict[str, Any]) -> T:
         translations = {
             "nside": ("resolution", lambda nside: int(np.log2(nside))),
             "order": ("resolution", identity),
@@ -79,7 +82,7 @@ class HealpixInfo:
 
         return cls(**params)
 
-    def to_dict(self):
+    def to_dict(self: Self) -> dict[str, Any]:
         return {
             "grid_type": "healpix",
             "resolution": self.resolution,
