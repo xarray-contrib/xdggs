@@ -87,7 +87,7 @@ class HealpixInfo(DGGSInfo):
             "grid_name": "healpix",
             "resolution": self.resolution,
             "indexing_scheme": self.indexing_scheme,
-            "rotation": list(self.rotation),
+            "rotation": self.rotation,
         }
 
 
