@@ -17,6 +17,17 @@ lat_rotation = st.floats(min_value=-90.0, max_value=90.0)
 rotations = st.tuples(lon_rotation, lat_rotation)
 
 
+def grids(
+    resolutions=resolutions, indexing_schemes=indexing_schemes, rotations=rotations
+):
+    return st.builds(
+        healpix.HealpixInfo,
+        resolution=resolutions,
+        indexing_scheme=indexing_schemes,
+        rotation=rotations,
+    )
+
+
 class TestHealpixInfo:
     @given(resolutions, indexing_schemes, rotations)
     def test_init(self, resolution, indexing_scheme, rotation) -> None:
