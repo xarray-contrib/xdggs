@@ -6,6 +6,14 @@ T = TypeVar("T")
 
 @dataclass(frozen=True)
 class DGGSInfo:
+    """Base class for DGGS grid information objects
+
+    Parameters
+    ----------
+    resolution : int
+        The resolution of the grid.
+    """
+
     resolution: int
 
     @classmethod
