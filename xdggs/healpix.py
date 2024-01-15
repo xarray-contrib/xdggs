@@ -97,9 +97,12 @@ class HealpixIndex(DGGSIndex):
         self,
         cell_ids: Any | PandasIndex,
         dim: str,
-        grid_info,
+        grid_info: DGGSInfo,
     ):
         super().__init__(cell_ids, dim)
+
+        if not isinstance(grid_info, HealpixInfo):
+            raise ValueError(f"grid info object has an invalid type: {type(grid_info)}")
         self._grid = grid_info
 
     @classmethod
