@@ -47,6 +47,19 @@ class TestHealpixInfo:
         assert grid.nest == (True if indexing_scheme == "nested" else False)
 
     @given(resolutions, indexing_schemes, rotations)
+    def test_to_dict(self, resolution, indexing_scheme, rotation) -> None:
+        grid = healpix.HealpixInfo(
+            resolution=resolution, indexing_scheme=indexing_scheme, rotation=rotation
+        )
+        actual = grid.to_dict()
+
+        assert set(actual) == {"grid_name", "resolution", "indexing_scheme", "rotation"}
+        assert actual["grid_name"] == "healpix"
+        assert actual["resolution"] == resolution
+        assert actual["indexing_scheme"] == indexing_scheme
+        assert actual["rotation"] == rotation
+
+    @given(resolutions, indexing_schemes, rotations)
     def test_roundtrip(self, resolution, indexing_scheme, rotation):
         mapping = {
             "grid_name": "healpix",
