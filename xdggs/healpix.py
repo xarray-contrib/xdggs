@@ -84,7 +84,7 @@ class HealpixInfo(DGGSInfo):
 
     def to_dict(self: Self) -> dict[str, Any]:
         return {
-            "grid_type": "healpix",
+            "grid_name": "healpix",
             "resolution": self.resolution,
             "indexing_scheme": self.indexing_scheme,
             "rotation": list(self.rotation),
