@@ -4,7 +4,7 @@
 micromamba remove -y --force \
     xarray \
     healpy
-micromamba install -y cfitsio cython
+micromamba install -y cfitsio cython healpix_cxx
 python -m pip uninstall -y h3ronpy
 
 # install from scientific-python wheels
