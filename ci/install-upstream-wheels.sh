@@ -4,6 +4,7 @@
 micromamba remove -y --force \
     xarray \
     healpy
+micromamba install -y cfitsio
 python -m pip uninstall -y h3ronpy
 
 # install from scientific-python wheels
@@ -17,5 +18,7 @@ python -m pip install \
 
 # install from github
 python -m pip install --no-deps --upgrade \
-    git+https://github.com/healpy/healpy \
     git+https://github.com/nmandery/h3ronpy
+
+python -m pip install --no-deps --upgrade --no-build-isolation \
+    git+https://github.com/healpy/healpy
