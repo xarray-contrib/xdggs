@@ -24,6 +24,15 @@ class HealpixInfo(DGGSInfo):
 
     rotation: tuple[float, float] = (0.0, 0.0)
 
+    def __post_init__(self):
+        if self.resolution < 0 or self.resolution > 29:
+            raise ValueError("resolution must be an integer in the range of [0, 29]")
+
+        if self.indexing_scheme not in {"nested", "ring", "unique"}:
+            raise ValueError(
+                "indexing scheme must be one of ['nested', 'ring', 'unique']"
+            )
+
     @property
     def nside(self: Self) -> int:
         return 2**self.resolution
