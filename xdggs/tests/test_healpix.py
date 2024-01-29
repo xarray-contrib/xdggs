@@ -12,8 +12,10 @@ from hypothesis import given
 # from xarray.core.indexes import PandasIndex
 from xdggs import healpix
 
-resolutions = st.integers(min_value=0, max_value=60)
+invalid_resolutions = st.integers()
+resolutions = st.integers(min_value=0, max_value=29)
 indexing_schemes = st.sampled_from(["nested", "ring", "unique"])
+invalid_indexing_schemes = st.sampled_from(["nested", "ring", "unique", "invalid"])
 
 
 def rotations():
@@ -48,8 +50,29 @@ def grids(
 
 
 class TestHealpixInfo:
-    @given(resolutions, indexing_schemes, rotations())
+    @given(invalid_resolutions, invalid_indexing_schemes, rotations())
     def test_init(self, resolution, indexing_scheme, rotation) -> None:
+        if resolution < 0 or resolution > 29:
+            with pytest.raises(
+                ValueError, match="resolution must be an integer in the range of"
+            ):
+                healpix.HealpixInfo(
+                    resolution=resolution,
+                    indexing_scheme=indexing_scheme,
+                    rotation=rotation,
+                )
+
+            return
+        elif indexing_scheme not in {"nested", "ring", "unique"}:
+            with pytest.raises(ValueError, match="indexing scheme must be one of"):
+                healpix.HealpixInfo(
+                    resolution=resolution,
+                    indexing_scheme=indexing_scheme,
+                    rotation=rotation,
+                )
+
+            return
+
         grid = healpix.HealpixInfo(
             resolution=resolution, indexing_scheme=indexing_scheme, rotation=rotation
         )
