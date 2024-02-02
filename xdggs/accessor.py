@@ -86,7 +86,6 @@ class DGGSAccessor:
     def cell_ids(self):
         return self._obj[self._name]
 
-    @property
     def cell_boundaries(self):
         import shapely
 
