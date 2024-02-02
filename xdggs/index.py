@@ -72,6 +72,5 @@ class DGGSIndex(Index):
     def cell_centers(self) -> tuple[np.ndarray, np.ndarray]:
         return self._cellid2latlon(self._pd_index.index.values)
 
-    @property
     def cell_boundaries(self) -> np.ndarray:
         return self._cellid2boundaries(self._pd_index.index.values)
