@@ -32,11 +32,11 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Scientific/Engineering :: GIS",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "xarray",
     "healpy",
-    "h3",
+    "h3ronpy",
 ]
 
 [project.urls]
@@ -73,10 +73,13 @@ select = [
 ]
 line-length = 100
 
+[tool.ruff.lint]
+fixable = ["I"]
+
 [tool.ruff.isort]
 known-first-party = ["xdggs"]
 known-third-party=[
     "xarray",
     "healpy",
-    "h3",
+    "h3ronpy",
 ]

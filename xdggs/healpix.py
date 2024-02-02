@@ -47,11 +47,11 @@ class HealpixIndex(DGGSIndex):
         )
 
     def _latlon2cellid(self, lat: Any, lon: Any) -> np.ndarray:
-        return healpy.ang2pix(self._nside, -lon, lat, lonlat=True, nest=self._nest)
+        return healpy.ang2pix(self._nside, lon, lat, lonlat=True, nest=self._nest)
 
     def _cellid2latlon(self, cell_ids: Any) -> tuple[np.ndarray, np.ndarray]:
         lon, lat = healpy.pix2ang(self._nside, cell_ids, nest=self._nest, lonlat=True)
-        return lat, -lon
+        return np.stack([lon, lat], axis=-1)
 
     def _cellid2boundaries(self, cell_ids: Any) -> np.ndarray:
         boundary_vectors = healpy.boundaries(
