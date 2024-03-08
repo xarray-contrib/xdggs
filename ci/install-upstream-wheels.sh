@@ -4,7 +4,6 @@
 micromamba remove -y --force \
     xarray \
     pandas \
-    numpy \
     healpy
 python -m pip uninstall -y h3ronpy
 
@@ -18,16 +17,8 @@ python -m pip install \
     --no-deps \
     --pre \
     --upgrade \
-    numpy \
     pandas \
     xarray
-
-# pyarrow (as a dependency for both `pandas` and `h3ronpy`)
-python -m pip install \
-       --extra-index-url https://pypi.fury.io/arrow-nightlies \
-       --pre \
-       --prefer-binary \
-       pyarrow
 
 # install from github
 python -m pip install --no-deps --upgrade --no-build-isolation \
