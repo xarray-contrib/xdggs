@@ -3,6 +3,7 @@
 # force-remove re-installed versions
 micromamba remove -y --force \
     xarray \
+    pandas \
     numpy \
     healpy
 python -m pip uninstall -y h3ronpy
@@ -18,6 +19,7 @@ python -m pip install \
     --pre \
     --upgrade \
     numpy \
+    pandas \
     xarray
 
 # install from github
