@@ -3,9 +3,13 @@
 # force-remove re-installed versions
 micromamba remove -y --force \
     xarray \
+    numpy \
     healpy
-micromamba install -y cfitsio cython healpix_cxx
 python -m pip uninstall -y h3ronpy
+
+# build-deps for upstream-dev healpy
+micromamba install -y cython setuptools setuptools-scm
+python -m pip install pykg-config
 
 # install from scientific-python wheels
 python -m pip install \
