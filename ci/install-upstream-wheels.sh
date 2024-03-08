@@ -9,7 +9,7 @@ micromamba remove -y --force \
 python -m pip uninstall -y h3ronpy
 
 # build-deps for upstream-dev healpy
-micromamba install -y cython setuptools setuptools-scm
+micromamba install -y cython setuptools setuptools-scm "maturin=1.2"
 python -m pip install pykg-config
 
 # install from scientific-python wheels
@@ -23,8 +23,6 @@ python -m pip install \
     xarray
 
 # install from github
-python -m pip install --no-deps --upgrade \
-    git+https://github.com/nmandery/h3ronpy
-
 python -m pip install --no-deps --upgrade --no-build-isolation \
+    git+https://github.com/nmandery/h3ronpy \
     git+https://github.com/healpy/healpy
