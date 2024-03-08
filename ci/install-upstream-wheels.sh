@@ -1,10 +1,24 @@
 #!/usr/bin/env bash
 
+if which micromamba; then
+    conda=micromamba
+else
+    conda=mamba
+fi
+
 # force-remove re-installed versions
-micromamba remove -y --force \
+$conda remove -y --force \
     xarray \
+    pandas \
     healpy
 python -m pip uninstall -y h3ronpy
+
+# still need to install healpix_cxx
+$conda install healpix_cxx
+
+# build-deps for upstream-dev healpy
+#$conda install -y cython setuptools setuptools-scm "maturin=1.2"
+#python -m pip install pykg-config
 
 # install from scientific-python wheels
 python -m pip install \
@@ -12,10 +26,10 @@ python -m pip install \
     --no-deps \
     --pre \
     --upgrade \
-    numpy \
+    pandas \
     xarray
 
 # install from github
 python -m pip install --no-deps --upgrade \
-    git+https://github.com/healpy/healpy \
-    git+https://github.com/nmandery/h3ronpy
+    git+https://github.com/nmandery/h3ronpy \
+    git+https://github.com/healpy/healpy
