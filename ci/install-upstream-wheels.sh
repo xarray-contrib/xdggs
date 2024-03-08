@@ -1,14 +1,20 @@
 #!/usr/bin/env bash
 
+if which micromamba; then
+    conda=micromamba
+else
+    conda=mamba
+fi
+
 # force-remove re-installed versions
-micromamba remove -y --force \
+$conda remove -y --force \
     xarray \
     pandas \
     healpy
 python -m pip uninstall -y h3ronpy
 
 # build-deps for upstream-dev healpy
-micromamba install -y cython setuptools setuptools-scm "maturin=1.2"
+$conda install -y cython setuptools setuptools-scm "maturin=1.2"
 python -m pip install pykg-config
 
 # install from scientific-python wheels
