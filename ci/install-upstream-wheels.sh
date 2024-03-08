@@ -27,6 +27,6 @@ python -m pip install \
     xarray
 
 # install from github
-python -m pip install --no-deps --upgrade --no-build-isolation \
+python -m pip install --no-deps --upgrade \
     git+https://github.com/nmandery/h3ronpy \
     git+https://github.com/healpy/healpy
