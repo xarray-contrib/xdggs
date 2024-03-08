@@ -14,8 +14,8 @@ $conda remove -y --force \
 python -m pip uninstall -y h3ronpy
 
 # build-deps for upstream-dev healpy
-$conda install -y cython setuptools setuptools-scm "maturin=1.2"
-python -m pip install pykg-config
+#$conda install -y cython setuptools setuptools-scm "maturin=1.2"
+#python -m pip install pykg-config
 
 # install from scientific-python wheels
 python -m pip install \
