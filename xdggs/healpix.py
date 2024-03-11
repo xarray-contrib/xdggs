@@ -1,7 +1,7 @@
 import operator
 from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Any, Literal, Self, TypeVar
+from typing import Any, ClassVar, Literal, Self, TypeVar
 
 import healpy
 import numpy as np
@@ -19,8 +19,10 @@ T = TypeVar("T")
 @dataclass(frozen=True)
 class HealpixInfo(DGGSInfo):
     resolution: int
+    valid_resolutions: ClassVar[range] = range(0, 29)
 
     indexing_scheme: Literal["nested", "ring", "unique"] = "nested"
+    valid_indexing_schemes: ClassVar[list[str]] = ["nested", "ring", "unique"]
 
     rotation: tuple[float, float] = (0.0, 0.0)
 

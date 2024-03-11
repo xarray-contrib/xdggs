@@ -12,10 +12,12 @@ from hypothesis import given
 # from xarray.core.indexes import PandasIndex
 from xdggs import healpix
 
-invalid_resolutions = st.integers()
+invalid_resolutions = st.integers(max_value=-1) | st.integers(min_value=30)
 resolutions = st.integers(min_value=0, max_value=29)
 indexing_schemes = st.sampled_from(["nested", "ring", "unique"])
-invalid_indexing_schemes = st.sampled_from(["nested", "ring", "unique", "invalid"])
+invalid_indexing_schemes = st.text().filter(
+    lambda x: x not in ["nested", "ring", "unique"]
+)
 
 
 def rotations():
@@ -50,29 +52,23 @@ def grids(
 
 
 class TestHealpixInfo:
-    @given(invalid_resolutions, invalid_indexing_schemes, rotations())
-    def test_init(self, resolution, indexing_scheme, rotation) -> None:
-        if resolution < 0 or resolution > 29:
-            with pytest.raises(
-                ValueError, match="resolution must be an integer in the range of"
-            ):
-                healpix.HealpixInfo(
-                    resolution=resolution,
-                    indexing_scheme=indexing_scheme,
-                    rotation=rotation,
-                )
+    @given(invalid_resolutions)
+    def test_init_invalid_resolutions(self, resolution):
+        with pytest.raises(
+            ValueError, match="resolution must be an integer in the range of"
+        ):
+            healpix.HealpixInfo(resolution=resolution)
 
-            return
-        elif indexing_scheme not in {"nested", "ring", "unique"}:
-            with pytest.raises(ValueError, match="indexing scheme must be one of"):
-                healpix.HealpixInfo(
-                    resolution=resolution,
-                    indexing_scheme=indexing_scheme,
-                    rotation=rotation,
-                )
+    @given(invalid_indexing_schemes)
+    def test_init_invalid_indexing_scheme(self, indexing_scheme):
+        with pytest.raises(ValueError, match="indexing scheme must be one of"):
+            healpix.HealpixInfo(
+                resolution=0,
+                indexing_scheme=indexing_scheme,
+            )
 
-            return
-
+    @given(resolutions, indexing_schemes, rotations())
+    def test_init(self, resolution, indexing_scheme, rotation):
         grid = healpix.HealpixInfo(
             resolution=resolution, indexing_scheme=indexing_scheme, rotation=rotation
         )
