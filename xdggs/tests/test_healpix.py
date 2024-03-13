@@ -124,6 +124,10 @@ class TestHealpixInfo:
 
         assert grid.nest == (True if indexing_scheme == "nested" else False)
 
+    @given(grid_mappings())
+    def test_from_dict(self, mapping) -> None:
+        healpix.HealpixInfo.from_dict(mapping)
+
     @given(resolutions, indexing_schemes, rotations())
     def test_to_dict(self, resolution, indexing_scheme, rotation) -> None:
         grid = healpix.HealpixInfo(
