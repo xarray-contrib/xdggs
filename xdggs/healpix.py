@@ -19,20 +19,23 @@ T = TypeVar("T")
 @dataclass(frozen=True)
 class HealpixInfo(DGGSInfo):
     resolution: int
-    valid_resolutions: ClassVar[range] = range(0, 29)
 
     indexing_scheme: Literal["nested", "ring", "unique"] = "nested"
-    valid_indexing_schemes: ClassVar[list[str]] = ["nested", "ring", "unique"]
 
     rotation: list[float, float] = field(default_factory=lambda: [0.0, 0.0])
 
+    valid_parameters: ClassVar[dict[str, Any]] = {
+        "resolution": range(0, 29 + 1),
+        "indexing_scheme": ["nested", "ring", "unique"],
+    }
+
     def __post_init__(self):
-        if self.resolution < 0 or self.resolution > 29:
+        if self.resolution not in self.valid_parameters["resolution"]:
             raise ValueError("resolution must be an integer in the range of [0, 29]")
 
-        if self.indexing_scheme not in {"nested", "ring", "unique"}:
+        if self.indexing_scheme not in self.valid_parameters["indexing_scheme"]:
             raise ValueError(
-                "indexing scheme must be one of ['nested', 'ring', 'unique']"
+                f"indexing scheme must be one of {self.valid_parameters['indexing_scheme']}"
             )
 
     @property
