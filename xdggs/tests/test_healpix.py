@@ -29,6 +29,35 @@ def rotations():
 dims = xrst.names()
 
 
+def grid_mappings():
+    strategies = {
+        "resolution": resolutions,
+        "nside": st.integers(min_value=0),
+        "depth": resolutions,
+        "level": resolutions,
+        "order": resolutions,
+        "indexing_scheme": indexing_schemes,
+        "nest": st.booleans(),
+        "rotation": rotations(),
+        "rot_latlon": rotations().map(lambda x: x[::-1]),
+    }
+
+    names = {
+        "resolution": st.sampled_from(
+            ["resolution", "nside", "depth", "level", "order"]
+        ),
+        "indexing_scheme": st.sampled_from(["indexing_scheme", "nest"]),
+        "rotation": st.sampled_from(["rotation", "rot_latlon"]),
+    }
+
+    def create_mapping(**params):
+        return st.builds(lambda **x: x, **{p: strategies[p] for p in params.values()})
+
+    return st.builds(lambda **x: list(x.values()), **names).flatmap(
+        lambda params: st.builds(dict, **{p: strategies[p] for p in params})
+    )
+
+
 def cell_ids(dtypes=npst.unsigned_integer_dtypes() | npst.integer_dtypes()):
     shapes = npst.array_shapes(min_dims=1, max_dims=1)
 
