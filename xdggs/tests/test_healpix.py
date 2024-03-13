@@ -32,7 +32,7 @@ dims = xrst.names()
 def grid_mappings():
     strategies = {
         "resolution": resolutions,
-        "nside": st.integers(min_value=0),
+        "nside": resolutions.map(lambda n: 2**n),
         "depth": resolutions,
         "level": resolutions,
         "order": resolutions,
