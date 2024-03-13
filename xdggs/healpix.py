@@ -58,8 +58,16 @@ class HealpixInfo(DGGSInfo):
 
     @classmethod
     def from_dict(cls: type[T], mapping: dict[str, Any]) -> T:
+        def translate_nside(nside):
+            log = np.log2(nside)
+            potential_resolution = int(log)
+            if potential_resolution != log:
+                raise ValueError("`nside` has to be an integer power of 2")
+
+            return potential_resolution
+
         translations = {
-            "nside": ("resolution", lambda nside: int(np.log2(nside))),
+            "nside": ("resolution", translate_nside),
             "order": ("resolution", identity),
             "level": ("resolution", identity),
             "depth": ("resolution", identity),
