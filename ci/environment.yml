@@ -10,6 +10,7 @@ dependencies:
   - matplotlib-base
   - shapely
   - pytest
+  - hypothesis
   - ruff
   - pip
   - pip:
