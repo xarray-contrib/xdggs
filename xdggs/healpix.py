@@ -1,6 +1,6 @@
 import operator
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, ClassVar, Literal, Self, TypeVar
 
 import healpy
@@ -24,7 +24,7 @@ class HealpixInfo(DGGSInfo):
     indexing_scheme: Literal["nested", "ring", "unique"] = "nested"
     valid_indexing_schemes: ClassVar[list[str]] = ["nested", "ring", "unique"]
 
-    rotation: tuple[float, float] = (0.0, 0.0)
+    rotation: list[float, float] = field(default_factory=lambda: [0.0, 0.0])
 
     def __post_init__(self):
         if self.resolution < 0 or self.resolution > 29:
