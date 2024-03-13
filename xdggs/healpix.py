@@ -38,6 +38,11 @@ class HealpixInfo(DGGSInfo):
                 f"indexing scheme must be one of {self.valid_parameters['indexing_scheme']}"
             )
 
+        if np.any(np.isnan(self.rotation) | np.isinf(self.rotation)):
+            raise ValueError(
+                f"rotation must consist of finite values, got {self.rotation}"
+            )
+
     @property
     def nside(self: Self) -> int:
         return 2**self.resolution
