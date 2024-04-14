@@ -1,5 +1,10 @@
 from dataclasses import dataclass
-from typing import Any, Self, TypeVar
+from typing import Any, TypeVar
+
+try:
+    from typing import Self
+except ImportError:
+    from typing_extensions import Self
 
 T = TypeVar("T")
 
