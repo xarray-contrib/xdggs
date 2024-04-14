@@ -58,7 +58,10 @@ def grid_mappings():
     )
 
 
-def cell_ids(dtypes=npst.unsigned_integer_dtypes() | npst.integer_dtypes()):
+def cell_ids(dtypes=None):
+    if dtypes is None:
+        # healpy can't deal with `uint32` or less (it segfaults occasionally)
+        dtypes = st.sampled_from(["uint64"])
     shapes = npst.array_shapes(min_dims=1, max_dims=1)
 
     return npst.arrays(
