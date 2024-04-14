@@ -269,6 +269,16 @@ class TestHealpixIndex:
 
         np.testing.assert_equal(index._pd_index.index.values, cell_ids)
 
+    @given(cell_ids(), dims, grids())
+    def test_cell_center_roundtrip(self, cell_ids, dim, grid) -> None:
+        index = healpix.HealpixIndex(cell_ids, dim, grid)
+
+        lon, lat = index._cellid2latlon(cell_ids)
+
+        actual = index._latlon2cellid(lat, lon)
+
+        np.testing.assert_equal(actual, cell_ids)
+
 
 # @pytest.mark.parametrize("options", options)
 # @pytest.mark.parametrize("variable", variables)
