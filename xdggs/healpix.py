@@ -1,7 +1,12 @@
 import operator
 from collections.abc import Mapping
 from dataclasses import dataclass, field
-from typing import Any, ClassVar, Literal, Self, TypeVar
+from typing import Any, ClassVar, Literal, TypeVar
+
+try:
+    from typing import Self
+except ImportError:
+    from typing_extensions import Self
 
 import healpy
 import numpy as np
