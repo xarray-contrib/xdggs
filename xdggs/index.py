@@ -11,7 +11,9 @@ from xdggs.utils import GRID_REGISTRY, _extract_cell_id_variable
 def decode(ds):
     variable_name = "cell_ids"
 
-    return ds.set_xindex(variable_name, DGGSIndex)
+    return ds.drop_indexes(variable_name, errors="ignore").set_xindex(
+        variable_name, DGGSIndex
+    )
 
 
 class DGGSIndex(Index):
