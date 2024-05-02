@@ -22,6 +22,15 @@ python -m pip install \
     pandas \
     numpy \
     xarray
+# pyarrow nightly builds
+python -m pip install \
+    -i https://pypi.fury.io/arrow-nightlies/ \
+    --prefer-binary \
+    --no-deps \
+    --pre \
+    --upgrade \
+    pyarrow
+
 
 # install from github
 python -m pip install --no-deps --upgrade \
