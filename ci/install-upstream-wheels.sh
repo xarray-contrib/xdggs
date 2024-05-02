@@ -20,6 +20,7 @@ python -m pip install \
     --pre \
     --upgrade \
     pandas \
+    numpy \
     xarray
 
 # install from github
