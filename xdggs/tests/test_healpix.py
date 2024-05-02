@@ -88,6 +88,29 @@ class strategies:
             rotation=rotations,
         )
 
+    @classmethod
+    def grid_and_cell_ids(
+        cls,
+        resolutions=resolutions,
+        indexing_schemes=indexing_schemes,
+        rotations=rotations(),
+        dtypes=None,
+    ):
+        cell_resolutions = st.shared(resolutions, key="common-resolutions")
+        grid_resolutions = st.shared(resolutions, key="common-resolutions")
+        cell_ids_ = cell_resolutions.flatmap(
+            lambda resolution: cls.cell_ids(
+                max_value=12 * 2 ** (resolution * 2) - 1, dtypes=dtypes
+            )
+        )
+        grids_ = cls.grids(
+            resolutions=grid_resolutions,
+            indexing_schemes=indexing_schemes,
+            rotations=rotations,
+        )
+
+        return cell_ids_, grids_
+
 
 class TestHealpixInfo:
     @given(strategies.invalid_resolutions)
@@ -319,6 +342,21 @@ class TestHealpixIndex:
         assert index._pd_index.dim == dim
 
         np.testing.assert_equal(index._pd_index.index.values, cell_ids)
+
+    @given(
+        *strategies.grid_and_cell_ids(
+            indexing_schemes=st.sampled_from(["nested", "ring"]),
+            dtypes=st.sampled_from(["int64"]),
+        )
+    )
+    def test_cell_center_roundtrip(self, cell_ids, grid) -> None:
+        index = healpix.HealpixIndex(cell_ids, dim="cells", grid_info=grid)
+
+        centers = index._cellid2latlon(cell_ids)
+
+        roundtripped = index._latlon2cellid(lat=centers[:, 1], lon=centers[:, 0])
+
+        np.testing.assert_equal(roundtripped, cell_ids)
 
 
 @pytest.mark.parametrize("options", options)
