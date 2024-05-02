@@ -51,11 +51,6 @@ class strategies:
             "rotation": st.sampled_from(["rotation", "rot_latlon"]),
         }
 
-        def create_mapping(**params):
-            return st.builds(
-                lambda **x: x, **{p: strategies[p] for p in params.values()}
-            )
-
         return st.builds(lambda **x: list(x.values()), **names).flatmap(
             lambda params: st.builds(dict, **{p: strategies[p] for p in params})
         )
