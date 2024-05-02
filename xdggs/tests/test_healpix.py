@@ -191,7 +191,7 @@ variables = [
         dims[0],
         cell_ids[0],
         {
-            "grid_type": "healpix",
+            "grid_name": "healpix",
             "nside": resolutions[0],
             "nest": True,
             "rotation": rotation[0],
@@ -201,7 +201,7 @@ variables = [
         dims[1],
         cell_ids[0],
         {
-            "grid_type": "healpix",
+            "grid_name": "healpix",
             "nside": resolutions[0],
             "nest": False,
             "rotation": rotation[0],
@@ -211,7 +211,7 @@ variables = [
         dims[0],
         cell_ids[1],
         {
-            "grid_type": "healpix",
+            "grid_name": "healpix",
             "nside": resolutions[1],
             "nest": True,
             "rotation": rotation[0],
@@ -221,7 +221,7 @@ variables = [
         dims[1],
         cell_ids[2],
         {
-            "grid_type": "healpix",
+            "grid_name": "healpix",
             "nside": resolutions[2],
             "nest": False,
             "rotation": rotation[0],
@@ -317,9 +317,9 @@ def test_from_variables(variable_name, variable, options) -> None:
 
     index = healpix.HealpixIndex.from_variables(variables, options=options)
 
-    assert index._nside == expected_resolution
-    assert index._nest == expected_scheme
-    assert index._rot_latlon == expected_rot
+    assert index._grid.nside == expected_resolution
+    assert index._grid.nest == expected_scheme
+    assert index._grid.rot_latlon == expected_rot
 
     assert (index._dim,) == variable.dims
     np.testing.assert_equal(index._pd_index.index.values, variable.data)
@@ -327,12 +327,12 @@ def test_from_variables(variable_name, variable, options) -> None:
 
 @pytest.mark.parametrize(["old_variable", "new_variable"], variable_combinations)
 def test_replace(old_variable, new_variable) -> None:
+    grid = healpix.HealpixInfo.from_dict(old_variable.attrs)
+
     index = healpix.HealpixIndex(
         cell_ids=old_variable.data,
         dim=old_variable.dims[0],
-        nside=old_variable.attrs["nside"],
-        nest=old_variable.attrs["nest"],
-        rot_latlon=old_variable.attrs["rotation"],
+        grid_info=grid,
     )
 
     new_pandas_index = PandasIndex.from_variables(
@@ -341,20 +341,17 @@ def test_replace(old_variable, new_variable) -> None:
 
     new_index = index._replace(new_pandas_index)
 
-    assert new_index._nside == index._nside
-    assert new_index._nest == index._nest
-    assert new_index._rot_latlon == index._rot_latlon
     assert new_index._dim == index._dim
     assert new_index._pd_index == new_pandas_index
+    assert index._grid == grid
 
 
 @pytest.mark.parametrize(
     ["cell_ids", "cell_centers"], list(zip(cell_ids, cell_centers))
 )
 def test_cellid2latlon(cell_ids, cell_centers) -> None:
-    index = healpix.HealpixIndex(
-        cell_ids=[0], dim="cells", nside=8, nest=True, rot_latlon=(0, 0)
-    )
+    grid_info = healpix.HealpixInfo(resolution=3, indexing_scheme="nested")
+    index = healpix.HealpixIndex(cell_ids=[0], dim="cells", grid_info=grid_info)
 
     actual = index._cellid2latlon(cell_ids)
     expected = cell_centers
@@ -366,9 +363,8 @@ def test_cellid2latlon(cell_ids, cell_centers) -> None:
     ["cell_centers", "cell_ids"], list(zip(cell_centers, cell_ids))
 )
 def test_latlon2cell_ids(cell_centers, cell_ids) -> None:
-    index = healpix.HealpixIndex(
-        cell_ids=[0], dim="cells", nside=8, nest=True, rot_latlon=(0, 0)
-    )
+    grid_info = healpix.HealpixInfo(resolution=3, indexing_scheme="nested")
+    index = healpix.HealpixIndex(cell_ids=[0], dim="cells", grid_info=grid_info)
 
     actual = index._latlon2cellid(lon=cell_centers[:, 0], lat=cell_centers[:, 1])
     expected = cell_ids
@@ -379,13 +375,10 @@ def test_latlon2cell_ids(cell_centers, cell_ids) -> None:
 @pytest.mark.parametrize("max_width", [20, 50, 80, 120])
 @pytest.mark.parametrize("resolution", resolutions)
 def test_repr_inline(resolution, max_width) -> None:
-    index = healpix.HealpixIndex(
-        cell_ids=[0],
-        dim="cells",
-        resolution=resolution,
-        scheme="nested",
-        rot_latlon=(0, 0),
+    grid_info = healpix.HealpixInfo(
+        resolution=resolution, indexing_scheme="nested", rotation=(0, 0)
     )
+    index = healpix.HealpixIndex(cell_ids=[0], dim="cells", grid_info=grid_info)
 
     actual = index._repr_inline_(max_width)
 
