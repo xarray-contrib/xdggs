@@ -17,7 +17,7 @@ from xdggs.tests import assert_exceptions_equal
 class strategies:
     invalid_resolutions = st.integers(max_value=-1) | st.integers(min_value=30)
     resolutions = st.integers(min_value=0, max_value=29)
-    indexing_schemes = st.sampled_from(["nested", "ring"])
+    indexing_schemes = st.sampled_from(["nested", "ring", "unique"])
     invalid_indexing_schemes = st.text().filter(
         lambda x: x not in ["nested", "ring", "unique"]
     )
