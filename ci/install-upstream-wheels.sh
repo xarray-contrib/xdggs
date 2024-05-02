@@ -39,6 +39,7 @@ python -m pip install \
 # install from github
 python -m pip install --no-deps --upgrade \
     git+https://github.com/Unidata/cftime \
+    git+https://github.com/astropy/astropy \
     git+https://github.com/nmandery/h3ronpy
 python -m pip install --no-deps --upgrade --no-build-isolation \
     git+https://github.com/healpy/healpy
