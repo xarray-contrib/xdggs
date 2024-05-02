@@ -127,7 +127,9 @@ class TestHealpixInfo:
                 grid.nest
             return
 
-        assert grid.nest == (True if indexing_scheme == "nested" else False)
+        expected = indexing_scheme == "nested"
+
+        assert grid.nest == expected
 
     @given(strategies.grid_mappings())
     def test_from_dict(self, mapping) -> None:
