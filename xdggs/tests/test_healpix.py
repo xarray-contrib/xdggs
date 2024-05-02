@@ -190,12 +190,7 @@ class TestHealpixInfo:
         assert roundtripped == mapping
 
 
-pixel_orderings = ["nested", "ring"]
-resolutions = [0, 1, 3]
-rotation = [(0, 0)]
-
 options = [{}]
-dims = ["cells", "zones"]
 variable_names = ["cell_ids", "zonal_ids", "zone_ids"]
 variables = [
     xr.Variable(
@@ -461,7 +456,7 @@ def test_latlon2cell_ids(cell_centers, resolution, indexing_scheme, expected) ->
 
 
 @pytest.mark.parametrize("max_width", [20, 50, 80, 120])
-@pytest.mark.parametrize("resolution", resolutions)
+@pytest.mark.parametrize("resolution", [0, 1, 3])
 def test_repr_inline(resolution, max_width) -> None:
     grid_info = healpix.HealpixInfo(
         resolution=resolution, indexing_scheme="nested", rotation=(0, 0)
