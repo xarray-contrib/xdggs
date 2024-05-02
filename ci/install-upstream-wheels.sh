@@ -14,7 +14,7 @@ $conda remove -y --force \
 python -m pip uninstall -y h3ronpy
 
 # still need to install healpix_cxx
-$conda install healpix_cxx
+#$conda install healpix_cxx
 
 # build-deps for upstream-dev healpy
 #$conda install -y cython setuptools setuptools-scm "maturin=1.2"
