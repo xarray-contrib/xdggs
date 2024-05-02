@@ -161,24 +161,6 @@ class TestHealpixInfo:
         assert roundtripped == mapping
 
 
-cell_ids = [
-    np.array([3]),
-    np.array([5, 11, 21]),
-    np.array([54, 70, 82, 91]),
-]
-cell_centers = [
-    np.array([[45.0, 14.47751219]]),
-    np.array([[61.875, 19.47122063], [33.75, 24.62431835], [84.375, 41.8103149]]),
-    np.array(
-        [
-            [56.25, 66.44353569],
-            [140.625, 19.47122063],
-            [151.875, 30.0],
-            [147.85714286, 48.14120779],
-        ]
-    ),
-]
-
 pixel_orderings = ["nested", "ring"]
 resolutions = [0, 1, 3]
 rotation = [(0, 0)]
@@ -188,43 +170,43 @@ dims = ["cells", "zones"]
 variable_names = ["cell_ids", "zonal_ids", "zone_ids"]
 variables = [
     xr.Variable(
-        dims[0],
-        cell_ids[0],
+        "cells",
+        np.array([3]),
         {
             "grid_name": "healpix",
-            "resolution": resolutions[0],
+            "resolution": 0,
             "indexing_scheme": "nested",
-            "rotation": rotation[0],
+            "rotation": (0, 0),
         },
     ),
     xr.Variable(
-        dims[1],
-        cell_ids[0],
+        "zones",
+        np.array([3]),
         {
             "grid_name": "healpix",
-            "resolution": resolutions[0],
+            "resolution": 0,
             "indexing_scheme": "ring",
-            "rotation": rotation[0],
+            "rotation": (0, 0),
         },
     ),
     xr.Variable(
-        dims[0],
-        cell_ids[1],
+        "cells",
+        np.array([5, 11, 21]),
         {
             "grid_name": "healpix",
-            "resolution": resolutions[1],
+            "resolution": 1,
             "indexing_scheme": "nested",
-            "rotation": rotation[0],
+            "rotation": (0, 0),
         },
     ),
     xr.Variable(
-        dims[1],
-        cell_ids[2],
+        "zones",
+        np.array([54, 70, 82, 91]),
         {
             "grid_name": "healpix",
-            "resolution": resolutions[2],
+            "resolution": 3,
             "indexing_scheme": "nested",
-            "rotation": rotation[0],
+            "rotation": (0, 0),
         },
     ),
 ]
@@ -270,6 +252,44 @@ variable_combinations = list(itertools.product(variables, repeat=2))
                 ],
             ),
             id="nside-duplicated",
+        ),
+        pytest.param(
+            {
+                "resolution": 10,
+                "indexing_scheme": "nested",
+                "nest": True,
+                "rotation": (0.0, 0.0),
+            },
+            ExceptionGroup(
+                "received multiple values for parameters",
+                [
+                    ValueError(
+                        "Parameter indexing_scheme received multiple values: ['nest', 'indexing_scheme']"
+                    ),
+                ],
+            ),
+            id="indexing_scheme-duplicated",
+        ),
+        pytest.param(
+            {
+                "nside": 1024,
+                "resolution": 10,
+                "indexing_scheme": "nested",
+                "nest": True,
+                "rotation": (0.0, 0.0),
+            },
+            ExceptionGroup(
+                "received multiple values for parameters",
+                [
+                    ValueError(
+                        "Parameter resolution received multiple values: ['nside', 'resolution']"
+                    ),
+                    ValueError(
+                        "Parameter indexing_scheme received multiple values: ['nest', 'indexing_scheme']"
+                    ),
+                ],
+            ),
+            id="multiple_params-duplicated",
         ),
     ),
 )
@@ -337,27 +357,61 @@ def test_replace(old_variable, new_variable) -> None:
 
 
 @pytest.mark.parametrize(
-    ["cell_ids", "cell_centers"], list(zip(cell_ids, cell_centers))
+    ["cell_ids", "resolution", "indexing_scheme", "expected"],
+    (
+        pytest.param(
+            np.array([3]),
+            1,
+            "ring",
+            np.array([[315.0, 66.44353569089877]]),
+        ),
+        pytest.param(
+            np.array([5, 11, 21]),
+            3,
+            "nested",
+            np.array(
+                [[61.875, 19.47122063], [33.75, 24.62431835], [84.375, 41.8103149]]
+            ),
+        ),
+    ),
 )
-def test_cellid2latlon(cell_ids, cell_centers) -> None:
-    grid_info = healpix.HealpixInfo(resolution=3, indexing_scheme="nested")
+def test_cellid2latlon(cell_ids, resolution, indexing_scheme, expected) -> None:
+    grid_info = healpix.HealpixInfo(
+        resolution=resolution, indexing_scheme=indexing_scheme
+    )
     index = healpix.HealpixIndex(cell_ids=[0], dim="cells", grid_info=grid_info)
 
     actual = index._cellid2latlon(cell_ids)
-    expected = cell_centers
 
     np.testing.assert_allclose(actual, expected)
 
 
 @pytest.mark.parametrize(
-    ["cell_centers", "cell_ids"], list(zip(cell_centers, cell_ids))
+    ["cell_centers", "resolution", "indexing_scheme", "expected"],
+    (
+        pytest.param(
+            np.array([[315.0, 66.44353569089877]]),
+            1,
+            "ring",
+            np.array([3]),
+        ),
+        pytest.param(
+            np.array(
+                [[61.875, 19.47122063], [33.75, 24.62431835], [84.375, 41.8103149]]
+            ),
+            3,
+            "nested",
+            np.array([5, 11, 21]),
+        ),
+    ),
 )
-def test_latlon2cell_ids(cell_centers, cell_ids) -> None:
-    grid_info = healpix.HealpixInfo(resolution=3, indexing_scheme="nested")
+def test_latlon2cell_ids(cell_centers, resolution, indexing_scheme, expected) -> None:
+    grid_info = healpix.HealpixInfo(
+        resolution=resolution, indexing_scheme=indexing_scheme
+    )
     index = healpix.HealpixIndex(cell_ids=[0], dim="cells", grid_info=grid_info)
 
     actual = index._latlon2cellid(lon=cell_centers[:, 0], lat=cell_centers[:, 1])
-    expected = cell_ids
 
     np.testing.assert_equal(actual, expected)
 
