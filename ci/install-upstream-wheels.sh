@@ -13,6 +13,10 @@ $conda remove -y --force \
     healpy
 python -m pip uninstall -y h3ronpy
 
+# install healpy build deps
+$conda install healpix_cxx cython setuptools setuptools-scm "maturin=1.2"
+python -m pip install pykg-config
+
 # install from scientific-python wheels
 python -m pip install \
     -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple \
@@ -34,5 +38,6 @@ python -m pip install \
 
 # install from github
 python -m pip install --no-deps --upgrade \
-    git+https://github.com/nmandery/h3ronpy \
+    git+https://github.com/nmandery/h3ronpy
+python -m pip install --no-deps --upgrade --no-build-isolation \
     git+https://github.com/healpy/healpy
