@@ -180,7 +180,7 @@ cell_centers = [
 ]
 
 pixel_orderings = ["nested", "ring"]
-resolutions = [1, 2, 8]
+resolutions = [0, 1, 3]
 rotation = [(0, 0)]
 
 options = [{}]
@@ -192,8 +192,8 @@ variables = [
         cell_ids[0],
         {
             "grid_name": "healpix",
-            "nside": resolutions[0],
-            "nest": True,
+            "resolution": resolutions[0],
+            "indexing_scheme": "nested",
             "rotation": rotation[0],
         },
     ),
@@ -202,8 +202,8 @@ variables = [
         cell_ids[0],
         {
             "grid_name": "healpix",
-            "nside": resolutions[0],
-            "nest": False,
+            "resolution": resolutions[0],
+            "indexing_scheme": "ring",
             "rotation": rotation[0],
         },
     ),
@@ -212,8 +212,8 @@ variables = [
         cell_ids[1],
         {
             "grid_name": "healpix",
-            "nside": resolutions[1],
-            "nest": True,
+            "resolution": resolutions[1],
+            "indexing_scheme": "nested",
             "rotation": rotation[0],
         },
     ),
@@ -222,8 +222,8 @@ variables = [
         cell_ids[2],
         {
             "grid_name": "healpix",
-            "nside": resolutions[2],
-            "nest": False,
+            "resolution": resolutions[2],
+            "indexing_scheme": "nested",
             "rotation": rotation[0],
         },
     ),
@@ -309,17 +309,17 @@ class TestHealpixIndex:
 @pytest.mark.parametrize("variable", variables)
 @pytest.mark.parametrize("variable_name", variable_names)
 def test_from_variables(variable_name, variable, options) -> None:
-    expected_resolution = variable.attrs["nside"]
-    expected_scheme = variable.attrs["nest"]
+    expected_resolution = variable.attrs["resolution"]
+    expected_scheme = variable.attrs["indexing_scheme"]
     expected_rot = variable.attrs["rotation"]
 
     variables = {variable_name: variable}
 
     index = healpix.HealpixIndex.from_variables(variables, options=options)
 
-    assert index._grid.nside == expected_resolution
-    assert index._grid.nest == expected_scheme
-    assert index._grid.rot_latlon == expected_rot
+    assert index._grid.resolution == expected_resolution
+    assert index._grid.indexing_scheme == expected_scheme
+    assert index._grid.rotation == expected_rot
 
     assert (index._dim,) == variable.dims
     np.testing.assert_equal(index._pd_index.index.values, variable.data)
