@@ -2,6 +2,11 @@ import enum
 import re
 from dataclasses import dataclass, field
 
+try:
+    ExceptionGroup
+except NameError:
+    from exceptiongroup import ExceptionGroup
+
 
 class MatchResult(enum.Enum):
     match = 0
