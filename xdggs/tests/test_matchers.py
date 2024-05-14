@@ -39,5 +39,41 @@ def test_from_dict(mapping, args, kwargs):
     assert actual == expected
 
 
-def test_single_level_match():
-    pass
+def test_assert_exceptions_equal():
+    actual = ValueError("error message")
+    expected = ValueError("error message")
+
+    matchers.assert_exceptions_equal(actual, expected)
+
+    try:
+        raise ValueError("error message")
+    except ValueError as e:
+        actual = e
+    expected = ValueError("error message")
+
+    matchers.assert_exceptions_equal(actual, expected)
+
+    actual = ValueError("error message")
+    expected = TypeError("error message")
+    with pytest.raises(AssertionError):
+        matchers.assert_exceptions_equal(actual, expected)
+
+    actual = ValueError("error message1")
+    expected = ValueError("error message2")
+    with pytest.raises(AssertionError):
+        matchers.assert_exceptions_equal(actual, expected)
+
+    actual = ExceptionGroup("group message1", [ValueError("error message")])
+    expected = ExceptionGroup("group message2", [ValueError("error message")])
+    with pytest.raises(AssertionError):
+        matchers.assert_exceptions_equal(actual, expected)
+
+    actual = ExceptionGroup("group message", [ValueError("error message1")])
+    expected = ExceptionGroup("group message", [ValueError("error message2")])
+    with pytest.raises(AssertionError):
+        matchers.assert_exceptions_equal(actual, expected)
+
+    actual = ExceptionGroup("group message", [ValueError("error message")])
+    expected = ExceptionGroup("group message", [TypeError("error message")])
+    with pytest.raises(AssertionError):
+        matchers.assert_exceptions_equal(actual, expected)
