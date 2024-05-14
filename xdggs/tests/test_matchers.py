@@ -13,7 +13,9 @@ def test_construct_simple():
     matchers.Match(ValueError)
     matchers.Match((ValueError, NameError))
     matchers.Match(ExceptionGroup)
-    with pytest.raises(TypeError, match="exception type must be an exception"):
+    with pytest.raises(
+        TypeError, match="exception type must be one or more exceptions"
+    ):
         matchers.Match(int)
 
     # with match string

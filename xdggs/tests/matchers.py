@@ -14,6 +14,13 @@ class MatchResult(enum.Enum):
     mismatched_message = 2
 
 
+def is_exception_spec(exc):
+    if not isinstance(exc, tuple):
+        exc = (exc,)
+
+    return all(isinstance(e, type) and issubclass(e, BaseException) for e in exc)
+
+
 # necessary until pytest-dev/pytest#11538 is resolved
 @dataclass
 class Match:
@@ -22,11 +29,14 @@ class Match:
     match: str = None
 
     def __post_init__(self):
-        if not isinstance(self.exc, type | tuple) or not issubclass(
-            self.exc, BaseException
+        if not is_exception_spec(self.exc):
+            raise TypeError(
+                f"exception type must be one or more exceptions, got: {self.exc}"
+            )
+        if (
+            not (isinstance(self.exc, type) and issubclass(self.exc, ExceptionGroup))
+            and self.submatchers
         ):
-            raise TypeError(f"exception type must be an exception, got: {self.exc}")
-        if not issubclass(self.exc, ExceptionGroup) and self.submatchers:
             raise TypeError("can only pass sub-matchers for exception groups")
         if not isinstance(self.match, str) and self.match is not None:
             raise TypeError("match must be either `None` or a string pattern")
