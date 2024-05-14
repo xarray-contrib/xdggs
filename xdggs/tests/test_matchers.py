@@ -45,6 +45,55 @@ class TestMatch:
         expected = matchers.Match(*args, **kwargs)
         assert actual == expected
 
+    @pytest.mark.parametrize(
+        ["exc", "match", "expected"],
+        (
+            pytest.param(
+                ValueError("e"), matchers.Match(ValueError), True, id="exc-wo pat"
+            ),
+            pytest.param(
+                ValueError("error message"),
+                matchers.Match(ValueError, match="message"),
+                True,
+                id="exc-match",
+            ),
+            pytest.param(
+                ValueError("error message"),
+                matchers.Match(ValueError, match="abc"),
+                False,
+                id="exc-no match",
+            ),
+            pytest.param(
+                ExceptionGroup("eg", [ValueError("error")]),
+                matchers.Match(ExceptionGroup),
+                True,
+                id="eg-without pattern-without submatchers",
+            ),
+            pytest.param(
+                ExceptionGroup("error group", [ValueError("error")]),
+                matchers.Match(ExceptionGroup, match="err"),
+                True,
+                id="eg-match-without submatchers",
+            ),
+            pytest.param(
+                ExceptionGroup("eg", [ValueError("error")]),
+                matchers.Match(ExceptionGroup, match="abc"),
+                False,
+                id="eg-no match-without submatchers",
+            ),
+            pytest.param(
+                ExceptionGroup("eg", [ValueError("error")]),
+                matchers.Match(
+                    ExceptionGroup, submatchers=[matchers.Match(ValueError)]
+                ),
+                True,
+                id="eg-wo pat-with submatchers-wo subpat",
+            ),
+        ),
+    )
+    def test_matches(self, exc, match, expected):
+        assert match.matches(exc) == expected
+
 
 def test_assert_exceptions_equal():
     actual = ValueError("error message")

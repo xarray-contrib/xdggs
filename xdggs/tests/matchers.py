@@ -1,4 +1,5 @@
 import enum
+import re
 from dataclasses import dataclass, field
 
 try:
@@ -31,6 +32,10 @@ class Match: ...
 
 
 MatchType = BaseException | Match | tuple[BaseException | Match, ...]
+
+
+def extract_message(exc):
+    return getattr(exc, "message", str(exc))
 
 
 # necessary until pytest-dev/pytest#11538 is resolved
@@ -77,6 +82,25 @@ class Match:
             submatchers=children,
             match=mapping.get("match", None),
         )
+
+    def matches(self, exc):
+        if not isinstance(exc, self.exc):
+            print("type does not match")
+            return False
+
+        if self.match is not None:
+            message = extract_message(exc)
+            match_ = re.search(self.match, message)
+            if match_ is None:
+                return False
+
+        if self.submatchers and not issubclass(self.exc, BaseExceptionGroup):
+            return False
+        elif self.submatchers:
+            # TODO: implement the submatchers
+            pass
+
+        return True
 
 
 def compare_exceptions(a, b):
