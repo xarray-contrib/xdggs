@@ -283,7 +283,7 @@ variable_combinations = list(itertools.product(variables, repeat=2))
                 "received multiple values for parameters",
                 [
                     ValueError(
-                        "Parameter indexing_scheme received multiple values: ['nest', 'indexing_scheme']"
+                        "Parameter indexing_scheme received multiple values: ['indexing_scheme', 'nest']"
                     ),
                 ],
             ),
@@ -301,10 +301,10 @@ variable_combinations = list(itertools.product(variables, repeat=2))
                 "received multiple values for parameters",
                 [
                     ValueError(
-                        "Parameter resolution received multiple values: ['nside', 'resolution']"
+                        "Parameter indexing_scheme received multiple values: ['indexing_scheme', 'nest']"
                     ),
                     ValueError(
-                        "Parameter indexing_scheme received multiple values: ['nest', 'indexing_scheme']"
+                        "Parameter resolution received multiple values: ['nside', 'resolution']"
                     ),
                 ],
             ),

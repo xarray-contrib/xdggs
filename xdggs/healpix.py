@@ -102,7 +102,7 @@ class HealpixInfo(DGGSInfo):
                 "received multiple values for parameters",
                 [
                     ValueError(
-                        f"Parameter {name} received multiple values: {[n for n, _ in group]}"
+                        f"Parameter {name} received multiple values: {sorted(n for n, _ in group)}"
                     )
                     for name, group in duplicated_parameters.items()
                 ],
