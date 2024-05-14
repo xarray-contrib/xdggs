@@ -53,6 +53,9 @@ exclude = [
     "dist",
     "__pycache__",
 ]
+line-length = 100
+
+[tool.ruff.lint]
 # E402: module level import not at top of file
 # E501: line too long - let black worry about that
 # E731: do not assign a lambda expression, use a def
@@ -71,12 +74,9 @@ select = [
     # Pyupgrade
     "UP",
 ]
-line-length = 100
-
-[tool.ruff.lint]
 fixable = ["I"]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["xdggs"]
 known-third-party=[
     "xarray",
