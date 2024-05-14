@@ -27,11 +27,35 @@ def is_exceptiongroup_spec(exc):
     return all(isinstance(e, type) and issubclass(e, BaseExceptionGroup) for e in exc)
 
 
+class Match: ...
+
+
+MatchType = BaseException | Match | tuple[BaseException | Match, ...]
+
+
 # necessary until pytest-dev/pytest#11538 is resolved
 @dataclass
 class Match:
-    exc: Exception | ExceptionGroup | tuple[Exception | ExceptionGroup, ...]
-    submatchers: list["Match"] = field(default_factory=list)
+    """match exceptions and exception groups
+
+    Think of `Match` objects as an equivalent to `re.Pattern` classes.
+
+    Providing a tuple in place of a single exception / matcher means logical "or".
+
+    Parameters
+    ----------
+    exc : exception-like or tuple of exception-like
+        The exceptions or exception groups to match.
+    submatchers : match-like, optional
+        The submatchers for exception groups. Note that matchers with a mixture of
+        exception groups and exceptions can't provide submatchers. If that's what you
+        need, provide a tuple containing multiple matchers.
+    match : str or regex-like, optional
+        A pattern for matching the message of the exception.
+    """
+
+    exc: type[BaseException] | tuple[type[BaseException], ...]
+    submatchers: list[MatchType] = field(default_factory=list)
     match: str = None
 
     def __post_init__(self):
