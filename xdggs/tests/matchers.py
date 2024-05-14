@@ -75,7 +75,25 @@ def compare_exceptions(a, b):
     return comparison
 
 
-def assert_exceptions_equal(actual, expected):
-    assert type(actual) is type(expected)
+def format_exception_diff(a, b):
+    sections = []
+    if type(a) is not type(b):
+        sections.append("\n".join([f"L  {type(a).__name__}", f"R  {type(b).__name__}"]))
+    else:
+        sections.append(f"{type(a).__name__}")
 
-    assert compare_exceptions(actual, expected), "mismatching exceptions"
+    if isinstance(a, BaseExceptionGroup):
+        if a.message != b.message:
+            sections.append(
+                "\n".join(["Message", f"L  {a.message}", f"R  {b.message}"])
+            )
+        if a.exceptions != b.exceptions:
+            sections.append("\n".join(["Exceptions differ"]))
+    elif str(a) != str(b):
+        sections.append("\n".join(["Message", f"L  {str(a)}", f"R  {str(b)}"]))
+
+    return "\n\n".join(sections)
+
+
+def assert_exceptions_equal(actual, expected):
+    assert compare_exceptions(actual, expected), format_exception_diff(actual, expected)
