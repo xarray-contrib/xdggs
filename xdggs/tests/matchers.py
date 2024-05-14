@@ -1,5 +1,4 @@
 import enum
-import re
 from dataclasses import dataclass, field
 
 try:
@@ -54,11 +53,6 @@ class Match:
             submatchers=children,
             match=mapping.get("match", None),
         )
-
-    def assert_match(self, exc):
-        assert type(exc) is type(self.exc)  # noqa: E721
-
-        assert re.search(str(exc), self.match), "message does not match"
 
 
 def compare_exceptions(a, b):
