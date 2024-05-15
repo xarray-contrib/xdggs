@@ -85,7 +85,6 @@ class Match:
 
     def matches(self, exc):
         if not isinstance(exc, self.exc):
-            print("type does not match")
             return False
 
         if self.match is not None:
@@ -94,11 +93,24 @@ class Match:
             if match_ is None:
                 return False
 
-        if self.submatchers and not issubclass(self.exc, BaseExceptionGroup):
+        if self.submatchers and not isinstance(exc, BaseExceptionGroup):
             return False
         elif self.submatchers:
-            # TODO: implement the submatchers
-            pass
+            if len(self.submatchers) != len(exc.exceptions):
+                return False
+
+            unmatched_matchers = []
+            exceptions = list(exc.exceptions)
+            for matcher in self.submatchers:
+                for index, exception in enumerate(exceptions):
+                    if matcher.matches(exception):
+                        exceptions.pop(index)
+                        break
+                else:
+                    unmatched_matchers.append(matcher)
+
+            if unmatched_matchers:
+                return False
 
         return True
 

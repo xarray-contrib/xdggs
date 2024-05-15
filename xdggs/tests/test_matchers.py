@@ -49,37 +49,37 @@ class TestMatch:
         ["exc", "match", "expected"],
         (
             pytest.param(
-                ValueError("e"), matchers.Match(ValueError), True, id="exc-wo pat"
+                ValueError("e"), matchers.Match(ValueError), True, id="exc-match-wo pat"
             ),
             pytest.param(
                 ValueError("error message"),
                 matchers.Match(ValueError, match="message"),
                 True,
-                id="exc-match",
+                id="exc-match-w pat",
             ),
             pytest.param(
                 ValueError("error message"),
                 matchers.Match(ValueError, match="abc"),
                 False,
-                id="exc-no match",
+                id="exc-no match-w pat",
             ),
             pytest.param(
                 ExceptionGroup("eg", [ValueError("error")]),
                 matchers.Match(ExceptionGroup),
                 True,
-                id="eg-without pattern-without submatchers",
+                id="eg-match-wo pat-without submatchers",
             ),
             pytest.param(
                 ExceptionGroup("error group", [ValueError("error")]),
                 matchers.Match(ExceptionGroup, match="err"),
                 True,
-                id="eg-match-without submatchers",
+                id="eg-match-w pat-without submatchers",
             ),
             pytest.param(
                 ExceptionGroup("eg", [ValueError("error")]),
                 matchers.Match(ExceptionGroup, match="abc"),
                 False,
-                id="eg-no match-without submatchers",
+                id="eg-no match-w pat-without submatchers",
             ),
             pytest.param(
                 ExceptionGroup("eg", [ValueError("error")]),
@@ -87,7 +87,31 @@ class TestMatch:
                     ExceptionGroup, submatchers=[matchers.Match(ValueError)]
                 ),
                 True,
-                id="eg-wo pat-with submatchers-wo subpat",
+                id="eg-match-wo pat-with submatchers-wo subpat",
+            ),
+            pytest.param(
+                ExceptionGroup("eg", [ValueError("error")]),
+                matchers.Match(ExceptionGroup, submatchers=[matchers.Match(TypeError)]),
+                False,
+                id="eg-no match-wo pat-with submatchers-wo subpat",
+            ),
+            pytest.param(
+                ExceptionGroup("eg", [ValueError("error")]),
+                matchers.Match(
+                    ExceptionGroup,
+                    submatchers=[matchers.Match(ValueError, match="err")],
+                ),
+                True,
+                id="eg-match-w pat-with submatchers-wo subpat",
+            ),
+            pytest.param(
+                ExceptionGroup("eg", [ValueError("error")]),
+                matchers.Match(
+                    ExceptionGroup,
+                    submatchers=[matchers.Match(ValueError, match="abc")],
+                ),
+                False,
+                id="eg-no match-w pat-with submatchers-wo subpat",
             ),
         ),
     )
