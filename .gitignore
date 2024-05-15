@@ -138,6 +138,9 @@ venv.bak/
 # mkdocs documentation
 /site
 
+# code formatter cache
+.prettier_cache/
+
 # mypy
 .mypy_cache/
 .dmypy.json

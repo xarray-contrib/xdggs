@@ -53,6 +53,9 @@ exclude = [
     "dist",
     "__pycache__",
 ]
+line-length = 100
+
+[tool.ruff.lint]
 # E402: module level import not at top of file
 # E501: line too long - let black worry about that
 # E731: do not assign a lambda expression, use a def
@@ -62,21 +65,19 @@ ignore = [
     "E731",
 ]
 select = [
-    # Pyflakes
-    "F",
-    # Pycodestyle
-    "E",
-    # isort
-    "I",
-    # Pyupgrade
-    "UP",
+    "F",  # Pyflakes
+    "E",  # Pycodestyle
+    "I",  # isort
+    "UP", # Pyupgrade
+    "TID", # flake8-tidy-imports
+    "W",
 ]
-line-length = 100
+extend-safe-fixes = [
+    "TID252", # absolute imports
+]
+fixable = ["I", "TID252"]
 
-[tool.ruff.lint]
-fixable = ["I"]
-
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["xdggs"]
 known-third-party=[
     "xarray",
