@@ -65,16 +65,17 @@ ignore = [
     "E731",
 ]
 select = [
-    # Pyflakes
-    "F",
-    # Pycodestyle
-    "E",
-    # isort
-    "I",
-    # Pyupgrade
-    "UP",
+    "F",  # Pyflakes
+    "E",  # Pycodestyle
+    "I",  # isort
+    "UP", # Pyupgrade
+    "TID", # flake8-tidy-imports
+    "W",
 ]
-fixable = ["I"]
+extend-safe-fixes = [
+    "TID252", # absolute imports
+]
+fixable = ["I", "TID252"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["xdggs"]
