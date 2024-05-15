@@ -12,6 +12,11 @@ from xarray.core.indexes import PandasIndex
 from xdggs import healpix
 from xdggs.tests import assert_exceptions_equal
 
+try:
+    ExceptionGroup
+except NameError:
+    from exceptiongroup import ExceptionGroup
+
 
 # namespace class
 class strategies:
