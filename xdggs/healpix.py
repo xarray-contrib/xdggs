@@ -20,6 +20,11 @@ from xdggs.utils import _extract_cell_id_variable, register_dggs
 
 T = TypeVar("T")
 
+try:
+    ExceptionGroup
+except NameError:
+    from exceptiongroup import ExceptionGroup
+
 
 @dataclass(frozen=True)
 class HealpixInfo(DGGSInfo):
