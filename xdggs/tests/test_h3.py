@@ -47,6 +47,52 @@ variable_combinations = [
 ]
 
 
+class TestH3Info:
+
+    @pytest.mark.parametrize(
+        ["resolution", "error"],
+        (
+            (0, None),
+            (1, None),
+            (-1, ValueError("resolution must be an integer between")),
+        ),
+    )
+    def test_init(self, resolution, error):
+        if error is not None:
+            with pytest.raises(type(error), match=str(error)):
+                h3.H3Info(resolution=resolution)
+            return
+
+        actual = h3.H3Info(resolution=resolution)
+
+        assert actual.resolution == resolution
+
+    @pytest.mark.parametrize(
+        ["mapping", "expected"],
+        (
+            ({"resolution": 0}, 0),
+            ({"resolution": 1}, 1),
+            ({"resolution": -1}, ValueError("resolution must be an integer between")),
+        ),
+    )
+    def test_from_dict(self, mapping, expected):
+        if isinstance(expected, Exception):
+            with pytest.raises(type(expected), match=str(expected)):
+                h3.H3Info.from_dict(mapping)
+            return
+
+        actual = h3.H3Info.from_dict(mapping)
+        assert actual.resolution == expected
+
+    def test_roundtrip(self):
+        mapping = {"grid_name": "h3", "resolution": 0}
+
+        grid = h3.H3Info.from_dict(mapping)
+        actual = grid.to_dict()
+
+        assert actual == mapping
+
+
 @pytest.mark.parametrize("resolution", resolutions)
 @pytest.mark.parametrize("dim", dims)
 @pytest.mark.parametrize("cell_ids", cell_ids)
