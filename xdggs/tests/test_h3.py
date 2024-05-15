@@ -30,16 +30,16 @@ variable_names = ["cell_ids", "zonal_ids", "zone_ids"]
 
 variables = [
     xr.Variable(
-        dims[0], cell_ids[0], {"grid_type": "h3", "resolution": resolutions[0]}
+        dims[0], cell_ids[0], {"grid_name": "h3", "resolution": resolutions[0]}
     ),
     xr.Variable(
-        dims[1], cell_ids[0], {"grid_type": "h3", "resolution": resolutions[0]}
+        dims[1], cell_ids[0], {"grid_name": "h3", "resolution": resolutions[0]}
     ),
     xr.Variable(
-        dims[0], cell_ids[1], {"grid_type": "h3", "resolution": resolutions[1]}
+        dims[0], cell_ids[1], {"grid_name": "h3", "resolution": resolutions[1]}
     ),
     xr.Variable(
-        dims[1], cell_ids[2], {"grid_type": "h3", "resolution": resolutions[2]}
+        dims[1], cell_ids[2], {"grid_name": "h3", "resolution": resolutions[2]}
     ),
 ]
 variable_combinations = [
