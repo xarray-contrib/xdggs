@@ -5,7 +5,7 @@ from typing import Any, ClassVar, Literal, TypeVar
 
 try:
     from typing import Self
-except ImportError:
+except ImportError:  # pragma: no cover
     from typing_extensions import Self
 
 import healpy
@@ -22,7 +22,7 @@ T = TypeVar("T")
 
 try:
     ExceptionGroup
-except NameError:
+except NameError:  # pragma: no cover
     from exceptiongroup import ExceptionGroup
 
 

@@ -14,7 +14,7 @@ from xdggs.tests import assert_exceptions_equal
 
 try:
     ExceptionGroup
-except NameError:
+except NameError:  # pragma: no cover
     from exceptiongroup import ExceptionGroup
 
 
