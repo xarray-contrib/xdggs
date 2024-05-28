@@ -50,6 +50,11 @@ class DGGSAccessor:
             )
         return self._obj[self._name]
 
+    @property
+    def params(self) -> dict:
+        """The grid parameters after normalization."""
+        return self.index.grid.to_dict()
+
     def sel_latlon(
         self, latitude: npt.ArrayLike, longitude: npt.ArrayLike
     ) -> xr.Dataset | xr.DataArray:
