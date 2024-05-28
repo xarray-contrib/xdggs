@@ -171,5 +171,9 @@ class HealpixIndex(DGGSIndex):
         # TODO: apply rotation
         return np.stack([lon, lat], axis=-1)
 
+    @property
+    def grid(self) -> HealpixInfo:
+        return self._grid
+
     def _repr_inline_(self, max_width: int):
         return f"HealpixIndex(nside={self._grid.resolution}, indexing_scheme={self._grid.indexing_scheme}, rotation={self._grid.rotation!r})"

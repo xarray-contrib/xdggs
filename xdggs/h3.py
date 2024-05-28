@@ -62,6 +62,10 @@ class H3Index(DGGSIndex):
 
         return cls(var.data, dim, grid_info)
 
+    @property
+    def grid(self) -> H3Info:
+        return self._grid
+
     def _replace(self, new_pd_index: PandasIndex):
         return type(self)(new_pd_index, self._dim, self._grid)
 
