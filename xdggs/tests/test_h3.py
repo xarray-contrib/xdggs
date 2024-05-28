@@ -108,6 +108,15 @@ def test_init(cell_ids, dim, resolution):
     assert np.all(index._pd_index.index.values == cell_ids)
 
 
+@pytest.mark.parametrize("resolution", resolutions)
+def test_grid(resolution):
+    grid = h3.H3Info(resolution)
+
+    index = h3.H3Index([0], "cell_ids", grid)
+
+    assert index.grid is grid
+
+
 @pytest.mark.parametrize("variable", variables)
 @pytest.mark.parametrize("variable_name", variable_names)
 @pytest.mark.parametrize("options", [{}])

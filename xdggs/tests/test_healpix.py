@@ -353,6 +353,12 @@ class TestHealpixIndex:
 
         np.testing.assert_equal(roundtripped, cell_ids)
 
+    @given(strategies.grids())
+    def test_grid(self, grid):
+        index = healpix.HealpixIndex([0], dim="cells", grid_info=grid)
+
+        assert index.grid is grid
+
 
 @pytest.mark.parametrize("options", options)
 @pytest.mark.parametrize("variable", variables)
