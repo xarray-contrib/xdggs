@@ -13,10 +13,6 @@ $conda remove -y --force \
     healpy
 python -m pip uninstall -y h3ronpy
 
-# install healpy build deps
-$conda install healpix_cxx cython setuptools setuptools-scm "maturin=1.2"
-python -m pip install pykg-config
-
 # install from scientific-python wheels
 python -m pip install \
     -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple \
