@@ -41,7 +41,6 @@ python -m pip install --no-deps --upgrade \
 # install healpy from github
 # need to run `auditwheel` to include the shared libs
 python -m pip install auditwheel
-sudo apt install patchelf
 
 # build and repair the wheel
 mkdir -p built_wheel repaired_wheel
