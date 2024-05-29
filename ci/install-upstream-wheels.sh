@@ -46,7 +46,7 @@ python -m pip install auditwheel
 # - manual clone
 mkdir deps
 git clone --filter=blob:none --quiet https://github.com/healpy/healpy deps/healpy
-cd deps/healpy
+pushd deps/healpy
 git submodule update --init --recursive -q
 # - build and repair the wheel
 mkdir -p built_wheel repaired_wheel
@@ -55,4 +55,4 @@ auditwheel repair --plat linux_x86_64 -w repaired_wheel built_wheel/healpy-*.whl
 # - install the repaired wheel
 python -m pip install --upgrade --no-deps repaired_wheel/healpy-*.whl
 # - clean up
-cd -; rm -rf deps
+popd; rm -rf deps
