@@ -46,8 +46,8 @@ python -m pip install auditwheel
 # - manual clone
 mkdir deps
 git clone --filter=blob:none --quiet https://github.com/healpy/healpy deps/healpy
-git submodule update --init --recursive -q
 cd deps/healpy
+git submodule update --init --recursive -q
 # - build and repair the wheel
 mkdir -p built_wheel repaired_wheel
 python -m pip wheel --no-deps . --wheel-dir built_wheel
