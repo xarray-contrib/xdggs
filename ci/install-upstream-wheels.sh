@@ -37,5 +37,10 @@ python -m pip install --no-deps --upgrade \
     git+https://github.com/Unidata/cftime \
     git+https://github.com/astropy/astropy \
     git+https://github.com/nmandery/h3ronpy
-python -m pip install --no-deps --upgrade --no-build-isolation \
-    git+https://github.com/healpy/healpy
+
+# install healpy from github
+# need to run `auditwheel` to include the shared libs
+mkdir -p built_wheel repaired_wheel
+python -m pip wheel --no-deps git+https://github.com/healpy/healpy --wheel-dir built_wheel
+auditwheel repair --plat linux_x86_64 -w repaired_wheel built_wheel/healpy-*.whl
+python -m pip install --upgrade --no-deps repaired_wheel/healpy-*.whl
