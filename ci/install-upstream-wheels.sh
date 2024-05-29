@@ -54,3 +54,5 @@ python -m pip wheel --no-deps . --wheel-dir built_wheel
 auditwheel repair --plat linux_x86_64 -w repaired_wheel built_wheel/healpy-*.whl
 # - install the repaired wheel
 python -m pip install --upgrade --no-deps repaired_wheel/healpy-*.whl
+# - clean up
+cd -; rm -rf deps
