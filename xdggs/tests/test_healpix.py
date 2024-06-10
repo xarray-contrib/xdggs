@@ -349,7 +349,7 @@ class TestHealpixIndex:
 
         centers = index._cellid2latlon(cell_ids)
 
-        roundtripped = index._latlon2cellid(lat=centers[:, 1], lon=centers[:, 0])
+        roundtripped = index._latlon2cellid(lat=centers[1], lon=centers[0])
 
         np.testing.assert_equal(roundtripped, cell_ids)
 
@@ -408,14 +408,15 @@ def test_replace(old_variable, new_variable) -> None:
             np.array([3]),
             1,
             "ring",
-            np.array([[315.0, 66.44353569089877]]),
+            (np.array([315.0]), np.array([66.44353569089877])),
         ),
         pytest.param(
             np.array([5, 11, 21]),
             3,
             "nested",
-            np.array(
-                [[61.875, 19.47122063], [33.75, 24.62431835], [84.375, 41.8103149]]
+            (
+                np.array([61.875, 33.75, 84.375]),
+                np.array([19.47122063, 24.62431835, 41.8103149]),
             ),
         ),
     ),
@@ -426,9 +427,10 @@ def test_cellid2latlon(cell_ids, resolution, indexing_scheme, expected) -> None:
     )
     index = healpix.HealpixIndex(cell_ids=[0], dim="cells", grid_info=grid_info)
 
-    actual = index._cellid2latlon(cell_ids)
+    actual_lon, actual_lat = index._cellid2latlon(cell_ids)
 
-    np.testing.assert_allclose(actual, expected)
+    np.testing.assert_allclose(actual_lon, expected[0])
+    np.testing.assert_allclose(actual_lat, expected[1])
 
 
 @pytest.mark.parametrize(
