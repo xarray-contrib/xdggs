@@ -114,7 +114,7 @@ def test_grid(resolution):
 
     index = h3.H3Index([0], "cell_ids", grid)
 
-    assert index.grid is grid
+    assert index.grid_info is grid
 
 
 @pytest.mark.parametrize("variable", variables)

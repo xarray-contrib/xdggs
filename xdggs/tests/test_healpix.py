@@ -357,7 +357,7 @@ class TestHealpixIndex:
     def test_grid(self, grid):
         index = healpix.HealpixIndex([0], dim="cells", grid_info=grid)
 
-        assert index.grid is grid
+        assert index.grid_info is grid
 
 
 @pytest.mark.parametrize("options", options)

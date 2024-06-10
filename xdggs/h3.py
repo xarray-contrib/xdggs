@@ -46,8 +46,7 @@ class H3Index(DGGSIndex):
         dim: str,
         grid_info: DGGSInfo,
     ):
-        super().__init__(cell_ids, dim)
-        self._grid = grid_info
+        super().__init__(cell_ids, dim, grid_info)
 
     @classmethod
     def from_variables(
