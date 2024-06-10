@@ -80,3 +80,7 @@ class DGGSIndex(Index):
     @property
     def cell_centers(self) -> tuple[np.ndarray, np.ndarray]:
         return self._cellid2latlon(self._pd_index.index.values)
+
+    @property
+    def grid_info(self) -> DGGSInfo:
+        return self._grid
