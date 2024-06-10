@@ -168,8 +168,8 @@ class HealpixIndex(DGGSIndex):
         lon, lat = healpy.pix2ang(
             self._grid.nside, cell_ids, nest=self._grid.nest, lonlat=True
         )
-        # TODO: apply rotation
-        return np.stack([lon, lat], axis=-1)
+
+        return lon, lat
 
     @property
     def grid(self) -> HealpixInfo:
