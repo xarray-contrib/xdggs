@@ -5,6 +5,7 @@ import numpy as np
 import xarray as xr
 from xarray.indexes import Index, PandasIndex
 
+from xdggs.grid import DGGSInfo
 from xdggs.utils import GRID_REGISTRY, _extract_cell_id_variable
 
 
@@ -20,13 +21,15 @@ class DGGSIndex(Index):
     _dim: str
     _pd_index: PandasIndex
 
-    def __init__(self, cell_ids: Any | PandasIndex, dim: str):
+    def __init__(self, cell_ids: Any | PandasIndex, dim: str, grid_info: DGGSInfo):
         self._dim = dim
 
         if isinstance(cell_ids, PandasIndex):
             self._pd_index = cell_ids
         else:
             self._pd_index = PandasIndex(cell_ids, dim)
+
+        self._grid = grid_info
 
     @classmethod
     def from_variables(
