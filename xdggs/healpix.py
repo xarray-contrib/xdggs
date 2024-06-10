@@ -172,7 +172,7 @@ class HealpixIndex(DGGSIndex):
         return lon, lat
 
     @property
-    def grid(self) -> HealpixInfo:
+    def grid_info(self) -> HealpixInfo:
         return self._grid
 
     def _repr_inline_(self, max_width: int):
