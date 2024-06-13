@@ -10,7 +10,9 @@ dependencies:
   - matplotlib-base
   - shapely
   - pytest
+  - hypothesis
   - ruff
+  - typing-extensions
   - pip
   - pip:
       - h3ronpy

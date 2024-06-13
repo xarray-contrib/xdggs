@@ -50,6 +50,11 @@ class DGGSAccessor:
             )
         return self._obj[self._name]
 
+    @property
+    def params(self) -> dict:
+        """The grid parameters after normalization."""
+        return self.index.grid.to_dict()
+
     def sel_latlon(
         self, latitude: npt.ArrayLike, longitude: npt.ArrayLike
     ) -> xr.Dataset | xr.DataArray:
@@ -76,7 +81,7 @@ class DGGSAccessor:
         """Return a new Dataset or DataArray with new "latitude" and "longitude"
         coordinates representing the grid cell centers."""
 
-        lat_data, lon_data = self.index.cell_centers
+        lon_data, lat_data = self.index.cell_centers
         return self._obj.assign_coords(
             latitude=(self.index._dim, lat_data),
             longitude=(self.index._dim, lon_data),
