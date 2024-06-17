@@ -35,6 +35,14 @@ class H3Info(DGGSInfo):
     def to_dict(self: Self) -> dict[str, Any]:
         return {"grid_name": "h3", "resolution": self.resolution}
 
+    def cell_ids2geographic(
+        self, cell_ids: np.ndarray
+    ) -> tuple[np.ndarray, np.ndarray]:
+        return cells_to_coordinates(cell_ids, radians=False)
+
+    def geographic2cell_ids(self, lon, lat):
+        return coordinates_to_cells(lat, lon, self.resolution, radians=False)
+
 
 @register_dggs("h3")
 class H3Index(DGGSIndex):
