@@ -36,7 +36,7 @@ python -m pip install \
 python -m pip install --no-deps --upgrade \
     git+https://github.com/Unidata/cftime \
     git+https://github.com/astropy/astropy \
-    git+https://github.com/nmandery/h3ronpy
+    "git+https://github.com/nmandery/h3ronpy#subdirectory=h3ronpy"
 
 # install healpy from github
 # need to run `auditwheel` to include the shared libs
