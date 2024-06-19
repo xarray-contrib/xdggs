@@ -127,6 +127,18 @@ class HealpixInfo(DGGSInfo):
             "rotation": self.rotation,
         }
 
+    def cell_boundaries(self, cell_ids: Any) -> np.ndarray:
+        import shapely
+
+        boundary_vectors = healpy.boundaries(
+            self.nside, cell_ids, step=1, nest=self.nest
+        )
+
+        lon, lat = healpy.vec2ang(np.moveaxis(boundary_vectors, 1, -1), lonlat=True)
+        boundaries = np.reshape(np.stack((lon, lat), axis=-1), (-1, 4, 2))
+
+        return shapely.polygons(boundaries)
+
 
 @register_dggs("healpix")
 class HealpixIndex(DGGSIndex):
@@ -173,15 +185,6 @@ class HealpixIndex(DGGSIndex):
     @property
     def grid_info(self) -> HealpixInfo:
         return self._grid
-
-    def _cellid2boundaries(self, cell_ids: Any) -> np.ndarray:
-        boundary_vectors = healpy.boundaries(
-            self._nside, cell_ids, step=1, nest=self._nest
-        )
-
-        lon, lat = healpy.vec2ang(np.moveaxis(boundary_vectors, 1, -1), lonlat=True)
-        boundaries = np.reshape(np.stack((lon, lat), axis=-1), (-1, 4, 2))
-        return boundaries
 
     def _repr_inline_(self, max_width: int):
         return f"HealpixIndex(nside={self._grid.resolution}, indexing_scheme={self._grid.indexing_scheme}, rotation={self._grid.rotation!r})"

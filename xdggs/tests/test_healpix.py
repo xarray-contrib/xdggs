@@ -4,6 +4,8 @@ import hypothesis.extra.numpy as npst
 import hypothesis.strategies as st
 import numpy as np
 import pytest
+import shapely
+import shapely.testing
 import xarray as xr
 import xarray.testing.strategies as xrst
 from hypothesis import given
@@ -188,6 +190,71 @@ class TestHealpixInfo:
         roundtripped = grid.to_dict()
 
         assert roundtripped == mapping
+
+    @pytest.mark.parametrize(
+        ["params", "cell_ids", "expected_coords"],
+        (
+            (
+                {"resolution": 0, "indexing_scheme": "nested"},
+                np.array([2]),
+                np.array(
+                    [
+                        [0.0, 90.0],
+                        [180.0, 41.8103149],
+                        [225.0, 0.0],
+                        [270.0, 41.8103149],
+                    ]
+                ),
+            ),
+            (
+                {"resolution": 2, "indexing_scheme": "ring"},
+                np.array([12, 54]),
+                np.array(
+                    [
+                        [
+                            [0.0, 66.44353569],
+                            [0.0, 54.3409123],
+                            [22.5, 41.8103149],
+                            [30.0, 54.3409123],
+                        ],
+                        [
+                            [315.0, 41.8103149],
+                            [303.75, 30.0],
+                            [315.0, 19.47122063],
+                            [326.25, 30.0],
+                        ],
+                    ]
+                ),
+            ),
+            (
+                {"resolution": 3, "indexing_scheme": "nested"},
+                np.array([293, 17]),
+                np.array(
+                    [
+                        [
+                            [354.375, 4.78019185],
+                            [348.75, 0.0],
+                            [354.375, -4.78019185],
+                            [0.0, 0.0],
+                        ],
+                        [
+                            [73.125, 35.68533471],
+                            [67.5, 30.0],
+                            [73.125, 24.62431835],
+                            [78.75, 30.0],
+                        ],
+                    ]
+                ),
+            ),
+        ),
+    )
+    def test_cell_boundaries(self, params, cell_ids, expected_coords):
+        grid = healpix.HealpixInfo.from_dict(params)
+
+        actual = grid.cell_boundaries(cell_ids)
+        expected = shapely.polygons(expected_coords)
+
+        shapely.testing.assert_geometries_equal(actual, expected)
 
 
 options = [{}]
