@@ -127,6 +127,14 @@ class HealpixInfo(DGGSInfo):
             "rotation": self.rotation,
         }
 
+    def cell_ids2geographic(self, cell_ids):
+        lon, lat = healpy.pix2ang(self.nside, cell_ids, nest=self.nest, lonlat=True)
+
+        return lon, lat
+
+    def geographic2cell_ids(self, lon, lat):
+        return healpy.ang2pix(self.nside, lon, lat, lonlat=True, nest=self.nest)
+
 
 @register_dggs("healpix")
 class HealpixIndex(DGGSIndex):
