@@ -8,8 +8,13 @@ except ImportError:  # pragma: no cover
     from typing_extensions import Self
 
 import numpy as np
+import shapely
 import xarray as xr
-from h3ronpy.arrow.vector import cells_to_coordinates, coordinates_to_cells
+from h3ronpy.arrow.vector import (
+    cells_to_coordinates,
+    cells_to_wkb_polygons,
+    coordinates_to_cells,
+)
 from xarray.indexes import PandasIndex
 
 from xdggs.grid import DGGSInfo
@@ -34,6 +39,11 @@ class H3Info(DGGSInfo):
 
     def to_dict(self: Self) -> dict[str, Any]:
         return {"grid_name": "h3", "resolution": self.resolution}
+
+    def cell_boundaries(self, cell_ids):
+        wkb = cells_to_wkb_polygons(cell_ids, radians=False, link_cells=False)
+
+        return shapely.from_wkb(wkb)
 
 
 @register_dggs("h3")
