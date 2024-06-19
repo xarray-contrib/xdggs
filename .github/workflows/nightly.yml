@@ -7,7 +7,7 @@ on:
     branches: ["main"]
     types: [opened, reopened, synchronize, labeled]
   schedule:
-    - cron: "0 0 * * *" # Daily “At 00:00” UTC
+    - cron: "0 0 * * 1" # Mondays “At 00:00” UTC
   workflow_dispatch: # allows you to trigger the workflow run manually
 
 concurrency:
@@ -51,7 +51,7 @@ jobs:
       fail-fast: false
 
       matrix:
-        python-version: ["3.11"]
+        python-version: ["3.12"]
 
     steps:
       - name: Clone repository

@@ -18,11 +18,11 @@ Examples of common DGGS features that `xdggs` should provide or facilitate:
 - re-organize cell ids (e.g., spatial shuffling / partitioning)
 - plotting
 
-Conversion between DGGS and other grids or vector features may requires specific interpolation or regridding methods.
+Conversion between DGGS and other grids or vector features may require specific interpolation or regridding methods.
 
 `xdggs` should leverage the current recommended Xarray extension mechanisms ([apply_ufunc](https://docs.xarray.dev/en/stable/examples/apply_ufunc_vectorize_1d.html), [accessors](https://docs.xarray.dev/en/stable/internals/extending-xarray.html), [custom indexes](https://docs.xarray.dev/en/stable/internals/how-to-create-custom-index.html)) and possibly the future ones (e.g., variable encoders/decoders) to provide DGGS-specific functionality on top of Xarray core features.
 
-`xdggs` should facitiltate interoperability with other existing Xarray extensions (e.g., [xvec](https://github.com/xarray-contrib/xvec) for vector data or [uxarray](https://github.com/UXARRAY/uxarray) for unstructured grids).
+`xdggs` should facilitate interoperability with other existing Xarray extensions (e.g., [xvec](https://github.com/xarray-contrib/xvec) for vector data or [uxarray](https://github.com/UXARRAY/uxarray) for unstructured grids).
 
 `xdggs` should also leverage the existing implementation of various DGGSs exposed to Python via 3rd-party libraries, here below referred as "backends". Preferrably, those backends would expose DGGS functionality in an efficient way as vectorized functions (e.g., working with NumPy arrays).
 
@@ -32,7 +32,7 @@ Conversion between DGGS and other grids or vector features may requires specific
 
 When possible, `xdggs` operations should scale to fine DGGS resolutions (billions of cells). This can be done vertically using backends with vectorized bindings of DGGS implementations written in low-level languages and/or horizontally leveraging Xarray interoperability with Dask. Some operations like spatial indexing may be hard to scale horizontally, though. For the latter, we should probably focus `xdggs` development first towards good vertical scaling before figuring out how they can be scaled horizontally (for reference, see [dask-geopandas](https://github.com/geopandas/dask-geopandas) and [spatialpandas](https://github.com/holoviz/spatialpandas)).
 
-## Non-Gloals
+## Non-Goals
 
 `xdggs` should focus on providing the core DGGS functionality and operations that are listed above. Higher-level operations that can be implemented by combining together those core operations are out-of-scope and should be implemented in downstream libraries. Likewise, there may be many ways of resampling a grid to a DGGS ; `xdggs` should support the most common methods but not try to support _all of them_.
 
@@ -44,7 +44,7 @@ Although some DGGS may handle both the spatial and temporal domains in a joint f
 
 ## Discrete Global Grid Systems
 
-A Discrete Global Grid System (DGGS) can be roughly defined as a partitioning or tessellation of the entire Earth's surface into a finite number of "cells" or "zones". The shape and the properties of these cells generally vary from one DGGS to another. Most DGGSs are also hierarchical, i.e., the cells are arranged on recursively on multiple levels or resolutions. Follow the links in the subsection below for a more strict and detailed definition of a DGGS.
+A Discrete Global Grid System (DGGS) can be roughly defined as a partitioning or tessellation of the entire Earth's surface into a finite number of "cells" or "zones". The shape and the properties of these cells generally vary from one DGGS to another. Most DGGSs are also hierarchical, i.e., the cells are arranged recursively on multiple levels or resolutions. Follow the links in the subsection below for a more strict and detailed definition of a DGGS.
 
 DGGSs may be used in various ways, e.g.,
 

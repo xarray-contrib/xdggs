@@ -37,6 +37,7 @@ dependencies = [
     "xarray",
     "healpy",
     "h3ronpy",
+    "typing-extensions",
 ]
 
 [project.urls]
@@ -44,7 +45,7 @@ dependencies = [
 Repository = "https://github.com/xarray-contrib/xdggs"
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py310"
 builtins = ["ellipsis"]
 exclude = [
     ".git",
@@ -53,6 +54,9 @@ exclude = [
     "dist",
     "__pycache__",
 ]
+line-length = 100
+
+[tool.ruff.lint]
 # E402: module level import not at top of file
 # E501: line too long - let black worry about that
 # E731: do not assign a lambda expression, use a def
@@ -62,24 +66,30 @@ ignore = [
     "E731",
 ]
 select = [
-    # Pyflakes
-    "F",
-    # Pycodestyle
-    "E",
-    # isort
-    "I",
-    # Pyupgrade
-    "UP",
+    "F",  # Pyflakes
+    "E",  # Pycodestyle
+    "I",  # isort
+    "UP", # Pyupgrade
+    "TID", # flake8-tidy-imports
+    "W",
 ]
-line-length = 100
+extend-safe-fixes = [
+    "TID252", # absolute imports
+]
+fixable = ["I", "TID252"]
 
-[tool.ruff.lint]
-fixable = ["I"]
-
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["xdggs"]
 known-third-party=[
     "xarray",
     "healpy",
     "h3ronpy",
 ]
+
+[tool.coverage.run]
+source = ["xdggs"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING"]
