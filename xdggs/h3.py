@@ -76,11 +76,5 @@ class H3Index(DGGSIndex):
     def _replace(self, new_pd_index: PandasIndex):
         return type(self)(new_pd_index, self._dim, self._grid)
 
-    def _latlon2cellid(self, lat: Any, lon: Any) -> np.ndarray:
-        return coordinates_to_cells(lat, lon, self._grid.resolution, radians=False)
-
-    def _cellid2latlon(self, cell_ids: Any) -> tuple[np.ndarray, np.ndarray]:
-        return cells_to_coordinates(cell_ids, radians=False)
-
     def _repr_inline_(self, max_width: int):
         return f"H3Index(resolution={self._grid.resolution})"
