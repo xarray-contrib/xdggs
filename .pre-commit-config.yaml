@@ -21,6 +21,12 @@ repos:
     rev: 24.4.2
     hooks:
       - id: black-jupyter
+  - repo: https://github.com/keewis/blackdoc
+    rev: v0.3.9
+    hooks:
+      - id: blackdoc
+        additional_dependencies: ["black==24.4.2"]
+      - id: blackdoc-autoupdate-black
   - repo: https://github.com/kynan/nbstripout
     rev: 0.7.1
     hooks:
