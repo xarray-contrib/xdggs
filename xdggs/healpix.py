@@ -165,19 +165,6 @@ class HealpixIndex(DGGSIndex):
     def _replace(self, new_pd_index: PandasIndex):
         return type(self)(new_pd_index, self._dim, self._grid)
 
-    def _latlon2cellid(self, lat: Any, lon: Any) -> np.ndarray:
-        # TODO apply rotation
-        return healpy.ang2pix(
-            self._grid.nside, lon, lat, lonlat=True, nest=self._grid.nest
-        )
-
-    def _cellid2latlon(self, cell_ids: Any) -> tuple[np.ndarray, np.ndarray]:
-        lon, lat = healpy.pix2ang(
-            self._grid.nside, cell_ids, nest=self._grid.nest, lonlat=True
-        )
-
-        return lon, lat
-
     @property
     def grid_info(self) -> HealpixInfo:
         return self._grid
