@@ -27,3 +27,9 @@ class DGGSInfo:
 
     def to_dict(self: Self) -> dict[str, Any]:
         return {"resolution": self.resolution}
+
+    def cell_ids2geographic(self, cell_ids):
+        raise NotImplementedError()
+
+    def geographic2cell_ids(self, lon, lat):
+        raise NotImplementedError()
