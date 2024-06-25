@@ -95,6 +95,28 @@ class TestH3Info:
         assert actual == mapping
 
     @pytest.mark.parametrize(
+        ["cell_ids", "cell_centers"], list(zip(cell_ids, cell_centers))
+    )
+    def test_cell_ids2geographic(self, cell_ids, cell_centers):
+        grid = h3.H3Info(resolution=3)
+
+        actual = grid.cell_ids2geographic(cell_ids)
+        expected = cell_centers
+
+        np.testing.assert_allclose(actual, expected)
+
+    @pytest.mark.parametrize(
+        ["cell_centers", "cell_ids"], list(zip(cell_centers, cell_ids))
+    )
+    def test_geographic2cell_ids(self, cell_centers, cell_ids):
+        grid = h3.H3Info(resolution=3)
+
+        actual = grid.geographic2cell_ids(cell_centers[:, 1], cell_centers[:, 0])
+        expected = cell_ids
+
+        np.testing.assert_equal(actual, expected)
+
+    @pytest.mark.parametrize(
         ["resolution", "cell_ids", "expected_coords"],
         (
             (
@@ -245,32 +267,6 @@ def test_replace(old_variable, new_variable):
     assert new_index._grid == index._grid
     assert new_index._dim == index._dim
     assert new_index._pd_index == new_pandas_index
-
-
-@pytest.mark.parametrize(
-    ["cell_ids", "cell_centers"], list(zip(cell_ids, cell_centers))
-)
-def test_cellid2latlon(cell_ids, cell_centers):
-    grid = h3.H3Info(resolution=3)
-    index = h3.H3Index(cell_ids=cell_ids, dim="cells", grid_info=grid)
-
-    actual = index._cellid2latlon(cell_ids)
-    expected = cell_centers
-
-    np.testing.assert_allclose(actual, expected)
-
-
-@pytest.mark.parametrize(
-    ["cell_centers", "cell_ids"], list(zip(cell_centers, cell_ids))
-)
-def test_latlon2cellid(cell_centers, cell_ids):
-    grid = h3.H3Info(resolution=3)
-    index = h3.H3Index(cell_ids=[0], dim="cells", grid_info=grid)
-
-    actual = index._latlon2cellid(cell_centers[:, 0], cell_centers[:, 1])
-    expected = cell_ids
-
-    np.testing.assert_equal(actual, expected)
 
 
 @pytest.mark.parametrize("max_width", [20, 50, 80, 120])

@@ -114,6 +114,53 @@ class strategies:
         return cell_ids_, grids_
 
 
+options = [{}]
+variable_names = ["cell_ids", "zonal_ids", "zone_ids"]
+variables = [
+    xr.Variable(
+        "cells",
+        np.array([3]),
+        {
+            "grid_name": "healpix",
+            "resolution": 0,
+            "indexing_scheme": "nested",
+            "rotation": (0, 0),
+        },
+    ),
+    xr.Variable(
+        "zones",
+        np.array([3]),
+        {
+            "grid_name": "healpix",
+            "resolution": 0,
+            "indexing_scheme": "ring",
+            "rotation": (0, 0),
+        },
+    ),
+    xr.Variable(
+        "cells",
+        np.array([5, 11, 21]),
+        {
+            "grid_name": "healpix",
+            "resolution": 1,
+            "indexing_scheme": "nested",
+            "rotation": (0, 0),
+        },
+    ),
+    xr.Variable(
+        "zones",
+        np.array([54, 70, 82, 91]),
+        {
+            "grid_name": "healpix",
+            "resolution": 3,
+            "indexing_scheme": "nested",
+            "rotation": (0, 0),
+        },
+    ),
+]
+variable_combinations = list(itertools.product(variables, repeat=2))
+
+
 class TestHealpixInfo:
     @given(strategies.invalid_resolutions)
     def test_init_invalid_resolutions(self, resolution):
@@ -256,52 +303,82 @@ class TestHealpixInfo:
 
         shapely.testing.assert_geometries_equal(actual, expected)
 
+    @given(
+        *strategies.grid_and_cell_ids(
+            indexing_schemes=st.sampled_from(["nested", "ring"]),
+            dtypes=st.sampled_from(["int64"]),
+        )
+    )
+    def test_cell_center_roundtrip(self, cell_ids, grid) -> None:
+        centers = grid.cell_ids2geographic(cell_ids)
 
-options = [{}]
-variable_names = ["cell_ids", "zonal_ids", "zone_ids"]
-variables = [
-    xr.Variable(
-        "cells",
-        np.array([3]),
-        {
-            "grid_name": "healpix",
-            "resolution": 0,
-            "indexing_scheme": "nested",
-            "rotation": (0, 0),
-        },
-    ),
-    xr.Variable(
-        "zones",
-        np.array([3]),
-        {
-            "grid_name": "healpix",
-            "resolution": 0,
-            "indexing_scheme": "ring",
-            "rotation": (0, 0),
-        },
-    ),
-    xr.Variable(
-        "cells",
-        np.array([5, 11, 21]),
-        {
-            "grid_name": "healpix",
-            "resolution": 1,
-            "indexing_scheme": "nested",
-            "rotation": (0, 0),
-        },
-    ),
-    xr.Variable(
-        "zones",
-        np.array([54, 70, 82, 91]),
-        {
-            "grid_name": "healpix",
-            "resolution": 3,
-            "indexing_scheme": "nested",
-            "rotation": (0, 0),
-        },
-    ),
-]
-variable_combinations = list(itertools.product(variables, repeat=2))
+        roundtripped = grid.geographic2cell_ids(lat=centers[1], lon=centers[0])
+
+        np.testing.assert_equal(roundtripped, cell_ids)
+
+    @pytest.mark.parametrize(
+        ["cell_ids", "resolution", "indexing_scheme", "expected"],
+        (
+            pytest.param(
+                np.array([3]),
+                1,
+                "ring",
+                (np.array([315.0]), np.array([66.44353569089877])),
+            ),
+            pytest.param(
+                np.array([5, 11, 21]),
+                3,
+                "nested",
+                (
+                    np.array([61.875, 33.75, 84.375]),
+                    np.array([19.47122063, 24.62431835, 41.8103149]),
+                ),
+            ),
+        ),
+    )
+    def test_cell_ids2geographic(
+        self, cell_ids, resolution, indexing_scheme, expected
+    ) -> None:
+        grid = healpix.HealpixInfo(
+            resolution=resolution, indexing_scheme=indexing_scheme
+        )
+
+        actual_lon, actual_lat = grid.cell_ids2geographic(cell_ids)
+
+        np.testing.assert_allclose(actual_lon, expected[0])
+        np.testing.assert_allclose(actual_lat, expected[1])
+
+    @pytest.mark.parametrize(
+        ["cell_centers", "resolution", "indexing_scheme", "expected"],
+        (
+            pytest.param(
+                np.array([[315.0, 66.44353569089877]]),
+                1,
+                "ring",
+                np.array([3]),
+            ),
+            pytest.param(
+                np.array(
+                    [[61.875, 19.47122063], [33.75, 24.62431835], [84.375, 41.8103149]]
+                ),
+                3,
+                "nested",
+                np.array([5, 11, 21]),
+            ),
+        ),
+    )
+    def test_geographic2cell_ids(
+        self, cell_centers, resolution, indexing_scheme, expected
+    ) -> None:
+        grid = healpix.HealpixInfo(
+            resolution=resolution, indexing_scheme=indexing_scheme
+        )
+
+        actual = grid.geographic2cell_ids(
+            lon=cell_centers[:, 0], lat=cell_centers[:, 1]
+        )
+
+        np.testing.assert_equal(actual, expected)
 
 
 @pytest.mark.parametrize(
@@ -405,21 +482,6 @@ class TestHealpixIndex:
 
         np.testing.assert_equal(index._pd_index.index.values, cell_ids)
 
-    @given(
-        *strategies.grid_and_cell_ids(
-            indexing_schemes=st.sampled_from(["nested", "ring"]),
-            dtypes=st.sampled_from(["int64"]),
-        )
-    )
-    def test_cell_center_roundtrip(self, cell_ids, grid) -> None:
-        index = healpix.HealpixIndex(cell_ids, dim="cells", grid_info=grid)
-
-        centers = index._cellid2latlon(cell_ids)
-
-        roundtripped = index._latlon2cellid(lat=centers[1], lon=centers[0])
-
-        np.testing.assert_equal(roundtripped, cell_ids)
-
     @given(strategies.grids())
     def test_grid(self, grid):
         index = healpix.HealpixIndex([0], dim="cells", grid_info=grid)
@@ -466,68 +528,6 @@ def test_replace(old_variable, new_variable) -> None:
     assert new_index._dim == index._dim
     assert new_index._pd_index == new_pandas_index
     assert index._grid == grid
-
-
-@pytest.mark.parametrize(
-    ["cell_ids", "resolution", "indexing_scheme", "expected"],
-    (
-        pytest.param(
-            np.array([3]),
-            1,
-            "ring",
-            (np.array([315.0]), np.array([66.44353569089877])),
-        ),
-        pytest.param(
-            np.array([5, 11, 21]),
-            3,
-            "nested",
-            (
-                np.array([61.875, 33.75, 84.375]),
-                np.array([19.47122063, 24.62431835, 41.8103149]),
-            ),
-        ),
-    ),
-)
-def test_cellid2latlon(cell_ids, resolution, indexing_scheme, expected) -> None:
-    grid_info = healpix.HealpixInfo(
-        resolution=resolution, indexing_scheme=indexing_scheme
-    )
-    index = healpix.HealpixIndex(cell_ids=[0], dim="cells", grid_info=grid_info)
-
-    actual_lon, actual_lat = index._cellid2latlon(cell_ids)
-
-    np.testing.assert_allclose(actual_lon, expected[0])
-    np.testing.assert_allclose(actual_lat, expected[1])
-
-
-@pytest.mark.parametrize(
-    ["cell_centers", "resolution", "indexing_scheme", "expected"],
-    (
-        pytest.param(
-            np.array([[315.0, 66.44353569089877]]),
-            1,
-            "ring",
-            np.array([3]),
-        ),
-        pytest.param(
-            np.array(
-                [[61.875, 19.47122063], [33.75, 24.62431835], [84.375, 41.8103149]]
-            ),
-            3,
-            "nested",
-            np.array([5, 11, 21]),
-        ),
-    ),
-)
-def test_latlon2cell_ids(cell_centers, resolution, indexing_scheme, expected) -> None:
-    grid_info = healpix.HealpixInfo(
-        resolution=resolution, indexing_scheme=indexing_scheme
-    )
-    index = healpix.HealpixIndex(cell_ids=[0], dim="cells", grid_info=grid_info)
-
-    actual = index._latlon2cellid(lon=cell_centers[:, 0], lat=cell_centers[:, 1])
-
-    np.testing.assert_equal(actual, expected)
 
 
 @pytest.mark.parametrize("max_width", [20, 50, 80, 120])
