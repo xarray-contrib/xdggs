@@ -77,9 +77,8 @@ class DGGSIndex(Index):
         """convert cell ids to latitude / longitude (cell centers)."""
         raise NotImplementedError()
 
-    @property
     def cell_centers(self) -> tuple[np.ndarray, np.ndarray]:
-        return self._cellid2latlon(self._pd_index.index.values)
+        return self._grid.cell_ids2geographic(self._pd_index.index.values)
 
     @property
     def grid_info(self) -> DGGSInfo:
