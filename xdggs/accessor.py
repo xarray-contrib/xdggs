@@ -93,3 +93,13 @@ class DGGSAccessor:
             latitude=(self.index._dim, lat_data),
             longitude=(self.index._dim, lon_data),
         )
+
+    def cell_centers(self):
+        lon_data, lat_data = self.index.cell_centers()
+
+        return xr.Dataset(
+            coords={
+                "latitude": (self.index._dim, lat_data),
+                "longitude": (self.index._dim, lon_data),
+            }
+        )
