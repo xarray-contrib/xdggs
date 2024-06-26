@@ -1,6 +1,7 @@
 import numpy.typing as npt
 import xarray as xr
 
+from xdggs.grid import DGGSInfo
 from xdggs.index import DGGSIndex
 
 
@@ -54,6 +55,10 @@ class DGGSAccessor:
     def params(self) -> dict:
         """The grid parameters after normalization."""
         return self.index.grid.to_dict()
+
+    @property
+    def grid_info(self) -> DGGSInfo:
+        return self.index.grid_info
 
     def sel_latlon(
         self, latitude: npt.ArrayLike, longitude: npt.ArrayLike
