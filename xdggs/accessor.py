@@ -79,7 +79,9 @@ class DGGSAccessor:
             with all cells that contain the input latitude/longitude data points.
 
         """
-        cell_indexers = {self._name: self.index._latlon2cellid(latitude, longitude)}
+        cell_indexers = {
+            self._name: self.grid_info.geographic2cell_ids(latitude, longitude)
+        }
         return self._obj.sel(cell_indexers)
 
     def assign_latlon_coords(self) -> xr.Dataset | xr.DataArray:
