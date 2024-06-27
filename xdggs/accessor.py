@@ -87,6 +87,7 @@ class DGGSAccessor:
             longitude=(self.index._dim, lon_data),
         )
 
+    @property
     def cell_ids(self):
         return self._obj[self._name]
 
