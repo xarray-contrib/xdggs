@@ -69,14 +69,6 @@ class DGGSIndex(Index):
     def _replace(self, new_pd_index: PandasIndex):
         raise NotImplementedError()
 
-    def _latlon2cellid(self, lat: Any, lon: Any) -> np.ndarray:
-        """convert latitude / longitude points to cell ids."""
-        raise NotImplementedError()
-
-    def _cellid2latlon(self, cell_ids: Any) -> tuple[np.ndarray, np.ndarray]:
-        """convert cell ids to latitude / longitude (cell centers)."""
-        raise NotImplementedError()
-
     def cell_centers(self) -> tuple[np.ndarray, np.ndarray]:
         return self._grid.cell_ids2geographic(self._pd_index.index.values)
 
