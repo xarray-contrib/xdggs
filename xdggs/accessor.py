@@ -92,9 +92,8 @@ class DGGSAccessor:
         return self._obj[self._name]
 
     def cell_boundaries(self):
-        import shapely
+        boundaries = self.index.cell_boundaries()
 
-        boundaries = shapely.polygons(self.index.cell_boundaries())
         return xr.DataArray(
-            boundaries, coords={self._name: self.cell_ids()}, dims=self.cell_ids.dims
+            boundaries, coords={self._name: self.cell_ids}, dims=self.cell_ids.dims
         )
