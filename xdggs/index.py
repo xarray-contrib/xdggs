@@ -86,7 +86,7 @@ class DGGSIndex(Index):
         return self._cellid2latlon(self._pd_index.index.values)
 
     def cell_boundaries(self) -> np.ndarray:
-        return self._cellid2boundaries(self._pd_index.index.values)
+        return self.grid_info.cell_boundaries(self._pd_index.index.values)
 
     @property
     def grid_info(self) -> DGGSInfo:
