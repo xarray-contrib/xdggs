@@ -145,19 +145,13 @@ class HealpixInfo(DGGSInfo):
         lon, lat = healpy.vec2ang(np.moveaxis(boundary_vectors, 1, -1), lonlat=True)
         boundaries = np.reshape(np.stack((lon, lat), axis=-1), (-1, 4, 2))
 
-        polygons = shapely.polygons(boundaries)
-
         # fix the dateline / prime meridian issue
-        average_area = healpy.pixelfunc.nside2pixarea(self.nside, degrees=True)
-        polygons_to_fix = shapely.area(polygons) > 3 * average_area
+        lon_ = boundaries[..., 0]
+        to_fix = abs(np.max(lon_, axis=-1) - np.min(lon_, axis=-1)) > 300
+        fixed_lon = (lon_[to_fix, :] + 180) % 360 - 180
+        boundaries[to_fix, :, 0] = fixed_lon
 
-        fixed_lon = (boundaries[polygons_to_fix, :, 0] + 180) % 360 - 180
-        fixed_lat = boundaries[polygons_to_fix, :, 1]
-        polygons[polygons_to_fix] = shapely.polygons(
-            np.stack((fixed_lon, fixed_lat), axis=-1)
-        )
-
-        return polygons
+        return shapely.polygons(boundaries)
 
 
 @register_dggs("healpix")
