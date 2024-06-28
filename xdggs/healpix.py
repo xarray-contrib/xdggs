@@ -135,6 +135,30 @@ class HealpixInfo(DGGSInfo):
     def geographic2cell_ids(self, lon, lat):
         return healpy.ang2pix(self.nside, lon, lat, lonlat=True, nest=self.nest)
 
+    def cell_boundaries(self, cell_ids: Any) -> np.ndarray:
+        import shapely
+
+        boundary_vectors = healpy.boundaries(
+            self.nside, cell_ids, step=1, nest=self.nest
+        )
+
+        lon, lat = healpy.vec2ang(np.moveaxis(boundary_vectors, 1, -1), lonlat=True)
+        boundaries = np.reshape(np.stack((lon, lat), axis=-1), (-1, 4, 2))
+
+        polygons = shapely.polygons(boundaries)
+
+        # fix the dateline / prime meridian issue
+        average_area = healpy.pixelfunc.nside2pixarea(self.nside, degrees=True)
+        polygons_to_fix = shapely.area(polygons) > 3 * average_area
+
+        fixed_lon = (boundaries[polygons_to_fix, :, 0] + 180) % 360 - 180
+        fixed_lat = boundaries[polygons_to_fix, :, 1]
+        polygons[polygons_to_fix] = shapely.polygons(
+            np.stack((fixed_lon, fixed_lat), axis=-1)
+        )
+
+        return polygons
+
 
 @register_dggs("healpix")
 class HealpixIndex(DGGSIndex):
