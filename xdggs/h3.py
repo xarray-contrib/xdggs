@@ -39,6 +39,7 @@ class H3Info(DGGSInfo):
         self, cell_ids: np.ndarray
     ) -> tuple[np.ndarray, np.ndarray]:
         lat, lon = cells_to_coordinates(cell_ids, radians=False)
+
         return lon, lat
 
     def geographic2cell_ids(self, lon, lat):
