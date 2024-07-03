@@ -88,7 +88,8 @@ class DGGSAccessor:
         """Return a new Dataset or DataArray with new "latitude" and "longitude"
         coordinates representing the grid cell centers."""
 
-        lon_data, lat_data = self.index.cell_centers
+        lon_data, lat_data = self.index.cell_centers()
+
         return self._obj.assign_coords(
             latitude=(self.index._dim, lat_data),
             longitude=(self.index._dim, lon_data),
