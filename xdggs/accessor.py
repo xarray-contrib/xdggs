@@ -1,6 +1,7 @@
 import numpy.typing as npt
 import xarray as xr
 
+from xdggs.grid import DGGSInfo
 from xdggs.index import DGGSIndex
 
 
@@ -55,6 +56,10 @@ class DGGSAccessor:
         """The grid parameters after normalization."""
         return self.index.grid.to_dict()
 
+    @property
+    def grid_info(self) -> DGGSInfo:
+        return self.index.grid_info
+
     def sel_latlon(
         self, latitude: npt.ArrayLike, longitude: npt.ArrayLike
     ) -> xr.Dataset | xr.DataArray:
@@ -74,14 +79,17 @@ class DGGSAccessor:
             with all cells that contain the input latitude/longitude data points.
 
         """
-        cell_indexers = {self._name: self.index._latlon2cellid(latitude, longitude)}
+        cell_indexers = {
+            self._name: self.grid_info.geographic2cell_ids(latitude, longitude)
+        }
         return self._obj.sel(cell_indexers)
 
     def assign_latlon_coords(self) -> xr.Dataset | xr.DataArray:
         """Return a new Dataset or DataArray with new "latitude" and "longitude"
         coordinates representing the grid cell centers."""
 
-        lon_data, lat_data = self.index.cell_centers
+        lon_data, lat_data = self.index.cell_centers()
+
         return self._obj.assign_coords(
             latitude=(self.index._dim, lat_data),
             longitude=(self.index._dim, lon_data),
@@ -90,6 +98,16 @@ class DGGSAccessor:
     @property
     def cell_ids(self):
         return self._obj[self._name]
+
+    def cell_centers(self):
+        lon_data, lat_data = self.index.cell_centers()
+
+        return xr.Dataset(
+            coords={
+                "latitude": (self.index._dim, lat_data),
+                "longitude": (self.index._dim, lon_data),
+            }
+        )
 
     def cell_boundaries(self):
         boundaries = self.index.cell_boundaries()

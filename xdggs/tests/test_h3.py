@@ -16,13 +16,13 @@ cell_ids = [
     np.array([0x832833FFFFFFFFF, 0x832834FFFFFFFFF, 0x832835FFFFFFFFF]),
 ]
 cell_centers = [
-    np.array([[38.19320895, -122.19619676]]),
-    np.array([[38.63853196, -123.43390346], [38.82387033, -121.00991811]]),
+    np.array([[-122.19619676, 38.19320895]]),
+    np.array([[-123.43390346, 38.63853196], [-121.00991811, 38.82387033]]),
     np.array(
         [
-            [39.27846774, -122.2594399],
-            [37.09786649, -122.13425086],
-            [37.55231005, -123.35925909],
+            [-122.2594399, 39.27846774],
+            [-122.13425086, 37.09786649],
+            [-123.35925909, 37.55231005],
         ]
     ),
 ]
@@ -101,8 +101,9 @@ class TestH3Info:
         grid = h3.H3Info(resolution=3)
 
         actual = grid.cell_ids2geographic(cell_ids)
-        expected = cell_centers
+        expected = cell_centers.T
 
+        assert isinstance(actual, tuple) and len(actual) == 2
         np.testing.assert_allclose(actual, expected)
 
     @pytest.mark.parametrize(
@@ -111,7 +112,9 @@ class TestH3Info:
     def test_geographic2cell_ids(self, cell_centers, cell_ids):
         grid = h3.H3Info(resolution=3)
 
-        actual = grid.geographic2cell_ids(cell_centers[:, 1], cell_centers[:, 0])
+        actual = grid.geographic2cell_ids(
+            lon=cell_centers[:, 0], lat=cell_centers[:, 1]
+        )
         expected = cell_ids
 
         np.testing.assert_equal(actual, expected)
