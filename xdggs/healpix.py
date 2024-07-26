@@ -135,6 +135,19 @@ class HealpixInfo(DGGSInfo):
     def geographic2cell_ids(self, lon, lat):
         return healpy.ang2pix(self.nside, lon, lat, lonlat=True, nest=self.nest)
 
+    def parents(self, cell_ids, resolution):
+        if resolution >= self.resolution:
+            raise ValueError(
+                f"resolution is not a parent: {resolution} >= {self.resolution}"
+            )
+
+        offset = self.resolution - resolution
+        x, y, f = healpy.pix2xyf(self.nside, cell_ids, nest=self.nest)
+        x_ = x >> offset
+        y_ = y >> offset
+
+        return healpy.xyf2pix(2**resolution, x_, y_, f, nest=self.nest)
+
 
 @register_dggs("healpix")
 class HealpixIndex(DGGSIndex):
