@@ -9,6 +9,7 @@ except ImportError:  # pragma: no cover
 
 import numpy as np
 import xarray as xr
+from h3ronpy.arrow import change_resolution
 from h3ronpy.arrow.vector import cells_to_coordinates, coordinates_to_cells
 from xarray.indexes import PandasIndex
 
@@ -44,6 +45,14 @@ class H3Info(DGGSInfo):
 
     def geographic2cell_ids(self, lon, lat):
         return coordinates_to_cells(lat, lon, self.resolution, radians=False)
+
+    def parents(self, cell_ids, resolution):
+        if resolution >= self.resolution:
+            raise ValueError(
+                f"resolution is not a parent: {resolution} >= {self.resolution}"
+            )
+
+        return change_resolution(cell_ids, resolution)
 
 
 @register_dggs("h3")

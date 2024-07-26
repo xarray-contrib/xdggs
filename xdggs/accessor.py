@@ -104,3 +104,23 @@ class DGGSAccessor:
                 "longitude": (self.index._dim, lon_data),
             }
         )
+
+    def parents(self, resolution: int) -> xr.DataArray:
+        """determine the parent cell ids of the cells
+
+        Parameters
+        ----------
+        resolution : int
+            The parent resolution. Must be smaller than the current resolution.
+
+        Returns
+        -------
+        parents : DataArray
+            The parent cell ids, one for each input cell.
+        """
+        data = self.index.parents(resolution)
+
+        params = self.grid_info.to_dict()
+        params["resolution"] = resolution
+
+        return self.coord.copy(data=data).assign_attrs(**params).rename("parents")
