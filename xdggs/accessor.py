@@ -118,4 +118,9 @@ class DGGSAccessor:
         parents : DataArray
             The parent cell ids, one for each input cell.
         """
-        return self.index.parents(resolution)
+        data = self.index.parents(resolution)
+
+        params = self.grid_info.to_dict()
+        params["resolution"] = resolution
+
+        return self.coord.copy(data=data).assign_attrs(**params).rename("parents")
