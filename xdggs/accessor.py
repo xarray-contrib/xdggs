@@ -104,3 +104,18 @@ class DGGSAccessor:
                 "longitude": (self.index._dim, lon_data),
             }
         )
+
+    def parents(self, resolution: int) -> xr.DataArray:
+        """determine the parent cell ids of the cells
+
+        Parameters
+        ----------
+        resolution : int
+            The parent resolution. Must be smaller than the current resolution.
+
+        Returns
+        -------
+        parents : DataArray
+            The parent cell ids, one for each input cell.
+        """
+        return self.index.parents(resolution)

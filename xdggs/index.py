@@ -72,6 +72,9 @@ class DGGSIndex(Index):
     def cell_centers(self) -> tuple[np.ndarray, np.ndarray]:
         return self._grid.cell_ids2geographic(self._pd_index.index.values)
 
+    def parents(self, resolution: int) -> np.ndarray:
+        return self._grid.parents(self._pd_index.index.values, resolution=resolution)
+
     @property
     def grid_info(self) -> DGGSInfo:
         return self._grid
