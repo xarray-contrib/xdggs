@@ -49,13 +49,7 @@ class DGGSAccessor:
         if isinstance(grid_info, dict):
             var.attrs = grid_info
 
-        indexed = self._obj.drop_indexes(name, errors="ignore").set_xindex(
-            name, DGGSIndex
-        )
-        self._name = name
-        self._index = indexed.xindexes[name]
-
-        return indexed
+        return self._obj.drop_indexes(name, errors="ignore").set_xindex(name, DGGSIndex)
 
     @property
     def index(self) -> DGGSIndex:
