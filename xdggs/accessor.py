@@ -29,7 +29,20 @@ class DGGSAccessor:
         self._index = index
 
     def decode(self, grid_info=None, *, name="cell_ids") -> xr.Dataset | xr.DataArray:
+        """decode the DGGS cell ids
 
+        Parameters
+        ----------
+        grid_info : dict or DGGSInfo, optional
+            Override the grid information.
+        name : str, default: "cell_ids"
+            The name of the coordinate containing the cell ids.
+
+        Returns
+        -------
+        obj : xarray.DataArray or xarray.Dataset
+            The object with a new index.
+        """
         var = self._obj[name]
         if isinstance(grid_info, DGGSInfo):
             grid_info = grid_info.to_dict()
