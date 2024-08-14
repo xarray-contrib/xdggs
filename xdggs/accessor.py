@@ -29,10 +29,10 @@ class DGGSAccessor:
         self._index = index
 
     def decode(self, grid_info=None, *, name="cell_ids") -> xr.Dataset | xr.DataArray:
-        if isinstance(grid_info, DGGSInfo):
-            grid_info = grid_info.to_dict()
 
         var = self._obj[name]
+        if isinstance(grid_info, DGGSInfo):
+            grid_info = grid_info.to_dict()
         if isinstance(grid_info, dict):
             var.attrs = grid_info
 
