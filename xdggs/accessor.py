@@ -28,6 +28,22 @@ class DGGSAccessor:
         self._name = name
         self._index = index
 
+    def decode(self, grid_info=None, *, name="cell_ids") -> xr.Dataset | xr.DataArray:
+        if isinstance(grid_info, DGGSInfo):
+            grid_info = grid_info.to_dict()
+
+        var = self._obj[name]
+        if isinstance(grid_info, dict):
+            var.attrs = grid_info
+
+        indexed = self._obj.drop_indexes(name, errors="ignore").set_xindex(
+            name, DGGSIndex
+        )
+        self._name = name
+        self._index = indexed.xindexes[name]
+
+        return indexed
+
     @property
     def index(self) -> DGGSIndex:
         """Returns the DGGSIndex instance for this Dataset or DataArray.
