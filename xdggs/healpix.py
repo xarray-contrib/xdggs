@@ -35,13 +35,13 @@ class HealpixInfo(DGGSInfo):
     rotation: list[float, float] = field(default_factory=lambda: [0.0, 0.0])
 
     valid_parameters: ClassVar[dict[str, Any]] = {
-        "resolution": range(0, 29 + 1),
+        "level": range(0, 29 + 1),
         "indexing_scheme": ["nested", "ring", "unique"],
     }
 
     def __post_init__(self):
-        if self.resolution not in self.valid_parameters["resolution"]:
-            raise ValueError("resolution must be an integer in the range of [0, 29]")
+        if self.level not in self.valid_parameters["level"]:
+            raise ValueError("level must be an integer in the range of [0, 29]")
 
         if self.indexing_scheme not in self.valid_parameters["indexing_scheme"]:
             raise ValueError(
@@ -55,7 +55,7 @@ class HealpixInfo(DGGSInfo):
 
     @property
     def nside(self: Self) -> int:
-        return 2**self.resolution
+        return 2**self.level
 
     @property
     def nest(self: Self) -> bool:
@@ -70,17 +70,17 @@ class HealpixInfo(DGGSInfo):
     def from_dict(cls: type[T], mapping: dict[str, Any]) -> T:
         def translate_nside(nside):
             log = np.log2(nside)
-            potential_resolution = int(log)
-            if potential_resolution != log:
+            potential_level = int(log)
+            if potential_level != log:
                 raise ValueError("`nside` has to be an integer power of 2")
 
-            return potential_resolution
+            return potential_level
 
         translations = {
-            "nside": ("resolution", translate_nside),
-            "order": ("resolution", identity),
-            "level": ("resolution", identity),
-            "depth": ("resolution", identity),
+            "nside": ("level", translate_nside),
+            "order": ("level", identity),
+            "resolution": ("level", identity),
+            "depth": ("level", identity),
             "nest": ("indexing_scheme", lambda nest: "nested" if nest else "ring"),
             "rot_latlon": (
                 "rotation",
@@ -122,7 +122,7 @@ class HealpixInfo(DGGSInfo):
     def to_dict(self: Self) -> dict[str, Any]:
         return {
             "grid_name": "healpix",
-            "resolution": self.resolution,
+            "level": self.level,
             "indexing_scheme": self.indexing_scheme,
             "rotation": self.rotation,
         }
@@ -170,4 +170,4 @@ class HealpixIndex(DGGSIndex):
         return self._grid
 
     def _repr_inline_(self, max_width: int):
-        return f"HealpixIndex(nside={self._grid.resolution}, indexing_scheme={self._grid.indexing_scheme}, rotation={self._grid.rotation!r})"
+        return f"HealpixIndex(nside={self._grid.level}, indexing_scheme={self._grid.indexing_scheme}, rotation={self._grid.rotation!r})"
