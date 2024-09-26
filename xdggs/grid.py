@@ -15,18 +15,18 @@ class DGGSInfo:
 
     Parameters
     ----------
-    resolution : int
-        The resolution of the grid.
+    level : int
+        The level within the grid hierarchy tree.
     """
 
-    resolution: int
+    level: int
 
     @classmethod
     def from_dict(cls: type[T], mapping: dict[str, Any]) -> T:
         return cls(**mapping)
 
     def to_dict(self: Self) -> dict[str, Any]:
-        return {"resolution": self.resolution}
+        return {"level": self.level}
 
     def cell_ids2geographic(self, cell_ids):
         raise NotImplementedError()

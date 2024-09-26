@@ -28,7 +28,7 @@ except NameError:  # pragma: no cover
 
 @dataclass(frozen=True)
 class HealpixInfo(DGGSInfo):
-    resolution: int
+    level: int
 
     indexing_scheme: Literal["nested", "ring", "unique"] = "nested"
 
