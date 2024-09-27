@@ -7,16 +7,14 @@ try:
 except ImportError:  # pragma: no cover
     from typing_extensions import Self
 
-import operator
-
 import numpy as np
 import xarray as xr
 from h3ronpy.arrow.vector import cells_to_coordinates, coordinates_to_cells
 from xarray.indexes import PandasIndex
 
-from xdggs.grid import DGGSInfo
+from xdggs.grid import DGGSInfo, translate_parameters
 from xdggs.index import DGGSIndex
-from xdggs.itertools import groupby, identity
+from xdggs.itertools import identity
 from xdggs.utils import _extract_cell_id_variable, register_dggs
 
 
@@ -36,33 +34,7 @@ class H3Info(DGGSInfo):
             "resolution": ("level", identity),
         }
 
-        def translate(name, value):
-            new_name, translator = translations.get(name, (name, identity))
-
-            return new_name, name, translator(value)
-
-        translated = (translate(name, value) for name, value in mapping.items())
-        grouped = {
-            name: [(old_name, value) for _, old_name, value in group]
-            for name, group in groupby(translated, key=operator.itemgetter(0))
-        }
-        duplicated_parameters = {
-            name: group for name, group in grouped.items() if len(group) != 1
-        }
-        if duplicated_parameters:
-            raise ExceptionGroup(
-                "received multiple values for parameters",
-                [
-                    ValueError(
-                        f"Parameter {name} received multiple values: {sorted(n for n, _ in group)}"
-                    )
-                    for name, group in duplicated_parameters.items()
-                ],
-            )
-
-        params = {
-            name: group[0][1] for name, group in grouped.items() if name != "grid_name"
-        }
+        params = translate_parameters(mapping, translations)
         return cls(**params)
 
     def to_dict(self: Self) -> dict[str, Any]:

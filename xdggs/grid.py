@@ -1,5 +1,8 @@
+import operator
 from dataclasses import dataclass
 from typing import Any, TypeVar
+
+from xdggs.itertools import groupby, identity
 
 try:
     from typing import Self
@@ -37,3 +40,34 @@ class DGGSInfo:
 
     def geographic2cell_ids(self, lon, lat):
         raise NotImplementedError()
+
+
+def translate_parameters(mapping, translations):
+    def translate(name, value):
+        new_name, translator = translations.get(name, (name, identity))
+
+        return new_name, name, translator(value)
+
+    translated = (translate(name, value) for name, value in mapping.items())
+    grouped = {
+        name: [(old_name, value) for _, old_name, value in group]
+        for name, group in groupby(translated, key=operator.itemgetter(0))
+    }
+    duplicated_parameters = {
+        name: group for name, group in grouped.items() if len(group) != 1
+    }
+    if duplicated_parameters:
+        raise ExceptionGroup(
+            "received multiple values for parameters",
+            [
+                ValueError(
+                    f"Parameter {name} received multiple values: {sorted(n for n, _ in group)}"
+                )
+                for name, group in duplicated_parameters.items()
+            ],
+        )
+
+    params = {
+        name: group[0][1] for name, group in grouped.items() if name != "grid_name"
+    }
+    return params
