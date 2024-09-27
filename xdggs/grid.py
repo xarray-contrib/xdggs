@@ -16,7 +16,11 @@ class DGGSInfo:
     Parameters
     ----------
     level : int
-        The level within the grid hierarchy tree.
+        Grid hierarchical level. A higher value corresponds to a finer grid resolution
+        with smaller cell areas. The number of cells covering the whole sphere usually
+        grows exponentially with increasing level values, ranging from 5-100 cells at
+        level 0 to millions or billions of cells at level 10+ (the exact numbers depends
+        on the specific grid).
     """
 
     level: int
