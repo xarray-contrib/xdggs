@@ -3,6 +3,7 @@ import xarray as xr
 
 from xdggs.grid import DGGSInfo
 from xdggs.index import DGGSIndex
+from xdggs.plotting import explore
 
 
 @xr.register_dataset_accessor("dggs")
@@ -114,4 +115,19 @@ class DGGSAccessor:
 
         return xr.DataArray(
             boundaries, coords={self._name: self.cell_ids}, dims=self.cell_ids.dims
+        )
+
+    def explore(
+        self, *, cell_boundaries="cell_boundaries", cmap="viridis", center=None
+    ):
+        if isinstance(self._obj, xr.Dataset):
+            raise ValueError("does not work with Dataset objects, yet")
+
+        cell_dim = self._obj[self._name].dims[0]
+        return explore(
+            self._obj,
+            cell_boundaries=cell_boundaries,
+            cell_dim=cell_dim,
+            cmap=cmap,
+            center=center,
         )
