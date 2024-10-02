@@ -7,7 +7,7 @@ from xdggs import index
 @pytest.fixture
 def dggs_example():
     return xr.Dataset(
-        coords={"cell_ids": ("cells", [0, 1], {"grid_name": "test", "resolution": 2})}
+        coords={"cell_ids": ("cells", [0, 1], {"grid_name": "test", "level": 2})}
     )
 
 

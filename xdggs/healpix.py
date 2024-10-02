@@ -1,4 +1,3 @@
-import operator
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any, ClassVar, Literal, TypeVar
@@ -13,35 +12,30 @@ import numpy as np
 import xarray as xr
 from xarray.indexes import PandasIndex
 
-from xdggs.grid import DGGSInfo
+from xdggs.grid import DGGSInfo, translate_parameters
 from xdggs.index import DGGSIndex
-from xdggs.itertools import groupby, identity
+from xdggs.itertools import identity
 from xdggs.utils import _extract_cell_id_variable, register_dggs
 
 T = TypeVar("T")
 
-try:
-    ExceptionGroup
-except NameError:  # pragma: no cover
-    from exceptiongroup import ExceptionGroup
-
 
 @dataclass(frozen=True)
 class HealpixInfo(DGGSInfo):
-    resolution: int
+    level: int
 
     indexing_scheme: Literal["nested", "ring", "unique"] = "nested"
 
     rotation: list[float, float] = field(default_factory=lambda: [0.0, 0.0])
 
     valid_parameters: ClassVar[dict[str, Any]] = {
-        "resolution": range(0, 29 + 1),
+        "level": range(0, 29 + 1),
         "indexing_scheme": ["nested", "ring", "unique"],
     }
 
     def __post_init__(self):
-        if self.resolution not in self.valid_parameters["resolution"]:
-            raise ValueError("resolution must be an integer in the range of [0, 29]")
+        if self.level not in self.valid_parameters["level"]:
+            raise ValueError("level must be an integer in the range of [0, 29]")
 
         if self.indexing_scheme not in self.valid_parameters["indexing_scheme"]:
             raise ValueError(
@@ -55,7 +49,7 @@ class HealpixInfo(DGGSInfo):
 
     @property
     def nside(self: Self) -> int:
-        return 2**self.resolution
+        return 2**self.level
 
     @property
     def nest(self: Self) -> bool:
@@ -70,17 +64,17 @@ class HealpixInfo(DGGSInfo):
     def from_dict(cls: type[T], mapping: dict[str, Any]) -> T:
         def translate_nside(nside):
             log = np.log2(nside)
-            potential_resolution = int(log)
-            if potential_resolution != log:
+            potential_level = int(log)
+            if potential_level != log:
                 raise ValueError("`nside` has to be an integer power of 2")
 
-            return potential_resolution
+            return potential_level
 
         translations = {
-            "nside": ("resolution", translate_nside),
-            "order": ("resolution", identity),
-            "level": ("resolution", identity),
-            "depth": ("resolution", identity),
+            "nside": ("level", translate_nside),
+            "order": ("level", identity),
+            "resolution": ("level", identity),
+            "depth": ("level", identity),
             "nest": ("indexing_scheme", lambda nest: "nested" if nest else "ring"),
             "rot_latlon": (
                 "rotation",
@@ -88,41 +82,13 @@ class HealpixInfo(DGGSInfo):
             ),
         }
 
-        def translate(name, value):
-            new_name, translator = translations.get(name, (name, identity))
-
-            return new_name, name, translator(value)
-
-        translated = (translate(name, value) for name, value in mapping.items())
-
-        grouped = {
-            name: [(old_name, value) for _, old_name, value in group]
-            for name, group in groupby(translated, key=operator.itemgetter(0))
-        }
-        duplicated_parameters = {
-            name: group for name, group in grouped.items() if len(group) != 1
-        }
-        if duplicated_parameters:
-            raise ExceptionGroup(
-                "received multiple values for parameters",
-                [
-                    ValueError(
-                        f"Parameter {name} received multiple values: {sorted(n for n, _ in group)}"
-                    )
-                    for name, group in duplicated_parameters.items()
-                ],
-            )
-
-        params = {
-            name: group[0][1] for name, group in grouped.items() if name != "grid_name"
-        }
-
+        params = translate_parameters(mapping, translations)
         return cls(**params)
 
     def to_dict(self: Self) -> dict[str, Any]:
         return {
             "grid_name": "healpix",
-            "resolution": self.resolution,
+            "level": self.level,
             "indexing_scheme": self.indexing_scheme,
             "rotation": self.rotation,
         }
@@ -188,4 +154,4 @@ class HealpixIndex(DGGSIndex):
         return self._grid
 
     def _repr_inline_(self, max_width: int):
-        return f"HealpixIndex(nside={self._grid.resolution}, indexing_scheme={self._grid.indexing_scheme}, rotation={self._grid.rotation!r})"
+        return f"HealpixIndex(nside={self._grid.level}, indexing_scheme={self._grid.indexing_scheme}, rotation={self._grid.rotation!r})"
