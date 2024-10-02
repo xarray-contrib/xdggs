@@ -36,7 +36,9 @@ def explore(
     data = gdf[name]
 
     if center is None:
-        normalizer = Normalize()
+        vmin = data.min()
+        vmax = data.max()
+        normalizer = Normalize(vmin=vmin, vmax=vmax)
     else:
         halfrange = np.abs(data).max()
         normalizer = CenteredNorm(vcenter=center, halfrange=halfrange)
