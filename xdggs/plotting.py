@@ -33,15 +33,12 @@ def explore(
         .pipe(gpd.GeoDataFrame, geometry=cell_boundaries, crs=4326)
     )
 
-    data = gdf[name].to_numpy()
+    data = gdf[name]
 
     if center is None:
         normalizer = Normalize()
     else:
-        min_ = np.min(data)
-        max_ = np.max(data)
-
-        halfrange = max(abs(min_ - center), abs(max_ - center))
+        halfrange = np.abs(data).max()
         normalizer = CenteredNorm(vcenter=center, halfrange=halfrange)
 
     normalized_data = normalizer(data)
