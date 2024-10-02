@@ -112,7 +112,7 @@ class TestH3Info:
         np.testing.assert_equal(actual, expected)
 
     @pytest.mark.parametrize(
-        ["resolution", "cell_ids", "expected_coords"],
+        ["level", "cell_ids", "expected_coords"],
         (
             (
                 1,
@@ -194,10 +194,10 @@ class TestH3Info:
             ),
         ),
     )
-    def test_cell_boundaries(self, resolution, cell_ids, expected_coords):
+    def test_cell_boundaries(self, level, cell_ids, expected_coords):
         expected = shapely.polygons(expected_coords)
 
-        grid = h3.H3Info(resolution=resolution)
+        grid = h3.H3Info(level=level)
 
         actual = grid.cell_boundaries(cell_ids)
 
