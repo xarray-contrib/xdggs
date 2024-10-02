@@ -9,6 +9,11 @@ try:
 except ImportError:  # pragma: no cover
     from typing_extensions import Self
 
+try:
+    ExceptionGroup
+except NameError:  # pragma: no cover
+    from exceptiongroup import ExceptionGroup
+
 T = TypeVar("T")
 
 
