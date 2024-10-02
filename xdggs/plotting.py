@@ -13,7 +13,7 @@ def explore(
     from lonboard import SolidPolygonLayer
     from lonboard.colormap import apply_continuous_cmap
     from matplotlib import colormaps
-    from matplotlib.colors import CenteredNorm, Normalizer
+    from matplotlib.colors import CenteredNorm, Normalize
 
     if len(arr.dims) != 1 or cell_dim not in arr.dims:
         raise ValueError(
@@ -36,7 +36,7 @@ def explore(
     data = gdf[name].to_numpy()
 
     if center is None:
-        normalizer = Normalizer()
+        normalizer = Normalize()
     else:
         min_ = np.min(data)
         max_ = np.max(data)
