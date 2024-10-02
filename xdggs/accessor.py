@@ -120,6 +120,28 @@ class DGGSAccessor:
     def explore(
         self, *, cell_boundaries="cell_boundaries", cmap="viridis", center=None
     ):
+        """interactively explore the data using `lonboard`
+
+        Requires `geopandas`, `matplotlib`, and `lonboard` to be installed.
+
+        Parameters
+        ----------
+        cell_boundaries : str
+            The name of the coordinate containing the pre-computed cell boundary polygons.
+        cmap : str
+            The name of the color map to use
+        center : int or float, optional
+            If set, will choose this as the center point for a diverging color map.
+
+        Returns
+        -------
+        map : lonboard.Map
+            The rendered map.
+
+        Notes
+        -----
+        Plotting currently is restricted to `DataArray` objects.
+        """
         if isinstance(self._obj, xr.Dataset):
             raise ValueError("does not work with Dataset objects, yet")
 
