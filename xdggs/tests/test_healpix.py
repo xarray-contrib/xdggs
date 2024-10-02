@@ -242,7 +242,7 @@ class TestHealpixInfo:
         ["params", "cell_ids", "expected_coords"],
         (
             (
-                {"resolution": 0, "indexing_scheme": "nested"},
+                {"level": 0, "indexing_scheme": "nested"},
                 np.array([2]),
                 np.array(
                     [
@@ -254,7 +254,7 @@ class TestHealpixInfo:
                 ),
             ),
             (
-                {"resolution": 2, "indexing_scheme": "ring"},
+                {"level": 2, "indexing_scheme": "ring"},
                 np.array([12, 54]),
                 np.array(
                     [
@@ -274,7 +274,7 @@ class TestHealpixInfo:
                 ),
             ),
             (
-                {"resolution": 3, "indexing_scheme": "nested"},
+                {"level": 3, "indexing_scheme": "nested"},
                 np.array([293, 17]),
                 np.array(
                     [
@@ -294,7 +294,7 @@ class TestHealpixInfo:
                 ),
             ),
             (
-                {"resolution": 2, "indexing_scheme": "nested"},
+                {"level": 2, "indexing_scheme": "nested"},
                 np.array([79]),
                 np.array(
                     [
