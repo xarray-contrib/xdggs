@@ -117,7 +117,7 @@ class DGGSAccessor:
             boundaries, coords={self._name: self.cell_ids}, dims=self.cell_ids.dims
         )
 
-    def explore(self, *, cmap="viridis", center=None):
+    def explore(self, *, cmap="viridis", center=None, alpha=None):
         """interactively explore the data using `lonboard`
 
         Requires `geopandas`, `matplotlib`, and `lonboard` to be installed.
@@ -127,7 +127,9 @@ class DGGSAccessor:
         cmap : str
             The name of the color map to use
         center : int or float, optional
-            If set, will choose this as the center point for a diverging color map.
+            If set, will use this as the center value of a diverging color map.
+        alpha : float, optional
+            If set, controls the transparency of the polygons.
 
         Returns
         -------
@@ -147,4 +149,5 @@ class DGGSAccessor:
             cell_dim=cell_dim,
             cmap=cmap,
             center=center,
+            alpha=alpha,
         )

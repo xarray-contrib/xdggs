@@ -92,6 +92,7 @@ def explore(
     cell_dim="cells",
     cmap="viridis",
     center=None,
+    alpha=None,
 ):
     import lonboard
     from lonboard import SolidPolygonLayer
@@ -127,7 +128,7 @@ def explore(
     normalized_data = normalizer(data)
 
     colormap = colormaps[cmap]
-    colors = apply_continuous_cmap(normalized_data, colormap)
+    colors = apply_continuous_cmap(normalized_data, colormap, alpha=alpha)
 
     table = geoarrow2table(polygons).append_column(
         "cell_id", column_from_numpy(cell_ids)
