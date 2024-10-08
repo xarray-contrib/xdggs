@@ -33,9 +33,11 @@ def polygons_shapely(vertices):
 
 
 def polygons_geoarrow(vertices):
+    import pyproj
     from arro3.core import list_array
 
     polygon_vertices = np.concatenate([vertices, vertices[:, :1, :]], axis=1)
+    crs = pyproj.CRS.from_user_input("epsg:4326")
 
     # construct geoarrow arrays
     coords = np.reshape(polygon_vertices, (-1, 2))
@@ -50,7 +52,7 @@ def polygons_geoarrow(vertices):
         polygon_array.field.with_metadata(
             {
                 "ARROW:extension:name": "geoarrow.polygon",
-                "ARROW:extension:metadata": '{"crs": "epsg:4326"}',
+                "ARROW:extension:metadata": crs.to_json(),
             }
         )
     )

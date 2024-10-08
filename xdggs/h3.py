@@ -28,10 +28,13 @@ def polygons_shapely(wkb):
 
 
 def polygons_geoarrow(wkb):
+    import pyproj
     import shapely
     from arro3.core import list_array
 
     polygons = shapely.from_wkb(wkb)
+    crs = pyproj.CRS.from_epsg(4326)
+
     _, coords, (geom_offsets, ring_offsets) = shapely.to_ragged_array(polygons)
 
     polygon_array = list_array(geom_offsets, list_array(ring_offsets, coords))
@@ -39,7 +42,7 @@ def polygons_geoarrow(wkb):
         polygon_array.field.with_metadata(
             {
                 "ARROW:extension:name": "geoarrow.polygon",
-                "ARROW:extension:metadata": '{"crs": "epsg:4326"}',
+                "ARROW:extension:metadata": crs.to_json(),
             }
         )
     )
