@@ -138,7 +138,7 @@ class DGGSAccessor:
 
         Notes
         -----
-        Plotting currently is restricted to `DataArray` objects.
+        Plotting currently is restricted to 1D `DataArray` objects.
         """
         if isinstance(self._obj, xr.Dataset):
             raise ValueError("does not work with Dataset objects, yet")
