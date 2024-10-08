@@ -39,9 +39,9 @@ def polygons_geoarrow(vertices):
 
     # construct geoarrow arrays
     coords = np.reshape(polygon_vertices, (-1, 2))
-    coords_per_pixel = vertices.shape[1]
+    coords_per_pixel = polygon_vertices.shape[1]
     geom_offsets = np.arange(vertices.shape[0] + 1, dtype="int32")
-    ring_offsets = geom_offsets + coords_per_pixel
+    ring_offsets = geom_offsets * coords_per_pixel
 
     polygon_array = list_array(geom_offsets, list_array(ring_offsets, coords))
 
