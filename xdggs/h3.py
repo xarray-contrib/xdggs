@@ -8,7 +8,6 @@ except ImportError:  # pragma: no cover
     from typing_extensions import Self
 
 import numpy as np
-import shapely
 import xarray as xr
 from h3ronpy.arrow.vector import (
     cells_to_coordinates,
@@ -20,6 +19,32 @@ from xarray.indexes import PandasIndex
 from xdggs.grid import DGGSInfo
 from xdggs.index import DGGSIndex
 from xdggs.utils import _extract_cell_id_variable, register_dggs
+
+
+def polygons_shapely(wkb):
+    import shapely
+
+    return shapely.from_wkb(wkb)
+
+
+def polygons_geoarrow(wkb):
+    import shapely
+    from arro3.core import list_array
+
+    polygons = shapely.from_wkb(wkb)
+    _, coords, (geom_offsets, ring_offsets) = shapely.to_ragged_array(polygons)
+
+    polygon_array = list_array(geom_offsets, list_array(ring_offsets, coords))
+    polygon_array_with_geo_meta = polygon_array.cast(
+        polygon_array.field.with_metadata(
+            {
+                "ARROW:extension:name": "geoarrow.polygon",
+                "ARROW:extension:metadata": '{"crs": "epsg:4326"}',
+            }
+        )
+    )
+
+    return polygon_array_with_geo_meta
 
 
 @dataclass(frozen=True)
@@ -50,10 +75,18 @@ class H3Info(DGGSInfo):
     def geographic2cell_ids(self, lon, lat):
         return coordinates_to_cells(lat, lon, self.resolution, radians=False)
 
-    def cell_boundaries(self, cell_ids):
+    def cell_boundaries(self, cell_ids, backend="shapely"):
+        # TODO: convert cell ids directly to geoarrow once h3ronpy supports it
         wkb = cells_to_wkb_polygons(cell_ids, radians=False, link_cells=False)
 
-        return shapely.from_wkb(wkb)
+        backends = {
+            "shapely": polygons_shapely,
+            "geoarrow": polygons_geoarrow,
+        }
+        backend_func = backends.get(backend)
+        if backend_func is None:
+            raise ValueError("invalid backend: {backend!r}")
+        return backend_func(wkb)
 
 
 @register_dggs("h3")
