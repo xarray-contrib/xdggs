@@ -47,7 +47,7 @@ def polygons_geoarrow(wkb):
         polygon_array.field.with_metadata(
             {
                 "ARROW:extension:name": "geoarrow.polygon",
-                "ARROW:extension:metadata": crs.to_json(),
+                "ARROW:extension:metadata": f'{{"crs": {crs.to_json()}}}',
             }
         )
     )
