@@ -35,7 +35,12 @@ def polygons_geoarrow(wkb):
     polygons = shapely.from_wkb(wkb)
     crs = pyproj.CRS.from_epsg(4326)
 
-    _, coords, (geom_offsets, ring_offsets) = shapely.to_ragged_array(polygons)
+    geometry_type, coords, (geom_offsets, ring_offsets) = shapely.to_ragged_array(
+        polygons
+    )
+
+    if geometry_type != "Polygon":
+        raise ValueError(f"unsupported geometry type found: {geometry_type}")
 
     polygon_array = list_array(geom_offsets, list_array(ring_offsets, coords))
     polygon_array_with_geo_meta = polygon_array.cast(
