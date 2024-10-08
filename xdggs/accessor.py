@@ -117,17 +117,13 @@ class DGGSAccessor:
             boundaries, coords={self._name: self.cell_ids}, dims=self.cell_ids.dims
         )
 
-    def explore(
-        self, *, cell_boundaries="cell_boundaries", cmap="viridis", center=None
-    ):
+    def explore(self, *, cmap="viridis", center=None):
         """interactively explore the data using `lonboard`
 
         Requires `geopandas`, `matplotlib`, and `lonboard` to be installed.
 
         Parameters
         ----------
-        cell_boundaries : str
-            The name of the coordinate containing the pre-computed cell boundary polygons.
         cmap : str
             The name of the color map to use
         center : int or float, optional
@@ -148,7 +144,6 @@ class DGGSAccessor:
         cell_dim = self._obj[self._name].dims[0]
         return explore(
             self._obj,
-            cell_boundaries=cell_boundaries,
             cell_dim=cell_dim,
             cmap=cmap,
             center=center,
