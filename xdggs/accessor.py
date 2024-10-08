@@ -120,7 +120,7 @@ class DGGSAccessor:
     def explore(self, *, cmap="viridis", center=None, alpha=None):
         """interactively explore the data using `lonboard`
 
-        Requires `geopandas`, `matplotlib`, and `lonboard` to be installed.
+        Requires `lonboard`, `matplotlib`, and `arro3.core` to be installed.
 
         Parameters
         ----------
