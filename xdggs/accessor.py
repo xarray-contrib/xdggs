@@ -3,6 +3,7 @@ import xarray as xr
 
 from xdggs.grid import DGGSInfo
 from xdggs.index import DGGSIndex
+from xdggs.plotting import explore
 
 
 @xr.register_dataset_accessor("dggs")
@@ -114,4 +115,39 @@ class DGGSAccessor:
 
         return xr.DataArray(
             boundaries, coords={self._name: self.cell_ids}, dims=self.cell_ids.dims
+        )
+
+    def explore(self, *, cmap="viridis", center=None, alpha=None):
+        """interactively explore the data using `lonboard`
+
+        Requires `lonboard`, `matplotlib`, and `arro3.core` to be installed.
+
+        Parameters
+        ----------
+        cmap : str
+            The name of the color map to use
+        center : int or float, optional
+            If set, will use this as the center value of a diverging color map.
+        alpha : float, optional
+            If set, controls the transparency of the polygons.
+
+        Returns
+        -------
+        map : lonboard.Map
+            The rendered map.
+
+        Notes
+        -----
+        Plotting currently is restricted to 1D `DataArray` objects.
+        """
+        if isinstance(self._obj, xr.Dataset):
+            raise ValueError("does not work with Dataset objects, yet")
+
+        cell_dim = self._obj[self._name].dims[0]
+        return explore(
+            self._obj,
+            cell_dim=cell_dim,
+            cmap=cmap,
+            center=center,
+            alpha=alpha,
         )

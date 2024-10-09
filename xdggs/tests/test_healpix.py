@@ -12,7 +12,7 @@ from hypothesis import given
 from xarray.core.indexes import PandasIndex
 
 from xdggs import healpix
-from xdggs.tests import assert_exceptions_equal
+from xdggs.tests import assert_exceptions_equal, geoarrow_to_shapely
 
 try:
     ExceptionGroup
@@ -246,10 +246,10 @@ class TestHealpixInfo:
                 np.array([2]),
                 np.array(
                     [
-                        [0.0, 90.0],
-                        [180.0, 41.8103149],
-                        [225.0, 0.0],
-                        [270.0, 41.8103149],
+                        [-135.0, 90.0],
+                        [-180.0, 41.8103149],
+                        [-135.0, 0.0],
+                        [-90.0, 41.8103149],
                     ]
                 ),
             ),
@@ -265,10 +265,10 @@ class TestHealpixInfo:
                             [30.0, 54.3409123],
                         ],
                         [
-                            [315.0, 41.8103149],
-                            [303.75, 30.0],
-                            [315.0, 19.47122063],
-                            [326.25, 30.0],
+                            [-45.0, 41.8103149],
+                            [-56.25, 30.0],
+                            [-45.0, 19.47122063],
+                            [-33.75, 30.0],
                         ],
                     ]
                 ),
@@ -307,13 +307,20 @@ class TestHealpixInfo:
             ),
         ),
     )
-    def test_cell_boundaries(self, params, cell_ids, expected_coords):
+    @pytest.mark.parametrize("backend", ["shapely", "geoarrow"])
+    def test_cell_boundaries(self, params, cell_ids, backend, expected_coords):
         grid = healpix.HealpixInfo.from_dict(params)
 
-        actual = grid.cell_boundaries(cell_ids)
+        actual = grid.cell_boundaries(cell_ids, backend=backend)
+
+        backends = {
+            "shapely": lambda arr: arr,
+            "geoarrow": geoarrow_to_shapely,
+        }
+        converter = backends[backend]
         expected = shapely.polygons(expected_coords)
 
-        shapely.testing.assert_geometries_equal(actual, expected)
+        shapely.testing.assert_geometries_equal(converter(actual), expected)
 
     @given(
         *strategies.grid_and_cell_ids(
