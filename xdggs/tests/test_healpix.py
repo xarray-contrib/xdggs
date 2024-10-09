@@ -12,7 +12,7 @@ from hypothesis import given
 from xarray.core.indexes import PandasIndex
 
 from xdggs import healpix
-from xdggs.tests import assert_exceptions_equal
+from xdggs.tests import assert_exceptions_equal, geoarrow_to_shapely
 
 try:
     ExceptionGroup
@@ -307,13 +307,20 @@ class TestHealpixInfo:
             ),
         ),
     )
-    def test_cell_boundaries(self, params, cell_ids, expected_coords):
+    @pytest.mark.parametrize("backend", ["shapely", "geoarrow"])
+    def test_cell_boundaries(self, params, cell_ids, backend, expected_coords):
         grid = healpix.HealpixInfo.from_dict(params)
 
-        actual = grid.cell_boundaries(cell_ids)
+        actual = grid.cell_boundaries(cell_ids, backend=backend)
+
+        backends = {
+            "shapely": lambda arr: arr,
+            "geoarrow": geoarrow_to_shapely,
+        }
+        converter = backends[backend]
         expected = shapely.polygons(expected_coords)
 
-        shapely.testing.assert_geometries_equal(actual, expected)
+        shapely.testing.assert_geometries_equal(converter(actual), expected)
 
     @given(
         *strategies.grid_and_cell_ids(
