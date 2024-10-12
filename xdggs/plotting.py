@@ -1,19 +1,27 @@
 import numpy as np
 
 
-def geoarrow2table(polygons):
-    from arro3.core import Array, Schema, Table
+def create_arrow_table(polygons, arr, coords=None):
+    from arro3.core import Array, ChunkedArray, Schema, Table
+
+    if coords is None:
+        coords = ["latitude", "longitude"]
 
     array = Array.from_arrow(polygons)
-    field = array.field.with_name("geometry")
-    schema = Schema([field])
-    return Table.from_arrays([array], schema=schema)
+    name = arr.name or "data"
+    arrow_arrays = {
+        "geometry": array,
+        name: ChunkedArray([Array.from_numpy(arr.data)]),
+    } | {
+        coord: ChunkedArray([Array.from_numpy(arr.coords[coord].data)])
+        for coord in coords
+        if coord in arr.coords
+    }
 
+    fields = [array.field.with_name(name) for name, array in arrow_arrays.items()]
+    schema = Schema(fields)
 
-def column_from_numpy(arr):
-    from arro3.core import Array, ChunkedArray
-
-    return ChunkedArray([Array.from_numpy(arr)])
+    return Table.from_arrays(list(arrow_arrays.values()), schema=schema)
 
 
 def normalize(var, center=None):
@@ -47,30 +55,17 @@ def explore(
             f"exploration only works with a single dimension ('{cell_dim}')"
         )
 
-    name = arr.name or "data"
-
     cell_ids = arr.dggs.coord.data
     grid_info = arr.dggs.grid_info
 
     polygons = grid_info.cell_boundaries(cell_ids, backend="geoarrow")
 
-    data = arr.data
     normalized_data = normalize(arr.variable)
 
     colormap = colormaps[cmap]
     colors = apply_continuous_cmap(normalized_data, colormap, alpha=alpha)
 
-    table = geoarrow2table(polygons).append_column(
-        "cell_id", column_from_numpy(cell_ids)
-    )
-    if "latitude" in arr.coords and "longitude" in arr.coords:
-        lat = arr["latitude"].data
-        lon = arr["longitude"].data
-        table = table.append_column("latitude", column_from_numpy(lat)).append_column(
-            "longitude", column_from_numpy(lon)
-        )
-    table = table.append_column(name, column_from_numpy(data))
-
+    table = create_arrow_table(polygons, arr)
     layer = SolidPolygonLayer(table=table, filled=True, get_fill_color=colors)
 
     return lonboard.Map(layer)
