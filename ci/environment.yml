@@ -15,7 +15,7 @@ dependencies:
   - typing-extensions
   - geoarrow-pyarrow
   - lonboard
-  # - arro3-core  # not available on macos
   - pip
   - pip:
+      - arro3-core
       - h3ronpy

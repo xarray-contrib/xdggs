@@ -1,9 +1,6 @@
 import numpy as np
 import pytest
 import xarray as xr
-
-pytest.importorskip("arro3.core")
-
 from arro3.core import Array, Table
 
 from xdggs import plotting
