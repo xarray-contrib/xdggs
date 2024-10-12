@@ -16,6 +16,20 @@ def column_from_numpy(arr):
     return ChunkedArray([Array.from_numpy(arr)])
 
 
+def normalize(var, center=None):
+    from matplotlib.colors import CenteredNorm, Normalize
+
+    if center is None:
+        vmin = var.min(skipna=True)
+        vmax = var.max(skipna=True)
+        normalizer = Normalize(vmin=vmin, vmax=vmax)
+    else:
+        halfrange = np.abs(var).max(skipna=True)
+        normalizer = CenteredNorm(vcenter=center, halfrange=halfrange)
+
+    return normalizer(var.data)
+
+
 def explore(
     arr,
     cell_dim="cells",
@@ -27,7 +41,6 @@ def explore(
     from lonboard import SolidPolygonLayer
     from lonboard.colormap import apply_continuous_cmap
     from matplotlib import colormaps
-    from matplotlib.colors import CenteredNorm, Normalize
 
     if len(arr.dims) != 1 or cell_dim not in arr.dims:
         raise ValueError(
@@ -41,18 +54,8 @@ def explore(
 
     polygons = grid_info.cell_boundaries(cell_ids, backend="geoarrow")
 
-    var = arr.variable
-
-    if center is None:
-        vmin = var.min(skipna=True)
-        vmax = var.max(skipna=True)
-        normalizer = Normalize(vmin=vmin, vmax=vmax)
-    else:
-        halfrange = np.abs(var).max(skipna=True)
-        normalizer = CenteredNorm(vcenter=center, halfrange=halfrange)
-
-    data = var.data
-    normalized_data = normalizer(data)
+    data = arr.data
+    normalized_data = normalize(arr.variable)
 
     colormap = colormaps[cmap]
     colors = apply_continuous_cmap(normalized_data, colormap, alpha=alpha)
