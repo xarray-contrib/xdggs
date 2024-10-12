@@ -74,3 +74,44 @@ def test_create_arrow_table(polygons, arr, coords, expected):
     actual = plotting.create_arrow_table(polygons, arr, coords=coords)
 
     assert actual == expected
+
+
+@pytest.mark.parametrize(
+    ["var", "center", "expected"],
+    (
+        pytest.param(
+            xr.Variable("cells", np.array([-5, np.nan, -2, 1])),
+            None,
+            np.array([0, np.nan, 0.5, 1]),
+            id="linear-missing_values",
+        ),
+        pytest.param(
+            xr.Variable("cells", np.arange(-5, 2, dtype="float")),
+            None,
+            np.linspace(0, 1, 7),
+            id="linear-manual",
+        ),
+        pytest.param(
+            xr.Variable("cells", np.linspace(0, 10, 5)),
+            None,
+            np.linspace(0, 1, 5),
+            id="linear-linspace",
+        ),
+        pytest.param(
+            xr.Variable("cells", np.linspace(-5, 5, 10)),
+            0,
+            np.linspace(0, 1, 10),
+            id="centered-0",
+        ),
+        pytest.param(
+            xr.Variable("cells", np.linspace(0, 10, 10)),
+            5,
+            np.linspace(0, 1, 10),
+            id="centered-2",
+        ),
+    ),
+)
+def test_normalize(var, center, expected):
+    actual = plotting.normalize(var, center=center)
+
+    np.testing.assert_allclose(actual, expected)

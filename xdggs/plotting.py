@@ -32,7 +32,7 @@ def normalize(var, center=None):
         vmax = var.max(skipna=True)
         normalizer = Normalize(vmin=vmin, vmax=vmax)
     else:
-        halfrange = np.abs(var).max(skipna=True)
+        halfrange = np.abs(var - center).max(skipna=True)
         normalizer = CenteredNorm(vcenter=center, halfrange=halfrange)
 
     return normalizer(var.data)
