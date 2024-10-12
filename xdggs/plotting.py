@@ -60,7 +60,7 @@ def explore(
 
     polygons = grid_info.cell_boundaries(cell_ids, backend="geoarrow")
 
-    normalized_data = normalize(arr.variable)
+    normalized_data = normalize(arr.variable, center=center)
 
     colormap = colormaps[cmap]
     colors = apply_continuous_cmap(normalized_data, colormap, alpha=alpha)
