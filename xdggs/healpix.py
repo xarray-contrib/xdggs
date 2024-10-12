@@ -1,3 +1,4 @@
+import json
 import operator
 from collections.abc import Mapping
 from dataclasses import dataclass, field
@@ -52,7 +53,9 @@ def polygons_geoarrow(vertices):
         polygon_array.field.with_metadata(
             {
                 "ARROW:extension:name": "geoarrow.polygon",
-                "ARROW:extension:metadata": f'{{"crs": {crs.to_json()}}}',
+                "ARROW:extension:metadata": json.dumps(
+                    {"crs": crs.to_json_dict(), "edges": "spherical"}
+                ),
             }
         )
     )
