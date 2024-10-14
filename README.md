@@ -60,7 +60,7 @@ xarray_data.to_netcdf('resampled_data.nc')
 You can install the dependencies with:
 
 ```bash
-pip install xarray numpy dask 
+pip install xarray numpy dask
 ```
 
 ## Documentation
