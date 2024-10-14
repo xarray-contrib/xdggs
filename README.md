@@ -35,8 +35,15 @@ import xarray as xr
 import xdggs
 
 # Load your Xarray dataset
-ds = xr.open_dataset('path_to_your_data.nc')
+ds = xr.open_dataset("data/h3.nc", engine="netcdf4")
+ds_idx = ds.pipe(xdggs.decode)
+ds_idx.dggs.sel_latlon(np.array([37.0, 37.5]), np.array([299.3, 299.5]))
 
+ds2 = ds_idx.dggs.assign_latlon_coords()
+
+result = ds_idx.dggs.sel_latlon(ds2.latitude.data, ds2.longitude.data)
+
+xr.testing.assert_equal(result, ds)
 ...
 
 # Save the processed data
@@ -58,7 +65,7 @@ pip install xarray numpy dask
 
 ## Documentation
 
-Under construction.
+You can find additional examples in [https://github.com/xarray-contrib/xdggs/tree/main/examples](https://github.com/xarray-contrib/xdggs/tree/main/examples).
 
 ## Contributing
 
