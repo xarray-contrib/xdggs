@@ -14,6 +14,7 @@ from xdggs import plotting
             xr.DataArray(
                 [-1, 1],
                 coords={
+                    "cell_ids": ("cells", [0, 1]),
                     "latitude": ("cells", [-5, 10]),
                     "longitude": ("cells", [-60, -50]),
                 },
@@ -23,6 +24,7 @@ from xdggs import plotting
             Table.from_pydict(
                 {
                     "geometry": Array.from_numpy(np.array([1, 2])),
+                    "cell_ids": Array.from_numpy(np.array([0, 1])),
                     "data": Array.from_numpy(np.array([-1, 1])),
                     "latitude": Array.from_numpy(np.array([-5, 10])),
                     "longitude": Array.from_numpy(np.array([-60, -50])),
@@ -34,6 +36,7 @@ from xdggs import plotting
             xr.DataArray(
                 [-1, 1],
                 coords={
+                    "cell_ids": ("cells", [1, 2]),
                     "latitude": ("cells", [-5, 10]),
                     "longitude": ("cells", [-60, -50]),
                 },
@@ -43,6 +46,7 @@ from xdggs import plotting
             Table.from_pydict(
                 {
                     "geometry": Array.from_numpy(np.array([1, 2])),
+                    "cell_ids": Array.from_numpy(np.array([1, 2])),
                     "data": Array.from_numpy(np.array([-1, 1])),
                     "latitude": Array.from_numpy(np.array([-5, 10])),
                 }
@@ -53,6 +57,7 @@ from xdggs import plotting
             xr.DataArray(
                 [-1, 1],
                 coords={
+                    "cell_ids": ("cells", [0, 1]),
                     "latitude": ("cells", [-5, 10]),
                     "longitude": ("cells", [-60, -50]),
                 },
@@ -63,6 +68,7 @@ from xdggs import plotting
             Table.from_pydict(
                 {
                     "geometry": Array.from_numpy(np.array([1, 3])),
+                    "cell_ids": Array.from_numpy(np.array([0, 1])),
                     "new_data": Array.from_numpy(np.array([-1, 1])),
                     "longitude": Array.from_numpy(np.array([-60, -50])),
                 }
