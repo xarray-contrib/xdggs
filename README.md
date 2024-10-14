@@ -67,6 +67,10 @@ pip install xarray numpy dask
 
 You can find additional examples in [https://github.com/xarray-contrib/xdggs/tree/main/examples](https://github.com/xarray-contrib/xdggs/tree/main/examples).
 
+## Roadmap
+
+We have exciting plans to expand xdggs with new features and improvements. You can check out our roadmap in the [design_doc.md](design_doc.md) file for details on upcoming features, future enhancements, and release timelines.
+
 ## Contributing
 
 We welcome contributions to `xdggs`! Please follow these steps to get involved:
