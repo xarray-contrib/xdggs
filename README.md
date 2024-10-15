@@ -32,7 +32,7 @@ pip install xdggs
 
 ## Getting Started
 
-Here's a quick example of how to use `xdggs` to convert your Xarray data to a DGGS grid and perform resampling.
+As an example, this is how you would use `xdggs` to reconstruct geographical coordinates from the cell ids:
 
 ```python
 import xarray as xr
