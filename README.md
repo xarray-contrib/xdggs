@@ -32,7 +32,7 @@ pip install xdggs
 
 ## Getting Started
 
-As an example, this is how you would use `xdggs` to reconstruct geographical coordinates from the cell ids then make interactive plotting indicating cell ids and associated Latitude and Longitude coordinate:
+As an example, this is how you would use `xdggs` to reconstruct geographical coordinates from the cell ids then create an interactive plot indicating cell ids, data values and the associated geographical coordinates:
 
 ```python
 import xarray as xr
