@@ -59,7 +59,7 @@ xarray_data.to_netcdf('resampled_data.nc')
 - Python >= 3.10
 - Xarray >= 2023.09.0
 - NumPy >= 1.24.0
-- Dask (optional, for parallel computing)
+- Dask >= 2023.10.0 (optional, for parallel computing)
 
 You can install the dependencies with:
 
