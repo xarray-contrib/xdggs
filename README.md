@@ -44,7 +44,7 @@ ds = xr.open_dataset("data/h3.nc", engine="netcdf4")
 # Decode DGGS coordinates
 ds_idx = ds.pipe(xdggs.decode)
 
-# Assigne Latitude and Longitude coordinates
+# Assign geographical coordinates
 ds_idx = ds_idx.dggs.assign_latlon_coords()
 
 # Make interactive plotting
