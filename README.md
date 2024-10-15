@@ -15,7 +15,7 @@
 To install `xdggs`, you can clone the repository and install it using pip:
 
 ```bash
-git clone https://github.com/your-repo/xdggs.git
+git clone https://github.com/xarray-contrib/xdggs.git
 cd xdggs
 pip install .
 ```
