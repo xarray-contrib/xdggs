@@ -32,26 +32,24 @@ pip install xdggs
 
 ## Getting Started
 
-As an example, this is how you would use `xdggs` to reconstruct geographical coordinates from the cell ids:
+As an example, this is how you would use `xdggs` to reconstruct geographical coordinates from the cell ids then make interactive plotting indicating cell ids and associated Latitude and Longitude coordinate:
 
 ```python
 import xarray as xr
 import xdggs
 
-# Load your Xarray dataset
+# Load your Xarray dataset made using ./examples/prepare_dataset_h3.ipynb
 ds = xr.open_dataset("data/h3.nc", engine="netcdf4")
+
+# Decode DGGS coordinates
 ds_idx = ds.pipe(xdggs.decode)
-ds_idx.dggs.sel_latlon(np.array([37.0, 37.5]), np.array([299.3, 299.5]))
 
-ds2 = ds_idx.dggs.assign_latlon_coords()
+# Assigne Latitude and Longitude coordinates
+ds_idx = ds_idx.dggs.assign_latlon_coords()
 
-result = ds_idx.dggs.sel_latlon(ds2.latitude.data, ds2.longitude.data)
+# Make interactive plotting
+ds_idx['air'].isel(time=0).compute().dggs.explore(center=0, cmap="viridis", alpha=0.5)
 
-xr.testing.assert_equal(result, ds)
-...
-
-# Save the processed data
-xarray_data.to_netcdf('resampled_data.nc')
 ```
 
 ## Dependencies
