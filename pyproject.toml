@@ -34,14 +34,10 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "xarray",
-    "healpy",
-    "h3ronpy",
-    "typing-extensions",
-]
-
-[project.optional-dependencies]
-explore = [
+  "xarray",
+  "healpy",
+  "h3ronpy",
+  "typing-extensions",
   "lonboard>=0.9.3",
   "pyproj>=3.3",
   "matplotlib",
