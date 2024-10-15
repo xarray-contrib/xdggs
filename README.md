@@ -61,7 +61,7 @@ xarray_data.to_netcdf('resampled_data.nc')
 - NumPy >= 1.24.0
 - Dask >= 2023.10.0 (optional, for parallel computing)
 
-You can install the dependencies with:
+If needed, you can install the dependencies with:
 
 ```bash
 pip install xarray numpy dask
@@ -73,7 +73,7 @@ You can find additional examples in [https://github.com/xarray-contrib/xdggs/tre
 
 ## Roadmap
 
-We have exciting plans to expand xdggs with new features and improvements. You can check out our roadmap in the [design_doc.md](design_doc.md) file for details on upcoming features, future enhancements, and release timelines.
+We have exciting plans to expand xdggs with new features and improvements. You can check out our roadmap in the [design_doc.md](design_doc.md) file for details on the design of xdggs, upcoming features, and future enhancements.
 
 ## Contributing
 
