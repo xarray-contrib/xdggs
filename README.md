@@ -26,6 +26,10 @@ Alternatively, you can install it directly via pip (once it's available on PyPI)
 pip install xdggs
 ```
 
+## Demo
+
+![xdggs demo](xdggs-cropped.gif)
+
 ## Getting Started
 
 Here's a quick example of how to use `xdggs` to convert your Xarray data to a DGGS grid and perform resampling.
