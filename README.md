@@ -4,11 +4,11 @@
 
 ## Key Features
 
-- decoding / creating the index (xdggs.decode, possibly replaced by .dggs.decode)
-- selecting by geographical coordinates without actually having the geographical coordinates on the object (sel_latlon)
-- extracting cell center coordinates from the cell ids (cell_centers, and the older assign_latlon_coords)
-- extracting cell boundaries from the cell ids (cell_boundaries)
-- plotting with lonboard (explore)
+- **Seamless Integration with Xarray**: Use `xdggs` alongside Xarray's powerful tools for managing labeled, multi-dimensional data.
+- **Support for DGGS**: Convert geospatial data into DGGS representations, allowing for uniform spatial partitioning of the Earth's surface.
+- **Spatial Resampling**: Resample data on DGGS grids, enabling downscaling or upscaling across multiple resolutions.
+- **DGGS Aggregation**: Perform spatial aggregation of data on DGGS cells.
+- **Efficient Data Management**: Manage large datasets with Xarray's lazy loading, Dask integration, and chunking to optimize performance.
 
 ## Installation
 
