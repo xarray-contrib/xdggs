@@ -7,8 +7,8 @@ repos:
       - id: check-docstring-first
       - id: check-yaml
       - id: check-toml
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.8
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: v3.3.3
     hooks:
       - id: prettier
         args: [--cache-location=.prettier_cache/cache]
@@ -34,5 +34,5 @@ repos:
         args: [--extra-keys=metadata.kernelspec metadata.langauge_info.version]
 
 ci:
-  autofix_prs: false
-  autoupdate_schedule: quarterly
+  autofix_prs: true
+  autoupdate_schedule: monthly
