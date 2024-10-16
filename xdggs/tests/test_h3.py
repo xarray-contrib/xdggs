@@ -8,6 +8,7 @@ import xarray as xr
 from xarray.core.indexes import PandasIndex
 
 from xdggs import h3
+from xdggs.tests import geoarrow_to_shapely
 
 # from the h3 gallery, at resolution 3
 cell_ids = [
@@ -202,14 +203,18 @@ class TestH3Info:
             ),
         ),
     )
-    def test_cell_boundaries(self, resolution, cell_ids, expected_coords):
+    @pytest.mark.parametrize("backend", ["shapely", "geoarrow"])
+    def test_cell_boundaries(self, resolution, cell_ids, backend, expected_coords):
         expected = shapely.polygons(expected_coords)
 
         grid = h3.H3Info(resolution=resolution)
 
-        actual = grid.cell_boundaries(cell_ids)
+        backends = {"shapely": lambda arr: arr, "geoarrow": geoarrow_to_shapely}
+        converter = backends[backend]
 
-        shapely.testing.assert_geometries_equal(actual, expected)
+        actual = grid.cell_boundaries(cell_ids, backend=backend)
+
+        shapely.testing.assert_geometries_equal(converter(actual), expected)
 
 
 @pytest.mark.parametrize("resolution", resolutions)

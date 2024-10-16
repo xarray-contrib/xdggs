@@ -1,3 +1,4 @@
+import json
 import operator
 from collections.abc import Mapping
 from dataclasses import dataclass, field
@@ -24,6 +25,72 @@ try:
     ExceptionGroup
 except NameError:  # pragma: no cover
     from exceptiongroup import ExceptionGroup
+
+
+def polygons_shapely(vertices):
+    import shapely
+
+    return shapely.polygons(vertices)
+
+
+def polygons_geoarrow(vertices):
+    import pyproj
+    from arro3.core import list_array
+
+    polygon_vertices = np.concatenate([vertices, vertices[:, :1, :]], axis=1)
+    crs = pyproj.CRS.from_epsg(4326)
+
+    # construct geoarrow arrays
+    coords = np.reshape(polygon_vertices, (-1, 2))
+    coords_per_pixel = polygon_vertices.shape[1]
+    geom_offsets = np.arange(vertices.shape[0] + 1, dtype="int32")
+    ring_offsets = geom_offsets * coords_per_pixel
+
+    polygon_array = list_array(geom_offsets, list_array(ring_offsets, coords))
+
+    # We need to tag the array with extension metadata (`geoarrow.polygon`) so that Lonboard knows that this is a geospatial column.
+    polygon_array_with_geo_meta = polygon_array.cast(
+        polygon_array.field.with_metadata(
+            {
+                "ARROW:extension:name": "geoarrow.polygon",
+                "ARROW:extension:metadata": json.dumps(
+                    {"crs": crs.to_json_dict(), "edges": "spherical"}
+                ),
+            }
+        )
+    )
+    return polygon_array_with_geo_meta
+
+
+def center_around_prime_meridian(lon, lat):
+    # three tasks:
+    # - center around the prime meridian (map to a range of [-180, 180])
+    # - replace the longitude of points at the poles with the median
+    #   of longitude of the other vertices
+    # - cells that cross the dateline should have longitudes around 180
+
+    # center around prime meridian
+    recentered = (lon + 180) % 360 - 180
+
+    # replace lon of pole with the median of the remaining vertices
+    contains_poles = np.isin(lat, np.array([-90, 90]))
+    pole_cells = np.any(contains_poles, axis=-1)
+    recentered[contains_poles] = np.median(
+        np.reshape(
+            recentered[pole_cells[:, None] & np.logical_not(contains_poles)], (-1, 3)
+        ),
+        axis=-1,
+    )
+
+    # keep cells that cross the dateline centered around 180
+    polygons_to_fix = np.any(recentered < -100, axis=-1) & np.any(
+        recentered > 100, axis=-1
+    )
+    result = np.where(
+        polygons_to_fix[:, None] & (recentered < 0), recentered + 360, recentered
+    )
+
+    return result
 
 
 @dataclass(frozen=True)
@@ -135,23 +202,29 @@ class HealpixInfo(DGGSInfo):
     def geographic2cell_ids(self, lon, lat):
         return healpy.ang2pix(self.nside, lon, lat, lonlat=True, nest=self.nest)
 
-    def cell_boundaries(self, cell_ids: Any) -> np.ndarray:
-        import shapely
-
+    def cell_boundaries(self, cell_ids: Any, backend="shapely") -> np.ndarray:
         boundary_vectors = healpy.boundaries(
             self.nside, cell_ids, step=1, nest=self.nest
         )
 
         lon, lat = healpy.vec2ang(np.moveaxis(boundary_vectors, 1, -1), lonlat=True)
-        boundaries = np.reshape(np.stack((lon, lat), axis=-1), (-1, 4, 2))
+        lon_reshaped = np.reshape(lon, (-1, 4))
+        lat_reshaped = np.reshape(lat, (-1, 4))
 
-        # fix the dateline / prime meridian issue
-        lon_ = boundaries[..., 0]
-        to_fix = abs(np.max(lon_, axis=-1) - np.min(lon_, axis=-1)) > 300
-        fixed_lon = (lon_[to_fix, :] + 180) % 360 - 180
-        boundaries[to_fix, :, 0] = fixed_lon
+        lon_ = center_around_prime_meridian(lon_reshaped, lat_reshaped)
 
-        return shapely.polygons(boundaries)
+        vertices = np.stack((lon_, lat_reshaped), axis=-1)
+
+        backends = {
+            "shapely": polygons_shapely,
+            "geoarrow": polygons_geoarrow,
+        }
+
+        backend_func = backends.get(backend)
+        if backend_func is None:
+            raise ValueError("invalid backend: {backend!r}")
+
+        return backend_func(vertices)
 
 
 @register_dggs("healpix")

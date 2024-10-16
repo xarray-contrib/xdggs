@@ -13,6 +13,9 @@ dependencies:
   - hypothesis
   - ruff
   - typing-extensions
+  - geoarrow-pyarrow
+  - lonboard
   - pip
   - pip:
+      - arro3-core
       - h3ronpy
