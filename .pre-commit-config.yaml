@@ -34,5 +34,5 @@ repos:
         args: [--extra-keys=metadata.kernelspec metadata.langauge_info.version]
 
 ci:
-  autofix_prs: false
+  autofix_prs: true
   autoupdate_schedule: quarterly
