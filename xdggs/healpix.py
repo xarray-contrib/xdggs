@@ -1,7 +1,7 @@
 import json
 import operator
 from collections.abc import Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, ClassVar, Literal, TypeVar
 
 try:
@@ -99,8 +99,6 @@ class HealpixInfo(DGGSInfo):
 
     indexing_scheme: Literal["nested", "ring", "unique"] = "nested"
 
-    rotation: list[float, float] = field(default_factory=lambda: [0.0, 0.0])
-
     valid_parameters: ClassVar[dict[str, Any]] = {
         "resolution": range(0, 29 + 1),
         "indexing_scheme": ["nested", "ring", "unique"],
@@ -113,11 +111,6 @@ class HealpixInfo(DGGSInfo):
         if self.indexing_scheme not in self.valid_parameters["indexing_scheme"]:
             raise ValueError(
                 f"indexing scheme must be one of {self.valid_parameters['indexing_scheme']}"
-            )
-
-        if np.any(np.isnan(self.rotation) | np.isinf(self.rotation)):
-            raise ValueError(
-                f"rotation must consist of finite values, got {self.rotation}"
             )
 
     @property
@@ -149,10 +142,6 @@ class HealpixInfo(DGGSInfo):
             "level": ("resolution", identity),
             "depth": ("resolution", identity),
             "nest": ("indexing_scheme", lambda nest: "nested" if nest else "ring"),
-            "rot_latlon": (
-                "rotation",
-                lambda rot_latlon: (rot_latlon[1], rot_latlon[0]),
-            ),
         }
 
         def translate(name, value):
@@ -191,7 +180,6 @@ class HealpixInfo(DGGSInfo):
             "grid_name": "healpix",
             "resolution": self.resolution,
             "indexing_scheme": self.indexing_scheme,
-            "rotation": self.rotation,
         }
 
     def cell_ids2geographic(self, cell_ids):
@@ -261,4 +249,4 @@ class HealpixIndex(DGGSIndex):
         return self._grid
 
     def _repr_inline_(self, max_width: int):
-        return f"HealpixIndex(nside={self._grid.resolution}, indexing_scheme={self._grid.indexing_scheme}, rotation={self._grid.rotation!r})"
+        return f"HealpixIndex(nside={self._grid.resolution}, indexing_scheme={self._grid.indexing_scheme})"
