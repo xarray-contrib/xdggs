@@ -46,7 +46,7 @@ class DGGSInfo:
     def geographic2cell_ids(self, lon, lat):
         raise NotImplementedError()
 
-    def cell_boundaries(self, cell_ids):
+    def cell_boundaries(self, cell_ids, backend="shapely"):
         raise NotImplementedError()
 
 

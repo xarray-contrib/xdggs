@@ -1,31 +1,31 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-docstring-first
       - id: check-yaml
       - id: check-toml
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.8
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: v3.3.3
     hooks:
       - id: prettier
         args: [--cache-location=.prettier_cache/cache]
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.9
+    rev: v0.6.9
     hooks:
       - id: ruff
         args: [--fix]
   - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 24.4.2
+    rev: 24.10.0
     hooks:
       - id: black-jupyter
   - repo: https://github.com/keewis/blackdoc
     rev: v0.3.9
     hooks:
       - id: blackdoc
-        additional_dependencies: ["black==24.4.2"]
+        additional_dependencies: ["black==24.10.0"]
       - id: blackdoc-autoupdate-black
   - repo: https://github.com/kynan/nbstripout
     rev: 0.7.1
@@ -34,5 +34,5 @@ repos:
         args: [--extra-keys=metadata.kernelspec metadata.langauge_info.version]
 
 ci:
-  autofix_prs: false
-  autoupdate_schedule: quarterly
+  autofix_prs: true
+  autoupdate_schedule: monthly

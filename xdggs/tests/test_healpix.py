@@ -12,7 +12,7 @@ from hypothesis import given
 from xarray.core.indexes import PandasIndex
 
 from xdggs import healpix
-from xdggs.tests import assert_exceptions_equal
+from xdggs.tests import assert_exceptions_equal, geoarrow_to_shapely
 
 try:
     ExceptionGroup
@@ -29,11 +29,6 @@ class strategies:
         lambda x: x not in ["nested", "ring", "unique"]
     )
 
-    def rotations():
-        lon_rotation = st.floats(min_value=-180.0, max_value=360.0)
-        lat_rotation = st.floats(min_value=-90.0, max_value=90.0)
-        return st.tuples(lon_rotation, lat_rotation)
-
     dims = xrst.names()
 
     @classmethod
@@ -46,8 +41,6 @@ class strategies:
             "order": cls.levels,
             "indexing_scheme": cls.indexing_schemes,
             "nest": st.booleans(),
-            "rotation": cls.rotations(),
-            "rot_latlon": cls.rotations().map(lambda x: x[::-1]),
         }
 
         names = {
@@ -55,7 +48,6 @@ class strategies:
                 ["resolution", "nside", "depth", "level", "order"]
             ),
             "indexing_scheme": st.sampled_from(["indexing_scheme", "nest"]),
-            "rotation": st.sampled_from(["rotation", "rot_latlon"]),
         }
 
         return st.builds(lambda **x: list(x.values()), **names).flatmap(
@@ -81,13 +73,11 @@ class strategies:
     def grids(
         levels=levels,
         indexing_schemes=indexing_schemes,
-        rotations=rotations(),
     ):
         return st.builds(
             healpix.HealpixInfo,
             level=levels,
             indexing_scheme=indexing_schemes,
-            rotation=rotations,
         )
 
     @classmethod
@@ -95,7 +85,6 @@ class strategies:
         cls,
         levels=levels,
         indexing_schemes=indexing_schemes,
-        rotations=rotations(),
         dtypes=None,
     ):
         cell_levels = st.shared(levels, key="common-levels")
@@ -108,7 +97,6 @@ class strategies:
         grids_ = cls.grids(
             levels=grid_levels,
             indexing_schemes=indexing_schemes,
-            rotations=rotations,
         )
 
         return cell_ids_, grids_
@@ -124,7 +112,6 @@ variables = [
             "grid_name": "healpix",
             "level": 0,
             "indexing_scheme": "nested",
-            "rotation": (0, 0),
         },
     ),
     xr.Variable(
@@ -134,7 +121,6 @@ variables = [
             "grid_name": "healpix",
             "level": 0,
             "indexing_scheme": "ring",
-            "rotation": (0, 0),
         },
     ),
     xr.Variable(
@@ -144,7 +130,6 @@ variables = [
             "grid_name": "healpix",
             "level": 1,
             "indexing_scheme": "nested",
-            "rotation": (0, 0),
         },
     ),
     xr.Variable(
@@ -154,7 +139,6 @@ variables = [
             "grid_name": "healpix",
             "level": 3,
             "indexing_scheme": "nested",
-            "rotation": (0, 0),
         },
     ),
 ]
@@ -177,15 +161,12 @@ class TestHealpixInfo:
                 indexing_scheme=indexing_scheme,
             )
 
-    @given(strategies.levels, strategies.indexing_schemes, strategies.rotations())
-    def test_init(self, level, indexing_scheme, rotation):
-        grid = healpix.HealpixInfo(
-            level=level, indexing_scheme=indexing_scheme, rotation=rotation
-        )
+    @given(strategies.levels, strategies.indexing_schemes)
+    def test_init(self, level, indexing_scheme):
+        grid = healpix.HealpixInfo(level=level, indexing_scheme=indexing_scheme)
 
         assert grid.level == level
         assert grid.indexing_scheme == indexing_scheme
-        assert grid.rotation == rotation
 
     @given(strategies.levels)
     def test_nside(self, level):
@@ -211,26 +192,22 @@ class TestHealpixInfo:
     def test_from_dict(self, mapping) -> None:
         healpix.HealpixInfo.from_dict(mapping)
 
-    @given(strategies.levels, strategies.indexing_schemes, strategies.rotations())
-    def test_to_dict(self, level, indexing_scheme, rotation) -> None:
-        grid = healpix.HealpixInfo(
-            level=level, indexing_scheme=indexing_scheme, rotation=rotation
-        )
+    @given(strategies.levels, strategies.indexing_schemes)
+    def test_to_dict(self, level, indexing_scheme) -> None:
+        grid = healpix.HealpixInfo(level=level, indexing_scheme=indexing_scheme)
         actual = grid.to_dict()
 
-        assert set(actual) == {"grid_name", "level", "indexing_scheme", "rotation"}
+        assert set(actual) == {"grid_name", "level", "indexing_scheme"}
         assert actual["grid_name"] == "healpix"
         assert actual["level"] == level
         assert actual["indexing_scheme"] == indexing_scheme
-        assert actual["rotation"] == rotation
 
-    @given(strategies.levels, strategies.indexing_schemes, strategies.rotations())
-    def test_roundtrip(self, level, indexing_scheme, rotation):
+    @given(strategies.levels, strategies.indexing_schemes)
+    def test_roundtrip(self, level, indexing_scheme):
         mapping = {
             "grid_name": "healpix",
             "level": level,
             "indexing_scheme": indexing_scheme,
-            "rotation": rotation,
         }
 
         grid = healpix.HealpixInfo.from_dict(mapping)
@@ -246,10 +223,10 @@ class TestHealpixInfo:
                 np.array([2]),
                 np.array(
                     [
-                        [0.0, 90.0],
-                        [180.0, 41.8103149],
-                        [225.0, 0.0],
-                        [270.0, 41.8103149],
+                        [-135.0, 90.0],
+                        [-180.0, 41.8103149],
+                        [-135.0, 0.0],
+                        [-90.0, 41.8103149],
                     ]
                 ),
             ),
@@ -265,10 +242,10 @@ class TestHealpixInfo:
                             [30.0, 54.3409123],
                         ],
                         [
-                            [315.0, 41.8103149],
-                            [303.75, 30.0],
-                            [315.0, 19.47122063],
-                            [326.25, 30.0],
+                            [-45.0, 41.8103149],
+                            [-56.25, 30.0],
+                            [-45.0, 19.47122063],
+                            [-33.75, 30.0],
                         ],
                     ]
                 ),
@@ -307,13 +284,20 @@ class TestHealpixInfo:
             ),
         ),
     )
-    def test_cell_boundaries(self, params, cell_ids, expected_coords):
+    @pytest.mark.parametrize("backend", ["shapely", "geoarrow"])
+    def test_cell_boundaries(self, params, cell_ids, backend, expected_coords):
         grid = healpix.HealpixInfo.from_dict(params)
 
-        actual = grid.cell_boundaries(cell_ids)
+        actual = grid.cell_boundaries(cell_ids, backend=backend)
+
+        backends = {
+            "shapely": lambda arr: arr,
+            "geoarrow": geoarrow_to_shapely,
+        }
+        converter = backends[backend]
         expected = shapely.polygons(expected_coords)
 
-        shapely.testing.assert_geometries_equal(actual, expected)
+        shapely.testing.assert_geometries_equal(converter(actual), expected)
 
     @given(
         *strategies.grid_and_cell_ids(
@@ -393,23 +377,22 @@ class TestHealpixInfo:
     ["mapping", "expected"],
     (
         pytest.param(
-            {"level": 10, "indexing_scheme": "nested", "rotation": (0.0, 0.0)},
-            {"level": 10, "indexing_scheme": "nested", "rotation": (0.0, 0.0)},
+            {"resolution": 10, "indexing_scheme": "nested"},
+            {"level": 10, "indexing_scheme": "nested"},
             id="no_translation",
         ),
         pytest.param(
             {
                 "level": 10,
                 "indexing_scheme": "nested",
-                "rotation": (0.0, 0.0),
                 "grid_name": "healpix",
             },
-            {"level": 10, "indexing_scheme": "nested", "rotation": (0.0, 0.0)},
+            {"level": 10, "indexing_scheme": "nested"},
             id="no_translation-grid_name",
         ),
         pytest.param(
-            {"nside": 1024, "indexing_scheme": "nested", "rotation": (0.0, 0.0)},
-            {"level": 10, "indexing_scheme": "nested", "rotation": (0.0, 0.0)},
+            {"nside": 1024, "indexing_scheme": "nested"},
+            {"level": 10, "indexing_scheme": "nested"},
             id="nside-alone",
         ),
         pytest.param(
@@ -417,7 +400,6 @@ class TestHealpixInfo:
                 "nside": 1024,
                 "level": 10,
                 "indexing_scheme": "nested",
-                "rotation": (0.0, 0.0),
             },
             ExceptionGroup(
                 "received multiple values for parameters",
@@ -434,7 +416,6 @@ class TestHealpixInfo:
                 "level": 10,
                 "indexing_scheme": "nested",
                 "nest": True,
-                "rotation": (0.0, 0.0),
             },
             ExceptionGroup(
                 "received multiple values for parameters",
@@ -452,7 +433,6 @@ class TestHealpixInfo:
                 "level": 10,
                 "indexing_scheme": "nested",
                 "nest": True,
-                "rotation": (0.0, 0.0),
             },
             ExceptionGroup(
                 "received multiple values for parameters",
@@ -503,7 +483,6 @@ class TestHealpixIndex:
 def test_from_variables(variable_name, variable, options) -> None:
     expected_level = variable.attrs["level"]
     expected_scheme = variable.attrs["indexing_scheme"]
-    expected_rot = variable.attrs["rotation"]
 
     variables = {variable_name: variable}
 
@@ -511,7 +490,6 @@ def test_from_variables(variable_name, variable, options) -> None:
 
     assert index._grid.level == expected_level
     assert index._grid.indexing_scheme == expected_scheme
-    assert index._grid.rotation == expected_rot
 
     assert (index._dim,) == variable.dims
     np.testing.assert_equal(index._pd_index.index.values, variable.data)
@@ -541,9 +519,7 @@ def test_replace(old_variable, new_variable) -> None:
 @pytest.mark.parametrize("max_width", [20, 50, 80, 120])
 @pytest.mark.parametrize("level", [0, 1, 3])
 def test_repr_inline(level, max_width) -> None:
-    grid_info = healpix.HealpixInfo(
-        level=level, indexing_scheme="nested", rotation=(0, 0)
-    )
+    grid_info = healpix.HealpixInfo(level=level, indexing_scheme="nested")
     index = healpix.HealpixIndex(cell_ids=[0], dim="cells", grid_info=grid_info)
 
     actual = index._repr_inline_(max_width)

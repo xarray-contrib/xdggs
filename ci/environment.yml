@@ -1,4 +1,3 @@
-name: xdggs_dev
 channels:
   - conda-forge
 dependencies:
@@ -13,6 +12,9 @@ dependencies:
   - hypothesis
   - ruff
   - typing-extensions
+  - geoarrow-pyarrow
+  - lonboard
+  - arro3-core
   - pip
   - pip:
       - h3ronpy

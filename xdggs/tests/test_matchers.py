@@ -4,7 +4,7 @@ from xdggs.tests import matchers
 
 try:
     ExceptionGroup
-except NameError:
+except NameError:  # pragma: no cover
     from exceptiongroup import ExceptionGroup
 
 
