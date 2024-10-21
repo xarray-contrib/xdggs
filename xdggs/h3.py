@@ -17,8 +17,9 @@ from h3ronpy.arrow.vector import (
 )
 from xarray.indexes import PandasIndex
 
-from xdggs.grid import DGGSInfo
+from xdggs.grid import DGGSInfo, translate_parameters
 from xdggs.index import DGGSIndex
+from xdggs.itertools import identity
 from xdggs.utils import _extract_cell_id_variable, register_dggs
 
 
@@ -60,21 +61,25 @@ def polygons_geoarrow(wkb):
 
 @dataclass(frozen=True)
 class H3Info(DGGSInfo):
-    resolution: int
+    level: int
 
-    valid_parameters: ClassVar[dict[str, Any]] = {"resolution": range(16)}
+    valid_parameters: ClassVar[dict[str, Any]] = {"level": range(16)}
 
     def __post_init__(self):
-        if self.resolution not in self.valid_parameters["resolution"]:
-            raise ValueError("resolution must be an integer between 0 and 15")
+        if self.level not in self.valid_parameters["level"]:
+            raise ValueError("level must be an integer between 0 and 15")
 
     @classmethod
     def from_dict(cls: type[Self], mapping: dict[str, Any]) -> Self:
-        params = {k: v for k, v in mapping.items() if k != "grid_name"}
+        translations = {
+            "resolution": ("level", identity),
+        }
+
+        params = translate_parameters(mapping, translations)
         return cls(**params)
 
     def to_dict(self: Self) -> dict[str, Any]:
-        return {"grid_name": "h3", "resolution": self.resolution}
+        return {"grid_name": "h3", "level": self.level}
 
     def cell_ids2geographic(
         self, cell_ids: np.ndarray
@@ -84,7 +89,7 @@ class H3Info(DGGSInfo):
         return lon, lat
 
     def geographic2cell_ids(self, lon, lat):
-        return coordinates_to_cells(lat, lon, self.resolution, radians=False)
+        return coordinates_to_cells(lat, lon, self.level, radians=False)
 
     def cell_boundaries(self, cell_ids, backend="shapely"):
         # TODO: convert cell ids directly to geoarrow once h3ronpy supports it
@@ -133,4 +138,4 @@ class H3Index(DGGSIndex):
         return type(self)(new_pd_index, self._dim, self._grid)
 
     def _repr_inline_(self, max_width: int):
-        return f"H3Index(resolution={self._grid.resolution})"
+        return f"H3Index(level={self._grid.level})"
