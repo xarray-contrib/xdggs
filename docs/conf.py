@@ -20,6 +20,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "IPython.sphinxext.ipython_directive",
     "IPython.sphinxext.ipython_console_highlighting",
+    "myst_parser",
 ]
 
 extlinks = {
