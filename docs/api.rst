@@ -54,4 +54,3 @@ Plotting
    :template: autosummary/accessor_method.rst
 
    DataArray.dggs.explore
-   Dataset.dggs.explore
