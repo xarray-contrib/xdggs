@@ -46,3 +46,12 @@ Data inference
    DataArray.dggs.cell_boundaries
    Dataset.dggs.cell_centers
    Dataset.dggs.cell_boundaries
+
+Plotting
+========
+.. autosummary::
+   :toctree: generated/
+   :template: autosummary/accessor_method.rst
+
+   DataArray.dggs.explore
+   Dataset.dggs.explore
