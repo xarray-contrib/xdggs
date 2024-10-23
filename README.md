@@ -28,7 +28,7 @@ pip install xdggs
 
 ## Demo
 
-![xdggs demo](xdggs-cropped.gif)
+![xdggs demo](https://raw.githubusercontent.com/xarray-contrib/xdggs/refs/heads/main/xdggs-cropped.gif)
 
 ## Getting Started
 
@@ -61,11 +61,11 @@ ds_idx['air'].isel(time=0).compute().dggs.explore(center=0, cmap="viridis", alph
 
 ## Documentation
 
-You can find additional examples in [https://github.com/xarray-contrib/xdggs/tree/main/examples](https://github.com/xarray-contrib/xdggs/tree/main/examples).
+You can find the documentation in [https://xdggs.readthedocs.io/en/latest/](https://xdggs.readthedocs.io/en/latest/).
 
 ## Roadmap
 
-We have exciting plans to expand xdggs with new features and improvements. You can check out our roadmap in the [design_doc.md](design_doc.md) file for details on the design of xdggs, upcoming features, and future enhancements.
+We have exciting plans to expand xdggs with new features and improvements. You can check out our roadmap in the [design_doc.md](https://github.com/xarray-contrib/xdggs/blob/main/design_doc.md) file for details on the design of xdggs, upcoming features, and future enhancements.
 
 ## Contributing
 
@@ -79,7 +79,7 @@ We welcome contributions to `xdggs`! Please follow these steps to get involved:
 
 ## License
 
-`xdggs` is licensed under the Apache License License. See [LICENSE](LICENSE) for more details.
+`xdggs` is licensed under the Apache License License. See [LICENSE](https://github.com/xarray-contrib/xdggs/blob/main/LICENSE) for more details.
 
 ## Acknowledgments
 
