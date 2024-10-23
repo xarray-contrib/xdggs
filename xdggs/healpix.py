@@ -120,6 +120,7 @@ class HealpixInfo(DGGSInfo):
 
     @property
     def nest(self: Self) -> bool:
+        """indexing_scheme as the healpy-compatible nest parameter"""
         if self.indexing_scheme not in {"nested", "ring"}:
             raise ValueError(
                 f"cannot convert indexing scheme {self.indexing_scheme} to `nest`"
