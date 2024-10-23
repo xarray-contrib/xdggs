@@ -59,6 +59,12 @@ class DGGSAccessor:
 
     @property
     def grid_info(self) -> DGGSInfo:
+        """The grid info object containing the DGGS type and its parameters.
+
+        Returns
+        -------
+        xdggs.DGGSInfo
+        """
         return self.index.grid_info
 
     def sel_latlon(

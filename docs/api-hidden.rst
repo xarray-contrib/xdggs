@@ -5,6 +5,14 @@
 .. autosummary::
    :toctree: generated
 
+   DGGSInfo.resolution
+
+   DGGSInfo.from_dict
+   DGGSInfo.to_dict
+   DGGSInfo.cell_boundaries
+   DGGSInfo.cell_ids2geographic
+   DGGSInfo.geographic2cell_ids
+
    HealpixInfo.resolution
    HealpixInfo.indexing_scheme
    HealpixInfo.valid_parameters

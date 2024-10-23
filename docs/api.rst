@@ -20,6 +20,8 @@ Grid parameter objects
 .. autosummary::
    :toctree: generated
 
+   DGGSInfo
+
    HealpixInfo
    H3Info
 
