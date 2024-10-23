@@ -14,6 +14,14 @@ Top-level functions
 
    decode
 
+Grid parameter objects
+======================
+
+.. autosummary::
+   :toctree: generated
+
+   HealpixInfo
+   H3Info
 
 .. currentmodule:: xarray
 
