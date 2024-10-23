@@ -5,11 +5,20 @@
 .. autosummary::
    :toctree: generated
 
+   HealpixInfo.resolution
+   HealpixInfo.indexing_scheme
+   HealpixInfo.valid_parameters
+   HealpixInfo.nside
+   HealpixInfo.nest
+
    HealpixInfo.from_dict
    HealpixInfo.to_dict
    HealpixInfo.cell_boundaries
    HealpixInfo.cell_ids2geographic
    HealpixInfo.geographic2cell_ids
+
+   H3Info.resolution
+   H3Info.valid_parameters
 
    H3Info.from_dict
    H3Info.to_dict
