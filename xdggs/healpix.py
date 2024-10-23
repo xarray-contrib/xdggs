@@ -115,6 +115,7 @@ class HealpixInfo(DGGSInfo):
 
     @property
     def nside(self: Self) -> int:
+        """resolution as the healpy-compatible nside parameter"""
         return 2**self.resolution
 
     @property
