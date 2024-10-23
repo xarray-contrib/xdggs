@@ -1,7 +1,7 @@
 Quickstart
 ==========
 
-``xdggs`` allows you to handle geospatial data using Discrete Global Grid Systems (DGGS). 
+``xdggs`` allows you to handle geospatial data using Discrete Global Grid Systems (DGGS).
 
 You can install xdggs with pip:
 
@@ -27,7 +27,9 @@ To use the package, import ``xdggs``. Below is a simple example to use xdggs
     ds_idx = ds_idx.dggs.assign_latlon_coords()
 
     # Interactive visualization
-    ds_idx['air'].isel(time=0).compute().dggs.explore(center=0, cmap="viridis", alpha=0.5)
+    ds_idx["air"].isel(time=0).compute().dggs.explore(
+        center=0, cmap="viridis", alpha=0.5
+    )
 
     import xarray_regrid
     import xarray
@@ -39,5 +41,3 @@ To use the package, import ``xdggs``. Below is a simple example to use xdggs
 
     # or, for example:
     ds = ds.regrid.conservative(ds_grid, latitude_coord="lat")
-
-

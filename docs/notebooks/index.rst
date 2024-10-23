@@ -16,4 +16,3 @@ You will find here simple examples and tutorials.
   :caption: Tutorials
 
   tutorials/intro.ipynb
-
