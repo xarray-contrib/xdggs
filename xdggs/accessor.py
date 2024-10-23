@@ -101,6 +101,13 @@ class DGGSAccessor:
         return self._obj[self._name]
 
     def cell_centers(self):
+        """derive geographic cell center coordinates
+
+        Returns
+        -------
+        coords : xarray.Dataset
+            Dataset containing the cell centers in geographic coordinates.
+        """
         lon_data, lat_data = self.index.cell_centers()
 
         return xr.Dataset(
@@ -111,6 +118,13 @@ class DGGSAccessor:
         )
 
     def cell_boundaries(self):
+        """derive cell boundary polygons
+
+        Returns
+        -------
+        boundaries : xarray.DataArray
+            The cell boundaries as shapely objects.
+        """
         boundaries = self.index.cell_boundaries()
 
         return xr.DataArray(
