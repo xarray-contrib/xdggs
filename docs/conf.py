@@ -21,6 +21,8 @@ extensions = [
     "IPython.sphinxext.ipython_directive",
     "IPython.sphinxext.ipython_console_highlighting",
     "myst_parser",
+    "nbsphinx",
+    "autoapi.extension",
 ]
 
 extlinks = {
@@ -55,3 +57,11 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
     "sphinx": ("https://www.sphinx-doc.org/en/stable/", None),
 }
+
+# -- Options for autoapi --
+
+autoapi_dirs = ["../xdggs"]
+
+# -- Options for nbsphinx for converting Jupyter notebooks
+
+nbsphinx_execute = "never"
