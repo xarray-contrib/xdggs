@@ -1,6 +1,10 @@
 # -- Project information -----------------------------------------------------
 import datetime as dt
 
+import sphinx_autosummary_accessors
+
+import xdggs  # noqa: F401
+
 project = "xdggs"
 author = f"{project} developers"
 initial_year = "2023"
@@ -18,9 +22,13 @@ root_doc = "index"
 extensions = [
     "sphinx.ext.extlinks",
     "sphinx.ext.intersphinx",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.napoleon",
     "IPython.sphinxext.ipython_directive",
     "IPython.sphinxext.ipython_console_highlighting",
     "myst_parser",
+    "sphinx_autosummary_accessors",
 ]
 
 extlinks = {
@@ -29,13 +37,24 @@ extlinks = {
 }
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ["_templates"]
+templates_path = ["_templates", sphinx_autosummary_accessors.templates_path]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ["_build", "directory"]
 
+# -- autosummary / autodoc ---------------------------------------------------
+
+autosummary_generate = True
+autodoc_typehints = "none"
+
+# -- napoleon ----------------------------------------------------------------
+
+napoleon_numpy_docstring = True
+napoleon_use_param = False
+napoleon_use_rtype = False
+napoleon_preprocess_types = True
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -54,4 +73,8 @@ html_theme = "sphinx_book_theme"
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
     "sphinx": ("https://www.sphinx-doc.org/en/stable/", None),
+    "numpy": ("https://numpy.org/doc/stable", None),
+    "xarray": ("https://docs.xarray.dev/en/latest/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
+    "lonboard": ("https://developmentseed.org/lonboard/latest", None),
 }

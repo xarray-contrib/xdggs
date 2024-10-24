@@ -70,6 +70,19 @@ class H3Info(DGGSInfo):
 
     @classmethod
     def from_dict(cls: type[Self], mapping: dict[str, Any]) -> Self:
+        """construct a `H3Info` object from a mapping of attributes
+
+        Parameters
+        ----------
+        mapping: mapping of str to any
+            The attributes.
+
+        Returns
+        -------
+        grid_info : H3Info
+            The constructed grid info object.
+        """
+
         params = {k: v for k, v in mapping.items() if k != "grid_name"}
         return cls(**params)
 
