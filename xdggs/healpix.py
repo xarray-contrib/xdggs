@@ -130,6 +130,19 @@ class HealpixInfo(DGGSInfo):
 
     @classmethod
     def from_dict(cls: type[T], mapping: dict[str, Any]) -> T:
+        """construct a `HealpixInfo` object from a mapping of attributes
+
+        Parameters
+        ----------
+        mapping: mapping of str to any
+            The attributes.
+
+        Returns
+        -------
+        grid_info : HealpixInfo
+            The constructed grid info object.
+        """
+
         def translate_nside(nside):
             log = np.log2(nside)
             potential_resolution = int(log)
