@@ -56,3 +56,13 @@ Plotting
    :template: autosummary/accessor_method.rst
 
    DataArray.dggs.explore
+
+Tutorial
+========
+
+.. currentmodule:: xdggs
+
+.. autosummary::
+   :toctree: generated
+
+   tutorial.open_dataset
