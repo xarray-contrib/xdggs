@@ -66,6 +66,12 @@ napoleon_type_aliases = {
     "mapping": ":term:`mapping`",
     "file-like": ":term:`file-like <file-like object>`",
     "any": ":py:class:`any <object>`",
+    # numpy terms
+    "array_like": ":term:`array_like`",
+    "array-like": ":term:`array-like <array_like>`",
+    "scalar": ":term:`scalar`",
+    "array": ":term:`array`",
+    "hashable": ":term:`hashable <name>`",
 }
 
 # -- Options for HTML output -------------------------------------------------
@@ -89,4 +95,6 @@ intersphinx_mapping = {
     "xarray": ("https://docs.xarray.dev/en/latest/", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
     "lonboard": ("https://developmentseed.org/lonboard/latest", None),
+    "healpy": ("https://healpy.readthedocs.io/en/latest", None),
+    "shapely": ("https://shapely.readthedocs.io/en/stable", None),
 }
