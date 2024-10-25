@@ -108,7 +108,16 @@ class DGGSAccessor:
 
     @property
     def cell_ids(self):
-        return self._obj[self._name]
+        """The indexed DGGS (cell ids) coordinate as a DataArray.
+
+        Alias of ``coord``.
+
+        Raises
+        ------
+        ValueError
+            if no such coordinate is found on the Dataset / DataArray
+        """
+        return self.coord
 
     def cell_centers(self):
         """derive geographic cell center coordinates
