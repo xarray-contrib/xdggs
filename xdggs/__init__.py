@@ -1,5 +1,6 @@
 from importlib.metadata import PackageNotFoundError, version
 
+import xdggs.tutorial  # noqa: F401
 from xdggs.accessor import DGGSAccessor  # noqa: F401
 from xdggs.grid import DGGSInfo
 from xdggs.h3 import H3Index, H3Info
