@@ -31,9 +31,12 @@ class DGGSAccessor:
 
     @property
     def index(self) -> DGGSIndex:
-        """Returns the DGGSIndex instance for this Dataset or DataArray.
+        """The DGGSIndex instance for this Dataset or DataArray.
 
-        Raise a ``ValueError`` if no such index is found.
+        Raises
+        ------
+        ValueError
+            if no DGGSIndex can be found
         """
         if self._index is None:
             raise ValueError("no DGGSIndex found on this Dataset or DataArray")
@@ -41,10 +44,12 @@ class DGGSAccessor:
 
     @property
     def coord(self) -> xr.DataArray:
-        """Returns the indexed DGGS (cell ids) coordinate as a DataArray.
+        """The indexed DGGS (cell ids) coordinate as a DataArray.
 
-        Raise a ``ValueError`` if no such coordinate is found on this Dataset or DataArray.
-
+        Raises
+        ------
+        ValueError
+            if no such coordinate is found on the Dataset / DataArray
         """
         if not self._name:
             raise ValueError(
@@ -84,7 +89,6 @@ class DGGSAccessor:
         subset
             A new :py:class:`xarray.Dataset` or :py:class:`xarray.DataArray`
             with all cells that contain the input latitude/longitude data points.
-
         """
         cell_indexers = {
             self._name: self.grid_info.geographic2cell_ids(latitude, longitude)
