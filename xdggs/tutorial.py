@@ -69,9 +69,9 @@ def open_dataset(
 
     If a local copy is found then always use that to avoid network traffic.
 
-    Available datasets:
+    Available datasets (available grid names in parentheses):
 
-    * ``"air_temperature"`` (H3, healpix): NCEP reanalysis subset.
+    * ``"air_temperature"`` (``h3``, ``healpix``): NCEP reanalysis subset.
 
     Parameters
     ----------
