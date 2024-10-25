@@ -27,3 +27,4 @@ dependencies:
   - pip
   - pip:
       - h3ronpy
+      - -e ..
