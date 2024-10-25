@@ -10,7 +10,7 @@ Top-level functions
 .. currentmodule:: xdggs
 
 .. autosummary::
-   :toctree: generated/
+   :toctree: generated
 
    decode
 
@@ -30,7 +30,7 @@ Grid parameter objects
 Parameters
 ==========
 .. autosummary::
-   :toctree: generated/
+   :toctree: generated
    :template: autosummary/accessor_attribute.rst
 
    DataArray.dggs.grid_info
@@ -41,7 +41,7 @@ Data inference
 ==============
 
 .. autosummary::
-   :toctree: generated/
+   :toctree: generated
    :template: autosummary/accessor_method.rst
 
    DataArray.dggs.cell_centers
@@ -52,7 +52,7 @@ Data inference
 Plotting
 ========
 .. autosummary::
-   :toctree: generated/
+   :toctree: generated
    :template: autosummary/accessor_method.rst
 
    DataArray.dggs.explore
