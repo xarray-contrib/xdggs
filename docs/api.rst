@@ -27,18 +27,44 @@ Grid parameter objects
 
 .. currentmodule:: xarray
 
+Dataset
+=======
+
 Parameters
-==========
+----------
+.. autosummary::
+   :toctree: generated
+   :template: autosummary/accessor_attribute.rst
+
+   Dataset.dggs.grid_info
+   Dataset.dggs.params
+
+
+Data inference
+--------------
+
+.. autosummary::
+   :toctree: generated
+   :template: autosummary/accessor_method.rst
+
+   Dataset.dggs.cell_centers
+   Dataset.dggs.cell_boundaries
+
+DataArray
+=========
+
+Parameters
+----------
 .. autosummary::
    :toctree: generated
    :template: autosummary/accessor_attribute.rst
 
    DataArray.dggs.grid_info
-   Dataset.dggs.grid_info
+   DataArray.dggs.params
 
 
 Data inference
-==============
+--------------
 
 .. autosummary::
    :toctree: generated
@@ -46,11 +72,9 @@ Data inference
 
    DataArray.dggs.cell_centers
    DataArray.dggs.cell_boundaries
-   Dataset.dggs.cell_centers
-   Dataset.dggs.cell_boundaries
 
 Plotting
-========
+--------
 .. autosummary::
    :toctree: generated
    :template: autosummary/accessor_method.rst
