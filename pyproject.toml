@@ -46,7 +46,7 @@ dependencies = [
 ]
 
 [project.urls]
-# Home = "https://xdggs.readthedocs.io"
+Documentation = "https://xdggs.readthedocs.io"
 Repository = "https://github.com/xarray-contrib/xdggs"
 
 [tool.ruff]
