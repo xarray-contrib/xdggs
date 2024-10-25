@@ -120,7 +120,6 @@ class HealpixInfo(DGGSInfo):
         "resolution": range(0, 29 + 1),
         "indexing_scheme": ["nested", "ring", "unique"],
     }
-    """mapping of str to any : Valid values for the parameters."""
 
     def __post_init__(self):
         if self.resolution not in self.valid_parameters["resolution"]:
