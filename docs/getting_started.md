@@ -8,14 +8,14 @@ You can install xdggs with pip:
 pip install xdggs
 ```
 
-To use the package, import `xdggs`. Below is a simple example to use xdggs
+To use the package, import `xdggs`. Below is a simple example to use xdggs:
 
 ```python
 import xarray as xr
 import xdggs
 
-# Load the dataset created by ./examples/prepare_dataset_h3.ipynb
-ds = xr.open_dataset("data/h3.nc", engine="netcdf4")
+# Load the tutorial dataset
+ds = xr.tutorial.open_dataset("air_temperature", "h3")
 
 # Decode DGGS coordinates
 ds_idx = ds.pipe(xdggs.decode)
