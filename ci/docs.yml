@@ -1,0 +1,30 @@
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - sphinx
+  - myst-parser
+  - myst-nb
+  - sphinx-book-theme
+  - sphinx-autosummary-accessors
+  - sphinx-copybutton
+  - sphinx-design
+  - sphinx-inline-tabs
+  - xarray
+  - healpy
+  - h5netcdf
+  - netcdf4
+  - pooch
+  - matplotlib-base
+  - shapely
+  - pytest
+  - hypothesis
+  - ruff
+  - typing-extensions
+  - geoarrow-pyarrow
+  - lonboard
+  - arro3-core
+  - pip
+  - pip:
+      - h3ronpy
+      - -e ..

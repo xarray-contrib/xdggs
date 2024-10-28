@@ -24,10 +24,9 @@ except NameError:  # pragma: no cover
 class strategies:
     invalid_levels = st.integers(max_value=-1) | st.integers(min_value=30)
     levels = st.integers(min_value=0, max_value=29)
-    indexing_schemes = st.sampled_from(["nested", "ring", "unique"])
-    invalid_indexing_schemes = st.text().filter(
-        lambda x: x not in ["nested", "ring", "unique"]
-    )
+    # TODO: add back `"unique"` once that is supported
+    indexing_schemes = st.sampled_from(["nested", "ring"])
+    invalid_indexing_schemes = st.text().filter(lambda x: x not in ["nested", "ring"])
 
     dims = xrst.names()
 

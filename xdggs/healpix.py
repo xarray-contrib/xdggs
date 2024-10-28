@@ -89,9 +89,30 @@ def center_around_prime_meridian(lon, lat):
 
 @dataclass(frozen=True)
 class HealpixInfo(DGGSInfo):
+    """
+    Grid information container for healpix grids.
+
+    Parameters
+    ----------
+    level : int
+        Grid hierarchical level. A higher value corresponds to a finer grid resolution
+        with smaller cell areas. The number of cells covering the whole sphere usually
+        grows exponentially with increasing level values, ranging from 5-100 cells at
+        level 0 to millions or billions of cells at level 10+ (the exact numbers depends
+        on the specific grid).
+    indexing_scheme : {"nested", "ring", "unique"}, default: "nested"
+        The indexing scheme of the healpix grid.
+
+        .. warning::
+            Note that ``"unique"`` is currently not supported as the underlying library
+            (:doc:`healpy <healpy:index>`) does not support it.
+    """
+
     level: int
+    """int : The hierarchical level of the grid"""
 
     indexing_scheme: Literal["nested", "ring", "unique"] = "nested"
+    """int : The indexing scheme of the grid"""
 
     valid_parameters: ClassVar[dict[str, Any]] = {
         "level": range(0, 29 + 1),
@@ -106,13 +127,17 @@ class HealpixInfo(DGGSInfo):
             raise ValueError(
                 f"indexing scheme must be one of {self.valid_parameters['indexing_scheme']}"
             )
+        elif self.indexing_scheme == "unique":
+            raise ValueError("the indexing scheme `unique` is currently not supported")
 
     @property
     def nside(self: Self) -> int:
+        """resolution as the healpy-compatible nside parameter"""
         return 2**self.level
 
     @property
     def nest(self: Self) -> bool:
+        """indexing_scheme as the healpy-compatible nest parameter"""
         if self.indexing_scheme not in {"nested", "ring"}:
             raise ValueError(
                 f"cannot convert indexing scheme {self.indexing_scheme} to `nest`"
@@ -122,6 +147,19 @@ class HealpixInfo(DGGSInfo):
 
     @classmethod
     def from_dict(cls: type[T], mapping: dict[str, Any]) -> T:
+        """construct a `HealpixInfo` object from a mapping of attributes
+
+        Parameters
+        ----------
+        mapping: mapping of str to any
+            The attributes.
+
+        Returns
+        -------
+        grid_info : HealpixInfo
+            The constructed grid info object.
+        """
+
         def translate_nside(nside):
             log = np.log2(nside)
             potential_level = int(log)
@@ -142,6 +180,14 @@ class HealpixInfo(DGGSInfo):
         return cls(**params)
 
     def to_dict(self: Self) -> dict[str, Any]:
+        """
+        Dump the normalized grid parameters.
+
+        Returns
+        -------
+        mapping : dict of str to any
+            The normalized grid parameters.
+        """
         return {
             "grid_name": "healpix",
             "level": self.level,
@@ -149,14 +195,66 @@ class HealpixInfo(DGGSInfo):
         }
 
     def cell_ids2geographic(self, cell_ids):
+        """
+        Convert cell ids to geographic coordinates
+
+        Parameters
+        ----------
+        cell_ids : array-like
+            Array-like containing the cell ids.
+
+        Returns
+        -------
+        lon : array-like
+            The longitude coordinate values of the grid cells in degree
+        lat : array-like
+            The latitude coordinate values of the grid cells in degree
+        """
         lon, lat = healpy.pix2ang(self.nside, cell_ids, nest=self.nest, lonlat=True)
 
         return lon, lat
 
     def geographic2cell_ids(self, lon, lat):
+        """
+        Convert cell ids to geographic coordinates
+
+        This will perform a binning operation: any point within a grid cell will be assign
+        that cell's ID.
+
+        Parameters
+        ----------
+        lon : array-like
+            The longitude coordinate values in degree
+        lat : array-like
+            The latitude coordinate values in degree
+
+        Returns
+        -------
+        cell_ids : array-like
+            Array-like containing the cell ids.
+        """
         return healpy.ang2pix(self.nside, lon, lat, lonlat=True, nest=self.nest)
 
     def cell_boundaries(self, cell_ids: Any, backend="shapely") -> np.ndarray:
+        """
+        Derive cell boundary polygons from cell ids
+
+        Parameters
+        ----------
+        cell_ids : array-like
+            The cell ids.
+        backend : {"shapely", "geoarrow"}, default: "shapely"
+            The backend to convert to.
+
+        Returns
+        -------
+        polygons : array-like
+            The derived cell boundary polygons. The format differs based on the passed
+            backend:
+
+            - ``"shapely"``: return a array of :py:class:`shapely.Polygon` objects
+            - ``"geoarrow"``: return a ``geoarrow`` array
+        """
         boundary_vectors = healpy.boundaries(
             self.nside, cell_ids, step=1, nest=self.nest
         )
