@@ -41,11 +41,12 @@ dependencies = [
   "lonboard>=0.9.3",
   "pyproj>=3.3",
   "matplotlib",
-  "arro3-core>=0.4.0"
+  "arro3-core>=0.4.0",
+  "pooch",
 ]
 
 [project.urls]
-# Home = "https://xdggs.readthedocs.io"
+Documentation = "https://xdggs.readthedocs.io"
 Repository = "https://github.com/xarray-contrib/xdggs"
 
 [tool.ruff]
@@ -101,3 +102,8 @@ branch = true
 [tool.coverage.report]
 show_missing = true
 exclude_lines = ["pragma: no cover", "if TYPE_CHECKING"]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "error:::xdggs.*",
+]
