@@ -1,11 +1,20 @@
 ```{toctree}
 ---
 maxdepth: 3
+caption: Getting Started
+hidden: true
+---
+
+Installation <getting_started/installation>
+```
+
+```{toctree}
+---
+maxdepth: 3
 caption: User Guide
 hidden: true
 ---
 
-Quickstart <getting_started>
 Tutorials <notebooks/index>
 ```
 
