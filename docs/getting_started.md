@@ -21,7 +21,7 @@ ds = xr.tutorial.open_dataset("air_temperature", "h3")
 ds_idx = ds.pipe(xdggs.decode)
 
 # Assign geographical coordinates
-ds_idx = ds_idx.dggs.assign_latlon_coords()
+ds_idx = ds_idx.assign_coords(ds_idx.dggs.cell_centers().coords)
 
 # Interactive visualization
 ds_idx["air"].isel(time=0).compute().dggs.explore(
