@@ -2,7 +2,7 @@
 ---
 maxdepth: 3
 caption: User Guide
-hidden:
+hidden: true
 ---
 
 Quickstart <getting_started>
@@ -13,7 +13,7 @@ Tutorials <notebooks/index>
 ---
 maxdepth: 3
 caption: Technical information
-hidden:
+hidden: true
 ---
 
 Changelog <changelog>
