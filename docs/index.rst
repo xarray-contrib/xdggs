@@ -18,7 +18,7 @@
   :caption: Technical information
   :hidden:
 
-  Changelog <changelog_link>
+  Changelog <changelog>
 
 
 Welcome to the documentation of `xdggs`
