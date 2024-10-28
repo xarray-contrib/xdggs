@@ -1,15 +1,6 @@
 ```{toctree}
 ---
 maxdepth: 3
-hidden:
----
-
-self
-```
-
-```{toctree}
----
-maxdepth: 3
 caption: User Guide
 hidden:
 ---
