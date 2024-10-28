@@ -8,7 +8,7 @@ You can install xdggs with pip:
 pip install xdggs
 ```
 
-To use the package, import `xdggs`. Below is a simple example to use xdggs:
+To use the package, import `xdggs`. Below is a very simple usage example:
 
 ```python
 import xarray as xr
