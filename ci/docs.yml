@@ -10,8 +10,6 @@ dependencies:
   - sphinx-copybutton
   - sphinx-design
   - sphinx-inline-tabs
-  - nbsphinx
-  - sphinx-autoapi
   - xarray
   - healpy
   - h5netcdf
