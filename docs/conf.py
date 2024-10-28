@@ -27,8 +27,8 @@ extensions = [
     "sphinx.ext.napoleon",
     "IPython.sphinxext.ipython_directive",
     "IPython.sphinxext.ipython_console_highlighting",
-    "myst_nb",
     "sphinx_autosummary_accessors",
+    "myst_nb",
 ]
 
 extlinks = {
@@ -101,5 +101,5 @@ intersphinx_mapping = {
 
 # -- myst-nb options ---------------------------------------------------------
 
-nb_execution_timeout = 60
+nb_execution_timeout = -1
 nb_execution_cache_path = "_build/myst-nb"
