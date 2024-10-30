@@ -5,7 +5,7 @@
 .. autosummary::
    :toctree: generated
 
-   DGGSInfo.resolution
+   DGGSInfo.level
 
    DGGSInfo.from_dict
    DGGSInfo.to_dict
@@ -13,7 +13,7 @@
    DGGSInfo.cell_ids2geographic
    DGGSInfo.geographic2cell_ids
 
-   HealpixInfo.resolution
+   HealpixInfo.level
    HealpixInfo.indexing_scheme
    HealpixInfo.valid_parameters
    HealpixInfo.nside
@@ -25,7 +25,7 @@
    HealpixInfo.cell_ids2geographic
    HealpixInfo.geographic2cell_ids
 
-   H3Info.resolution
+   H3Info.level
    H3Info.valid_parameters
 
    H3Info.from_dict

@@ -17,8 +17,9 @@ from h3ronpy.arrow.vector import (
 )
 from xarray.indexes import PandasIndex
 
-from xdggs.grid import DGGSInfo
+from xdggs.grid import DGGSInfo, translate_parameters
 from xdggs.index import DGGSIndex
+from xdggs.itertools import identity
 from xdggs.utils import _extract_cell_id_variable, register_dggs
 
 
@@ -65,18 +66,22 @@ class H3Info(DGGSInfo):
 
     Parameters
     ----------
-    resolution : int
-        The resolution of the grid
+    level : int
+        Grid hierarchical level. A higher value corresponds to a finer grid resolution
+        with smaller cell areas. The number of cells covering the whole sphere usually
+        grows exponentially with increasing level values, ranging from 5-100 cells at
+        level 0 to millions or billions of cells at level 10+ (the exact numbers depends
+        on the specific grid).
     """
 
-    resolution: int
-    """int : The resolution of the grid"""
+    level: int
+    """int : The hierarchical level of the grid"""
 
-    valid_parameters: ClassVar[dict[str, Any]] = {"resolution": range(16)}
+    valid_parameters: ClassVar[dict[str, Any]] = {"level": range(16)}
 
     def __post_init__(self):
-        if self.resolution not in self.valid_parameters["resolution"]:
-            raise ValueError("resolution must be an integer between 0 and 15")
+        if self.level not in self.valid_parameters["level"]:
+            raise ValueError("level must be an integer between 0 and 15")
 
     @classmethod
     def from_dict(cls: type[Self], mapping: dict[str, Any]) -> Self:
@@ -92,8 +97,11 @@ class H3Info(DGGSInfo):
         grid_info : H3Info
             The constructed grid info object.
         """
+        translations = {
+            "resolution": ("level", identity),
+        }
 
-        params = {k: v for k, v in mapping.items() if k != "grid_name"}
+        params = translate_parameters(mapping, translations)
         return cls(**params)
 
     def to_dict(self: Self) -> dict[str, Any]:
@@ -105,7 +113,7 @@ class H3Info(DGGSInfo):
         mapping : dict of str to any
             The normalized grid parameters.
         """
-        return {"grid_name": "h3", "resolution": self.resolution}
+        return {"grid_name": "h3", "level": self.level}
 
     def cell_ids2geographic(
         self, cell_ids: np.ndarray
@@ -148,7 +156,7 @@ class H3Info(DGGSInfo):
         cell_ids : array-like
             Array-like containing the cell ids.
         """
-        return coordinates_to_cells(lat, lon, self.resolution, radians=False)
+        return coordinates_to_cells(lat, lon, self.level, radians=False)
 
     def cell_boundaries(self, cell_ids, backend="shapely"):
         """
@@ -216,4 +224,4 @@ class H3Index(DGGSIndex):
         return type(self)(new_pd_index, self._dim, self._grid)
 
     def _repr_inline_(self, max_width: int):
-        return f"H3Index(resolution={self._grid.resolution})"
+        return f"H3Index(level={self._grid.level})"
