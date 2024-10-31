@@ -15,7 +15,7 @@ caption: User Guide
 hidden: true
 ---
 
-Tutorials <notebooks/index>
+Tutorials <tutorials/index>
 ```
 
 ```{toctree}
