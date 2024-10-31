@@ -16,7 +16,7 @@ import xdggs
                         [3],
                         {
                             "grid_name": "healpix",
-                            "resolution": 1,
+                            "level": 1,
                             "indexing_scheme": "ring",
                         },
                     )
@@ -36,7 +36,7 @@ import xdggs
                     "cell_ids": (
                         "cells",
                         [0x832830FFFFFFFFF],
-                        {"grid_name": "h3", "resolution": 3},
+                        {"grid_name": "h3", "level": 3},
                     )
                 }
             ),
@@ -69,7 +69,7 @@ def test_cell_centers(obj, expected):
                         [3],
                         {
                             "grid_name": "healpix",
-                            "resolution": 1,
+                            "level": 1,
                             "indexing_scheme": "ring",
                         },
                     )
@@ -86,7 +86,7 @@ def test_cell_centers(obj, expected):
                         [3],
                         {
                             "grid_name": "healpix",
-                            "resolution": 1,
+                            "level": 1,
                             "indexing_scheme": "ring",
                         },
                     ),
@@ -100,7 +100,7 @@ def test_cell_centers(obj, expected):
                     "cell_ids": (
                         "cells",
                         [0x832830FFFFFFFFF],
-                        {"grid_name": "h3", "resolution": 3},
+                        {"grid_name": "h3", "level": 3},
                     )
                 }
             ),
@@ -111,7 +111,7 @@ def test_cell_centers(obj, expected):
                     "cell_ids": (
                         "cells",
                         [0x832830FFFFFFFFF],
-                        {"grid_name": "h3", "resolution": 3},
+                        {"grid_name": "h3", "level": 3},
                     ),
                 }
             ),
