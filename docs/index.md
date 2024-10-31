@@ -38,12 +38,8 @@ Changelog <changelog>
 API Reference <api>
 ```
 
-# Welcome to the documentation of `xdggs`
+# Welcome to `xdggs`
 
-|PyPI| |DOI|
+[![PyPI](https://img.shields.io/pypi/v/xdggs.svg?style=flat)](https://pypi.org/project/xdggs)
 
-<!-- .. |PyPI| image:: https://img.shields.io/pypi/v/xdggs.svg?style=flat -->
-<!--    :target: https://pypi.python.org/pypi/xdggs/ -->
-
-<!-- .. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.13934967.svg -->
-<!--    :target: https://doi.org/10.5281/zenodo.13934967 -->
+_xdggs_ provides an accessor (`DataArray.dggs` or `Dataset.dggs`) that allows you to work with data on a discrete global grid system using {doc}`xarray:index` objects.
