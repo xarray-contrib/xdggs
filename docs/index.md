@@ -21,6 +21,15 @@ Tutorials <tutorials/index>
 ```{toctree}
 ---
 maxdepth: 3
+caption: User guide
+hidden: true
+---
+Publications <user_guide/publications>
+```
+
+```{toctree}
+---
+maxdepth: 3
 caption: Technical information
 hidden: true
 ---
