@@ -11,7 +11,7 @@ Installation <getting_started/installation>
 ```{toctree}
 ---
 maxdepth: 3
-caption: User Guide
+caption: Tutorials
 hidden: true
 ---
 
