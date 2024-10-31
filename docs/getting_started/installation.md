@@ -6,6 +6,12 @@
 pip install xdggs
 ```
 
+from `conda-forge`:
+
+```shell
+conda install -c conda-forge xdggs
+```
+
 from github:
 
 ```shell
