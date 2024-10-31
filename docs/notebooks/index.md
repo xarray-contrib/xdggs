@@ -8,5 +8,6 @@ maxdepth: 1
 caption: Tutorials
 ---
 
-tutorials/h3.ipynb
+tutorials/h3
+tutorials/healpix
 ```
