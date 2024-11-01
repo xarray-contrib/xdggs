@@ -27,8 +27,8 @@ extensions = [
     "sphinx.ext.napoleon",
     "IPython.sphinxext.ipython_directive",
     "IPython.sphinxext.ipython_console_highlighting",
-    "myst_parser",
     "sphinx_autosummary_accessors",
+    "myst_nb",
 ]
 
 extlinks = {
@@ -98,3 +98,8 @@ intersphinx_mapping = {
     "healpy": ("https://healpy.readthedocs.io/en/latest", None),
     "shapely": ("https://shapely.readthedocs.io/en/stable", None),
 }
+
+# -- myst-nb options ---------------------------------------------------------
+
+nb_execution_timeout = -1
+nb_execution_cache_path = "_build/myst-nb"
