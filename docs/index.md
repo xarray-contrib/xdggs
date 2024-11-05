@@ -14,8 +14,8 @@ maxdepth: 3
 caption: Tutorials
 hidden: true
 ---
-
-Tutorials <tutorials/index>
+tutorials/h3
+tutorials/healpix
 ```
 
 ```{toctree}
