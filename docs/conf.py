@@ -29,6 +29,7 @@ extensions = [
     "IPython.sphinxext.ipython_console_highlighting",
     "sphinx_autosummary_accessors",
     "myst_nb",
+    "sphinxcontrib.bibtex",
 ]
 
 extlinks = {
@@ -103,3 +104,7 @@ intersphinx_mapping = {
 
 nb_execution_timeout = -1
 nb_execution_cache_path = "_build/myst-nb"
+
+# -- sphinxcontrib-bibtex ----------------------------------------------------
+
+bibtex_bibfiles = ["reference_guide/publications.bib"]
