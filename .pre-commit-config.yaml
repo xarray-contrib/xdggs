@@ -32,6 +32,10 @@ repos:
     hooks:
       - id: nbstripout
         args: [--extra-keys=metadata.kernelspec metadata.langauge_info.version]
+  - repo: https://github.com/ntessore/tidybib
+    rev: v0.1.3
+    hooks:
+      - id: tidybib
 
 ci:
   autofix_prs: true
