@@ -91,9 +91,7 @@ class DGGSAccessor:
             with all cells that contain the input latitude/longitude data points.
         """
         cell_indexers = {
-            self._name: self.grid_info.geographic2cell_ids(
-                longitude=longitude, latitude=latitude
-            )
+            self._name: self.grid_info.geographic2cell_ids(lon=longitude, lat=latitude)
         }
         return self._obj.sel(cell_indexers)
 
