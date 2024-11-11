@@ -19,7 +19,6 @@ from xarray.indexes import PandasIndex
 
 from xdggs.grid import DGGSInfo, translate_parameters
 from xdggs.index import DGGSIndex
-from xdggs.itertools import identity
 from xdggs.utils import _extract_cell_id_variable, register_dggs
 
 
@@ -98,7 +97,8 @@ class H3Info(DGGSInfo):
             The constructed grid info object.
         """
         translations = {
-            "resolution": ("level", identity),
+            "resolution": ("level", int),
+            "level": ("level", int),
         }
 
         params = translate_parameters(mapping, translations)
