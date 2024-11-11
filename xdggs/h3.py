@@ -156,7 +156,7 @@ class H3Info(DGGSInfo):
         cell_ids : array-like
             Array-like containing the cell ids.
         """
-        return coordinates_to_cells(lat, lon, int(self.level), radians=False)
+        return coordinates_to_cells(lat, lon, self.level, radians=False)
 
     def cell_boundaries(self, cell_ids, backend="shapely"):
         """
