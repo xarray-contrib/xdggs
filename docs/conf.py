@@ -96,6 +96,7 @@ intersphinx_mapping = {
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
     "lonboard": ("https://developmentseed.org/lonboard/latest", None),
     "healpy": ("https://healpy.readthedocs.io/en/latest", None),
+    "cdshealpix-python": ("https://cds-astro.github.io/cds-healpix-python", None),
     "shapely": ("https://shapely.readthedocs.io/en/stable", None),
 }
 
