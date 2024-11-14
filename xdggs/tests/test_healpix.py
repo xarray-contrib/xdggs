@@ -55,8 +55,7 @@ class strategies:
 
     def cell_ids(max_value=None, dtypes=None):
         if dtypes is None:
-            # healpy can't deal with `uint32` or less (it segfaults occasionally)
-            dtypes = st.sampled_from(["uint64"])
+            dtypes = st.sampled_from(["int32", "int64", "uint32", "uint64"])
         shapes = npst.array_shapes(min_dims=1, max_dims=1)
 
         return npst.arrays(
