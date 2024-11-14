@@ -11,7 +11,7 @@ dependencies:
   - sphinx-design
   - sphinx-inline-tabs
   - xarray
-  - healpy
+  - cdshealpix
   - h5netcdf
   - netcdf4
   - pooch

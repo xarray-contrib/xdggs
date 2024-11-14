@@ -2,7 +2,7 @@ channels:
   - conda-forge
 dependencies:
   - xarray
-  - healpy
+  - cdshealpix
   - h5netcdf
   - netcdf4
   - pooch
