@@ -89,9 +89,7 @@ class strategies:
         cell_levels = st.shared(levels, key="common-levels")
         grid_levels = st.shared(levels, key="common-levels")
         cell_ids_ = cell_levels.flatmap(
-            lambda level: cls.cell_ids(
-                max_value=12 * 2 ** (level * 2) - 1, dtypes=dtypes
-            )
+            lambda level: cls.cell_ids(max_value=12 * 4**level - 1, dtypes=dtypes)
         )
         grids_ = cls.grids(
             levels=grid_levels,
@@ -300,6 +298,9 @@ class TestHealpixInfo:
 
     @given(
         *strategies.grid_and_cell_ids(
+            # a dtype casting bug in the valid range check of `cdshealpix`
+            # causes this test to fail for large levels
+            levels=st.integers(min_value=0, max_value=10),
             indexing_schemes=st.sampled_from(["nested", "ring"]),
             dtypes=st.sampled_from(["int64"]),
         )
