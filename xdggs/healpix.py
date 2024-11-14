@@ -106,7 +106,7 @@ class HealpixInfo(DGGSInfo):
 
         .. warning::
             Note that ``"unique"`` is currently not supported as the underlying library
-            (:doc:`healpy <healpy:index>`) does not support it.
+            (:doc:`cdshealpix <cdshealpix-python:index>`) does not support it.
     """
 
     level: int
