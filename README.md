@@ -84,3 +84,4 @@ We welcome contributions to `xdggs`! Please follow these steps to get involved:
 ## Acknowledgments
 
 This project was inspired by the increasing need for scalable geospatial data analysis using DGGS and is built upon the robust ecosystem of Xarray.
+This project was funded by CNES (Centre National des Etudes Spatiales)
