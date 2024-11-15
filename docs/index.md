@@ -34,7 +34,7 @@ hidden: true
 ---
 
 Changelog <changelog>
-API Reference <reference_guide/api>
+API Reference <api>
 Publications <reference_guide/publications>
 ```
 
