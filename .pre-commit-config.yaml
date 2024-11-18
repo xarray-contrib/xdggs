@@ -40,6 +40,7 @@ repos:
     rev: v1.14.0
     hooks:
       - id: bibtex-tidy
+        stages: [manual]
         args:
           - "--modify"
           - "--blank-lines"
