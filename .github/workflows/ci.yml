@@ -11,9 +11,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  FORCE_COLOR: 3
-
 jobs:
   detect-ci-trigger:
     name: detect ci trigger
@@ -77,5 +74,7 @@ jobs:
           python -c "import xdggs"
 
       - name: Run tests
+        env:
+          FORCE_COLOR: 3
         run: |
           python -m pytest
