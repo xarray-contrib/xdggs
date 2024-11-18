@@ -7,30 +7,33 @@ fallback_version = "9999"
 
 [tool.setuptools.packages.find]
 include = [
-    "xdggs",
-    "xdggs.*",
+  "xdggs",
+  "xdggs.*",
 ]
 
 [project]
 name = "xdggs"
 dynamic = ["version"]
 authors = [
-    {name = "Benoît Bovy"},
-    {name = "Justus Magin"},
+  { name = "Benoît Bovy" },
+  { name = "Justus Magin" },
 ]
 maintainers = [
-    {name = "xdggs contributors"},
+  { name = "xdggs contributors" },
 ]
-license = {text = "Apache-2.0"}
+license = { text = "Apache-2.0" }
 description = "Xarray extension for DGGS"
 keywords = ["DGGS", "xarray", "GIS"]
 readme = "Readme.md"
 classifiers = [
-    "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: Apache Software License",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Topic :: Scientific/Engineering :: GIS",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: GIS",
 ]
 requires-python = ">=3.10"
 dependencies = [
@@ -53,11 +56,11 @@ Repository = "https://github.com/xarray-contrib/xdggs"
 target-version = "py310"
 builtins = ["ellipsis"]
 exclude = [
-    ".git",
-    ".eggs",
-    "build",
-    "dist",
-    "__pycache__",
+  ".git",
+  ".eggs",
+  "build",
+  "dist",
+  "__pycache__",
 ]
 line-length = 100
 
@@ -66,29 +69,29 @@ line-length = 100
 # E501: line too long - let black worry about that
 # E731: do not assign a lambda expression, use a def
 ignore = [
-    "E402",
-    "E501",
-    "E731",
+  "E402",
+  "E501",
+  "E731",
 ]
 select = [
-    "F",  # Pyflakes
-    "E",  # Pycodestyle
-    "I",  # isort
-    "UP", # Pyupgrade
-    "TID", # flake8-tidy-imports
-    "W",
+  "F",   # Pyflakes
+  "E",   # Pycodestyle
+  "I",   # isort
+  "UP",  # Pyupgrade
+  "TID", # flake8-tidy-imports
+  "W",
 ]
 extend-safe-fixes = [
-    "TID252", # absolute imports
+  "TID252", # absolute imports
 ]
 fixable = ["I", "TID252"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["xdggs"]
-known-third-party=[
-    "xarray",
-    "healpy",
-    "h3ronpy",
+known-third-party = [
+  "xarray",
+  "healpy",
+  "h3ronpy",
 ]
 
 [tool.ruff.lint.flake8-tidy-imports]
@@ -105,5 +108,5 @@ exclude_lines = ["pragma: no cover", "if TYPE_CHECKING"]
 
 [tool.pytest.ini_options]
 filterwarnings = [
-    "error:::xdggs.*",
+  "error:::xdggs.*",
 ]
