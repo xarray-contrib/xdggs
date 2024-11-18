@@ -36,8 +36,6 @@ repos:
     rev: v1.14.0
     hooks:
       - id: bibtex-tidy
-        language: node
-        entry: bibtex-tidy
         args:
           - "--modify"
           - "--blank-lines"
