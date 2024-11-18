@@ -13,7 +13,7 @@ repos:
       - id: prettier
         args: [--cache-location=.prettier_cache/cache]
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.9
+    rev: v0.7.2
     hooks:
       - id: ruff
         args: [--fix]
@@ -27,8 +27,12 @@ repos:
       - id: blackdoc
         additional_dependencies: ["black==24.10.0"]
       - id: blackdoc-autoupdate-black
+  - repo: https://github.com/citation-file-format/cffconvert
+    rev: b6045d78aac9e02b039703b030588d54d53262ac
+    hooks:
+      - id: validate-cff
   - repo: https://github.com/kynan/nbstripout
-    rev: 0.7.1
+    rev: 0.8.0
     hooks:
       - id: nbstripout
         args: [--extra-keys=metadata.kernelspec metadata.langauge_info.version]

@@ -1,0 +1,45 @@
+cff-version: 1.2.0
+title: xdggs
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - family-names: "Magin"
+    given-names: "Justus"
+    orcid: "https://orcid.org/0000-0002-4254-8002"
+  - family-names: "Bovy"
+    given-names: "Benoît"
+    orcid: "https://orcid.org/0009-0001-4011-3574"
+  - family-names: "Kmoch"
+    given-names: "Alexander"
+    orcid: "https://orcid.org/0000-0003-4386-4450"
+  - family-names: "Abernathey"
+    given-names: "Ryan"
+    orcid: "https://orcid.org/0000-0001-5999-4917"
+  - family-names: "Coca-Castro"
+    given-names: "Alejandro"
+    orcid: "https://orcid.org/0000-0002-9264-1539"
+  - family-names: "Strobl"
+    given-names: "Peter"
+    orcid: "https://orcid.org/0000-0003-2733-1822"
+  - family-names: "Fouilloux"
+    given-names: "Anne"
+    orcid: "https://orcid.org/0000-0002-1784-2920"
+  - family-names: "Loos"
+    given-names: "Daniel"
+    orcid: "https://orcid.org/0000-0002-4024-4443"
+  - family-names: "Chan"
+    given-names: "Wai Tik"
+    orcid: "https://orcid.org/0009-0005-3779-139X"
+  - family-names: "Delouis"
+    given-names: "Jean-Marc"
+    orcid: "https://orcid.org/0000-0002-0713-1658"
+  - family-names: "Odaka"
+    given-names: "Tina"
+    orcid: "https://orcid.org/0000-0002-1500-0156"
+repository-code: "https://github.com/xarray-contrib/xdggs"
+url: "https://xdggs.readthedocs.io"
+keywords:
+  - xarray
+  - discrete global grid systems
+  - dggs
+license: Apache-2.0
