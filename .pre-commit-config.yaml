@@ -45,6 +45,18 @@ repos:
     hooks:
       - id: nbstripout
         args: [--extra-keys=metadata.kernelspec metadata.langauge_info.version]
+  - repo: https://github.com/FlamingTempura/bibtex-tidy
+    rev: v1.14.0
+    hooks:
+      - id: bibtex-tidy
+        stages: [manual]
+        args:
+          - "--modify"
+          - "--blank-lines"
+          - "--sort=-year,name"
+          - "--duplicates"
+          - "--escape"
+          - "--trailing-commas"
 
 ci:
   autofix_prs: true
