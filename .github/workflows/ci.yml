@@ -59,10 +59,9 @@ jobs:
           echo "CONDA_ENV_FILE=ci/environment.yml" >> $GITHUB_ENV
 
       - name: Setup micromamba
-        env:
-          FORCE_COLOR: 0
         uses: mamba-org/setup-micromamba@v2
         with:
+          micromamba-version: "1.5.10-0"
           environment-file: ${{ env.CONDA_ENV_FILE }}
           environment-name: xdggs-tests
           cache-environment: true
