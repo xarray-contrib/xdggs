@@ -44,7 +44,6 @@ repos:
           - "--sort=-year,name"
           - "--duplicates"
           - "--escape"
-          - "--drop-all-caps"
           - "--trailing-commas"
 
 ci:
