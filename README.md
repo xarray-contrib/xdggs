@@ -1,12 +1,12 @@
 # xdggs
 
-`xdggs` is an open-source Python package that provides tools for handling geospatial data using Discrete Global Grid Systems (DGGS).  
+`xdggs` is an open-source Python package that provides tools for handling geospatial data using Discrete Global Grid Systems (DGGS).
 
-It enables efficient manipulation and analysis of multi-dimensional gridded data within a DGGS framework, supporting spatial data processing, resampling, and aggregation on both global and regional scales.  
+It enables efficient manipulation and analysis of multi-dimensional gridded data within a DGGS framework, supporting spatial data processing, resampling, and aggregation on both global and regional scales.
 
-Inspired by the growing need for scalable geospatial data analysis with DGGS, `xdggs` is built upon the robust [Xarray](https://xarray.pydata.org/) ecosystem, which simplifies working with labeled multi-dimensional arrays.  
+Inspired by the growing need for scalable geospatial data analysis with DGGS, `xdggs` is built upon the robust [Xarray](https://xarray.pydata.org/) ecosystem, which simplifies working with labeled multi-dimensional arrays.
 
-As an extension of Xarray, `xdggs` leverages Xarray's capabilities, including seamless access to formats like [NetCDF](https://www.unidata.ucar.edu/software/netcdf/), [Zarr](https://zarr.readthedocs.io/), and parallelization through [Dask](https://www.dask.org/), to provide a powerful and flexible toolkit for geospatial analysis.  
+As an extension of Xarray, `xdggs` leverages Xarray's capabilities, including seamless access to formats like [NetCDF](https://www.unidata.ucar.edu/software/netcdf/), [Zarr](https://zarr.readthedocs.io/), and parallelization through [Dask](https://www.dask.org/), to provide a powerful and flexible toolkit for geospatial analysis.
 
 ## Key Features
 
@@ -53,7 +53,6 @@ ds_idx['air'].isel(time=0).compute().dggs.explore(center=0, cmap="viridis", alph
 - NumPy >= 1.24.0
 - Dask >= 2023.10.0 (optional, for parallel computing)
 
-
 ## Roadmap
 
 We have exciting plans to expand xdggs with new features and improvements. You can check out our roadmap in the [design_doc.md](https://github.com/xarray-contrib/xdggs/blob/main/design_doc.md) file for details on the design of xdggs, upcoming features, and future enhancements.
@@ -73,4 +72,3 @@ We welcome contributions to `xdggs`! Please follow these steps to get involved:
 `xdggs` is licensed under the Apache License License. See [LICENSE](https://github.com/xarray-contrib/xdggs/blob/main/LICENSE) for more details.
 
 ## Acknowledgments
-
