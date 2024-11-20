@@ -20,10 +20,6 @@ As an extension of Xarray, `xdggs` leverages Xarray's capabilities, including se
 
 You can find the documentation in [https://xdggs.readthedocs.io/en/latest/](https://xdggs.readthedocs.io/en/latest/).
 
-## Demo
-
-![xdggs demo](https://raw.githubusercontent.com/xarray-contrib/xdggs/refs/heads/main/xdggs-cropped.gif)
-
 ## Getting Started
 
 As an example, this is how you would use `xdggs` to reconstruct geographical coordinates from the cell ids then create an interactive plot indicating cell ids, data values and the associated geographical coordinates:
