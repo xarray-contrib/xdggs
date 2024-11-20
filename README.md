@@ -32,8 +32,7 @@ As an example, this is how you would use `xdggs` to reconstruct geographical coo
 import xarray as xr
 import xdggs
 
-# Load the dataset created by ./examples/prepare_dataset_h3.ipynb
-ds = xr.open_dataset("data/h3.nc", engine="netcdf4")
+ds = xdggs.tutorial.open_dataset("air_temperature", "h3")
 
 # Decode DGGS coordinates
 ds_idx = ds.pipe(xdggs.decode)
