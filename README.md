@@ -46,13 +46,6 @@ ds_idx['air'].isel(time=0).compute().dggs.explore(center=0, cmap="viridis", alph
 
 ```
 
-## Dependencies
-
-- Python >= 3.10
-- Xarray >= 2023.09.0
-- NumPy >= 1.24.0
-- Dask >= 2023.10.0 (optional, for parallel computing)
-
 ## Roadmap
 
 We have exciting plans to expand xdggs with new features and improvements. You can check out our roadmap in the [design_doc.md](https://github.com/xarray-contrib/xdggs/blob/main/design_doc.md) file for details on the design of xdggs, upcoming features, and future enhancements.
