@@ -38,7 +38,7 @@ classifiers = [
 requires-python = ">=3.10"
 dependencies = [
   "xarray",
-  "healpy",
+  "cdshealpix",
   "h3ronpy",
   "typing-extensions",
   "lonboard>=0.9.3",
@@ -90,7 +90,8 @@ fixable = ["I", "TID252"]
 known-first-party = ["xdggs"]
 known-third-party = [
   "xarray",
-  "healpy",
+  "cdshealpix",
+  "astropy",
   "h3ronpy",
 ]
 

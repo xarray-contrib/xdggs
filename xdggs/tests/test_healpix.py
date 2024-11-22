@@ -55,8 +55,7 @@ class strategies:
 
     def cell_ids(max_value=None, dtypes=None):
         if dtypes is None:
-            # healpy can't deal with `uint32` or less (it segfaults occasionally)
-            dtypes = st.sampled_from(["uint64"])
+            dtypes = st.sampled_from(["int32", "int64", "uint32", "uint64"])
         shapes = npst.array_shapes(min_dims=1, max_dims=1)
 
         return npst.arrays(
@@ -89,9 +88,7 @@ class strategies:
         cell_levels = st.shared(levels, key="common-levels")
         grid_levels = st.shared(levels, key="common-levels")
         cell_ids_ = cell_levels.flatmap(
-            lambda level: cls.cell_ids(
-                max_value=12 * 2 ** (level * 2) - 1, dtypes=dtypes
-            )
+            lambda level: cls.cell_ids(max_value=12 * 4**level - 1, dtypes=dtypes)
         )
         grids_ = cls.grids(
             levels=grid_levels,
@@ -222,10 +219,10 @@ class TestHealpixInfo:
                 np.array([2]),
                 np.array(
                     [
-                        [-135.0, 90.0],
-                        [-180.0, 41.8103149],
                         [-135.0, 0.0],
                         [-90.0, 41.8103149],
+                        [-135.0, 90.0],
+                        [-180.0, 41.8103149],
                     ]
                 ),
             ),
@@ -235,16 +232,16 @@ class TestHealpixInfo:
                 np.array(
                     [
                         [
-                            [0.0, 66.44353569],
-                            [0.0, 54.3409123],
                             [22.5, 41.8103149],
                             [30.0, 54.3409123],
+                            [0.0, 66.44353569],
+                            [0.0, 54.3409123],
                         ],
                         [
-                            [-45.0, 41.8103149],
-                            [-56.25, 30.0],
                             [-45.0, 19.47122063],
                             [-33.75, 30.0],
+                            [-45.0, 41.8103149],
+                            [-56.25, 30.0],
                         ],
                     ]
                 ),
@@ -255,16 +252,16 @@ class TestHealpixInfo:
                 np.array(
                     [
                         [
-                            [-5.625, 4.78019185],
-                            [-11.25, 0.0],
                             [-5.625, -4.78019185],
                             [0.0, 0.0],
+                            [-5.625, 4.78019185],
+                            [-11.25, 0.0],
                         ],
                         [
-                            [73.125, 35.68533471],
-                            [67.5, 30.0],
                             [73.125, 24.62431835],
                             [78.75, 30.0],
+                            [73.125, 35.68533471],
+                            [67.5, 30.0],
                         ],
                     ]
                 ),
@@ -274,10 +271,10 @@ class TestHealpixInfo:
                 np.array([79]),
                 np.array(
                     [
-                        [0.0, 41.8103149],
-                        [-11.25, 30],
                         [0.0, 19.47122063],
                         [11.25, 30],
+                        [0.0, 41.8103149],
+                        [-11.25, 30],
                     ]
                 ),
             ),
@@ -300,6 +297,9 @@ class TestHealpixInfo:
 
     @given(
         *strategies.grid_and_cell_ids(
+            # a dtype casting bug in the valid range check of `cdshealpix`
+            # causes this test to fail for large levels
+            levels=st.integers(min_value=0, max_value=10),
             indexing_schemes=st.sampled_from(["nested", "ring"]),
             dtypes=st.sampled_from(["int64"]),
         )

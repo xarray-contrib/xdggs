@@ -8,7 +8,8 @@ try:
 except ImportError:  # pragma: no cover
     from typing_extensions import Self
 
-import healpy
+import cdshealpix.nested
+import cdshealpix.ring
 import numpy as np
 import xarray as xr
 from xarray.indexes import PandasIndex
@@ -105,7 +106,7 @@ class HealpixInfo(DGGSInfo):
 
         .. warning::
             Note that ``"unique"`` is currently not supported as the underlying library
-            (:doc:`healpy <healpy:index>`) does not support it.
+            (:doc:`cdshealpix <cdshealpix-python:index>`) does not support it.
     """
 
     level: int
@@ -210,9 +211,17 @@ class HealpixInfo(DGGSInfo):
         lat : array-like
             The latitude coordinate values of the grid cells in degree
         """
-        lon, lat = healpy.pix2ang(self.nside, cell_ids, nest=self.nest, lonlat=True)
+        converters = {
+            "nested": cdshealpix.nested.healpix_to_lonlat,
+            "ring": lambda cell_ids, level: cdshealpix.ring.healpix_to_lonlat(
+                cell_ids, nside=2**level
+            ),
+        }
+        converter = converters[self.indexing_scheme]
 
-        return lon, lat
+        lon, lat = converter(cell_ids, self.level)
+
+        return np.asarray(lon.to("degree")), np.asarray(lat.to("degree"))
 
     def geographic2cell_ids(self, lon, lat):
         """
@@ -233,7 +242,20 @@ class HealpixInfo(DGGSInfo):
         cell_ids : array-like
             Array-like containing the cell ids.
         """
-        return healpy.ang2pix(self.nside, lon, lat, lonlat=True, nest=self.nest)
+        from astropy.coordinates import Latitude, Longitude
+
+        converters = {
+            "nested": cdshealpix.nested.lonlat_to_healpix,
+            "ring": lambda lon, lat, level: cdshealpix.ring.lonlat_to_healpix(
+                lon, lat, nside=2**level
+            ),
+        }
+        converter = converters[self.indexing_scheme]
+
+        longitude = Longitude(lon, unit="degree")
+        latitude = Latitude(lat, unit="degree")
+
+        return converter(longitude, latitude, self.level)
 
     def cell_boundaries(self, cell_ids: Any, backend="shapely") -> np.ndarray:
         """
@@ -255,11 +277,19 @@ class HealpixInfo(DGGSInfo):
             - ``"shapely"``: return a array of :py:class:`shapely.Polygon` objects
             - ``"geoarrow"``: return a ``geoarrow`` array
         """
-        boundary_vectors = healpy.boundaries(
-            self.nside, cell_ids, step=1, nest=self.nest
-        )
+        converters = {
+            "nested": cdshealpix.nested.vertices,
+            "ring": lambda cell_ids, level, **kwargs: cdshealpix.ring.vertices(
+                cell_ids, nside=2**level, **kwargs
+            ),
+        }
+        converter = converters[self.indexing_scheme]
 
-        lon, lat = healpy.vec2ang(np.moveaxis(boundary_vectors, 1, -1), lonlat=True)
+        lon_, lat_ = converter(cell_ids, self.level, step=1)
+
+        lon = np.asarray(lon_.to("degree"))
+        lat = np.asarray(lat_.to("degree"))
+
         lon_reshaped = np.reshape(lon, (-1, 4))
         lat_reshaped = np.reshape(lat, (-1, 4))
 
