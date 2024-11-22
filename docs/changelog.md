@@ -13,6 +13,11 @@ All notable changes to this project will be documented in this file.
 - interactive plotting with `lonboard` ({pr}`67`)
 - expose example datasets through `xdggs.tutorial` ({pr}`84`)
 
+### Bug fixes
+
+- fix the cell centers computation ({pr}`61`)
+- work around blocked HTTP requests from RTD to github ({pr}`93`)
+
 ### Documentation
 
 - create a readme ({pr}`70`)
