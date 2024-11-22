@@ -6,31 +6,31 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- derive cell boundaries ({pr}`30`)
-- add grid objects ({pr}`39`, {pr}`57`)
-- decoder function ({pr}`47`, {pr}`48`)
-- rename the primary grid parameter to `level` ({pr}`65`)
-- interactive plotting with `lonboard` ({pr}`67`)
-- expose example datasets through `xdggs.tutorial` ({pr}`84`)
+- derive cell boundaries ({pull}`30`)
+- add grid objects ({pull}`39`, {pull}`57`)
+- decoder function ({pull}`47`, {pull}`48`)
+- rename the primary grid parameter to `level` ({pull}`65`)
+- interactive plotting with `lonboard` ({pull}`67`)
+- expose example datasets through `xdggs.tutorial` ({pull}`84`)
 
 ### Bug fixes
 
-- fix the cell centers computation ({pr}`61`)
-- work around blocked HTTP requests from RTD to github ({pr}`93`)
+- fix the cell centers computation ({pull}`61`)
+- work around blocked HTTP requests from RTD to github ({pull}`93`)
 
 ### Documentation
 
-- create a readme ({pr}`70`)
-- create the documentation ({pr}`79`, {pr}`80`, {pr}`81`, {pr}`89`)
-- fix headings in tutorials ({pr}`90`)
-- rewrite the readme ({pr}`97`)
+- create a readme ({pull}`70`)
+- create the documentation ({pull}`79`, {pull}`80`, {pull}`81`, {pull}`89`)
+- fix headings in tutorials ({pull}`90`)
+- rewrite the readme ({pull}`97`)
 
 ### Internal changes
 
-- replace `h3` with `h3ronpy` ({pr}`28`)
-- setup CI ({pr}`31`)
-- tests for the healpix index ({pr}`36`)
-- testing utils for exception groups ({pr}`55`)
+- replace `h3` with `h3ronpy` ({pull}`28`)
+- setup CI ({pull}`31`)
+- tests for the healpix index ({pull}`36`)
+- testing utils for exception groups ({pull}`55`)
 
 ## 0.0.1 (2023-11-28)
 
