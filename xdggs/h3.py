@@ -10,11 +10,19 @@ except ImportError:  # pragma: no cover
 
 import numpy as np
 import xarray as xr
-from h3ronpy.arrow.vector import (
-    cells_to_coordinates,
-    cells_to_wkb_polygons,
-    coordinates_to_cells,
-)
+
+try:
+    from h3ronpy.vector import (
+        cells_to_coordinates,
+        cells_to_wkb_polygons,
+        coordinates_to_cells,
+    )
+except ImportError:
+    from h3ronpy.arrow.vector import (
+        cells_to_coordinates,
+        cells_to_wkb_polygons,
+        coordinates_to_cells,
+    )
 from xarray.indexes import PandasIndex
 
 from xdggs.grid import DGGSInfo, translate_parameters

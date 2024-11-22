@@ -83,4 +83,4 @@ We welcome contributions to `xdggs`! Please follow these steps to get involved:
 
 ## Acknowledgments
 
-This project was inspired by the increasing need for scalable geospatial data analysis using DGGS and is built upon the robust ecosystem of Xarray.
+This project was initiated using funding from CNES (PANGEO IAOCEA, contract R&T R-S23/DU-0002-025-01) and the European Union (ERC, WaterSmartLand, 101125476, Interreg-BSR, HyTruck, #C031).

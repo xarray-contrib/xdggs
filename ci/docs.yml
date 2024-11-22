@@ -10,8 +10,8 @@ dependencies:
   - sphinx-copybutton
   - sphinx-design
   - sphinx-inline-tabs
+  - sphinxcontrib-bibtex
   - xarray
-  - healpy
   - h5netcdf
   - netcdf4
   - pooch
@@ -27,4 +27,5 @@ dependencies:
   - pip
   - pip:
       - h3ronpy
+      - cdshealpix
       - -e ..

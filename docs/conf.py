@@ -29,6 +29,7 @@ extensions = [
     "IPython.sphinxext.ipython_console_highlighting",
     "sphinx_autosummary_accessors",
     "myst_nb",
+    "sphinxcontrib.bibtex",
 ]
 
 extlinks = {
@@ -96,6 +97,7 @@ intersphinx_mapping = {
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
     "lonboard": ("https://developmentseed.org/lonboard/latest", None),
     "healpy": ("https://healpy.readthedocs.io/en/latest", None),
+    "cdshealpix-python": ("https://cds-astro.github.io/cds-healpix-python", None),
     "shapely": ("https://shapely.readthedocs.io/en/stable", None),
 }
 
@@ -103,3 +105,7 @@ intersphinx_mapping = {
 
 nb_execution_timeout = -1
 nb_execution_cache_path = "_build/myst-nb"
+
+# -- sphinxcontrib-bibtex ----------------------------------------------------
+
+bibtex_bibfiles = ["reference_guide/publications.bib"]

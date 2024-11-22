@@ -5,13 +5,22 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-docstring-first
-      - id: check-yaml
-      - id: check-toml
   - repo: https://github.com/rbubley/mirrors-prettier
     rev: v3.3.3
     hooks:
       - id: prettier
         args: [--cache-location=.prettier_cache/cache]
+  - repo: https://github.com/ComPWA/taplo-pre-commit
+    rev: v0.9.3
+    hooks:
+      - id: taplo-format
+        args: [--option, array_auto_collapse=false]
+      - id: taplo-lint
+        args: [--no-schema]
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.23
+    hooks:
+      - id: validate-pyproject
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.7.2
     hooks:
@@ -27,11 +36,27 @@ repos:
       - id: blackdoc
         additional_dependencies: ["black==24.10.0"]
       - id: blackdoc-autoupdate-black
+  - repo: https://github.com/citation-file-format/cffconvert
+    rev: b6045d78aac9e02b039703b030588d54d53262ac
+    hooks:
+      - id: validate-cff
   - repo: https://github.com/kynan/nbstripout
     rev: 0.8.0
     hooks:
       - id: nbstripout
         args: [--extra-keys=metadata.kernelspec metadata.langauge_info.version]
+  - repo: https://github.com/FlamingTempura/bibtex-tidy
+    rev: v1.14.0
+    hooks:
+      - id: bibtex-tidy
+        stages: [manual]
+        args:
+          - "--modify"
+          - "--blank-lines"
+          - "--sort=-year,name"
+          - "--duplicates"
+          - "--escape"
+          - "--trailing-commas"
 
 ci:
   autofix_prs: true

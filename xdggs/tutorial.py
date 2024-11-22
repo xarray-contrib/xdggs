@@ -91,6 +91,7 @@ def open_dataset(
     --------
     xarray.tutorial.open_dataset
     """
+    import xdggs
 
     logger = pooch.get_logger()
     logger.setLevel("WARNING")
@@ -109,8 +110,13 @@ def open_dataset(
 
         url = f"{base_url}/raw/{version}/{name}/{path.name}"
 
+    headers = {"User-Agent": f"xdggs/{xdggs.__version__}"}
+
     # retrieve the file
-    filepath = pooch.retrieve(url=url, known_hash=None, path=cache_dir)
+    downloader = pooch.HTTPDownloader(headers=headers)
+    filepath = pooch.retrieve(
+        url=url, known_hash=None, path=cache_dir, downloader=downloader
+    )
     ds = _open_dataset(filepath, engine=engine, **kws)
     if not cache:
         ds = ds.load()

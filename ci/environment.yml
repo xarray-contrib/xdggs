@@ -2,7 +2,6 @@ channels:
   - conda-forge
 dependencies:
   - xarray
-  - healpy
   - h5netcdf
   - netcdf4
   - pooch
@@ -18,3 +17,4 @@ dependencies:
   - pip
   - pip:
       - h3ronpy
+      - cdshealpix

@@ -14,28 +14,28 @@ maxdepth: 3
 caption: Tutorials
 hidden: true
 ---
-
-Tutorials <tutorials/index>
+tutorials/h3
+tutorials/healpix
 ```
+
+<!-- ```{toctree} -->
+<!-- --- -->
+<!-- maxdepth: 3 -->
+<!-- caption: User guide -->
+<!-- hidden: true -->
+<!-- --- -->
+<!-- ``` -->
 
 ```{toctree}
 ---
 maxdepth: 3
-caption: User guide
-hidden: true
----
-Publications <user_guide/publications>
-```
-
-```{toctree}
----
-maxdepth: 3
-caption: Technical information
+caption: Reference guide
 hidden: true
 ---
 
 Changelog <changelog>
 API Reference <api>
+Publications <reference_guide/publications>
 ```
 
 # Welcome to `xdggs`
