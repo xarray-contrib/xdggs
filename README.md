@@ -1,6 +1,12 @@
 # xdggs
 
-`xdggs` is an extension for [Xarray](https://xarray.pydata.org/) that provides tools to handle geospatial data using Discrete Global Grid Systems (DGGS). It allows efficient manipulation and analysis of multi-dimensional gridded data within a DGGS framework, facilitating spatial data processing, resampling, and aggregations on both global and regional scales.
+`xdggs` is an open-source Python package that provides tools for handling geospatial data using Discrete Global Grid Systems (DGGS).
+
+It enables efficient manipulation and analysis of multi-dimensional gridded data within a DGGS framework, supporting spatial data processing, resampling, and aggregation on both global and regional scales.
+
+Inspired by the growing need for scalable geospatial data analysis with DGGS, `xdggs` is built upon the robust [Xarray](https://xarray.pydata.org/) ecosystem, which simplifies working with labeled multi-dimensional arrays.
+
+As an extension of Xarray, `xdggs` leverages Xarray's capabilities, including seamless access to formats like [NetCDF](https://www.unidata.ucar.edu/software/netcdf/), [Zarr](https://zarr.readthedocs.io/), and parallelization through [Dask](https://www.dask.org/), to provide a powerful and flexible toolkit for geospatial analysis.
 
 ## Key Features
 
@@ -10,21 +16,9 @@
 - **DGGS Aggregation**: Perform spatial aggregation of data on DGGS cells.
 - **Efficient Data Management**: Manage large datasets with Xarray's lazy loading, Dask integration, and chunking to optimize performance.
 
-## Installation
+## Documentation
 
-To install `xdggs`, you can clone the repository and install it using pip:
-
-```bash
-git clone https://github.com/xarray-contrib/xdggs.git
-cd xdggs
-pip install .
-```
-
-Alternatively, you can install it directly via pip (once it's available on PyPI):
-
-```bash
-pip install xdggs
-```
+You can find the documentation in [https://xdggs.readthedocs.io/en/latest/](https://xdggs.readthedocs.io/en/latest/).
 
 ## Demo
 
@@ -38,8 +32,7 @@ As an example, this is how you would use `xdggs` to reconstruct geographical coo
 import xarray as xr
 import xdggs
 
-# Load the dataset created by ./examples/prepare_dataset_h3.ipynb
-ds = xr.open_dataset("data/h3.nc", engine="netcdf4")
+ds = xdggs.tutorial.open_dataset("air_temperature", "h3")
 
 # Decode DGGS coordinates
 ds_idx = ds.pipe(xdggs.decode)
@@ -51,17 +44,6 @@ ds_idx = ds_idx.dggs.assign_latlon_coords()
 ds_idx['air'].isel(time=0).compute().dggs.explore(center=0, cmap="viridis", alpha=0.5)
 
 ```
-
-## Dependencies
-
-- Python >= 3.10
-- Xarray >= 2023.09.0
-- NumPy >= 1.24.0
-- Dask >= 2023.10.0 (optional, for parallel computing)
-
-## Documentation
-
-You can find the documentation in [https://xdggs.readthedocs.io/en/latest/](https://xdggs.readthedocs.io/en/latest/).
 
 ## Roadmap
 
