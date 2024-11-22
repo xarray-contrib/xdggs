@@ -66,6 +66,7 @@ class TestH3Info:
         ["mapping", "expected"],
         (
             ({"level": 0}, 0),
+            ({"level": np.int64(2)}, 2),
             ({"resolution": 1}, 1),
             ({"level": -1}, ValueError("level must be an integer between")),
         ),
@@ -77,7 +78,7 @@ class TestH3Info:
             return
 
         actual = h3.H3Info.from_dict(mapping)
-        assert actual.level == expected
+        assert actual.level == expected and type(actual.level) is type(expected)
 
     def test_roundtrip(self):
         mapping = {"grid_name": "h3", "level": 0}
