@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/xarray-contrib/xdggs/main/docs/_static/logos/xdggs_logo.png" width="200" height="200" /><br/>
+<img src="https://raw.githubusercontent.com/xarray-contrib/xdggs/main/docs/_static/logos/xdggs_logo.png" width="400" height="400" /><br/>
 
 ---
 
