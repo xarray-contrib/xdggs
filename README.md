@@ -6,16 +6,7 @@
 
 ---
 
-<table>
-  <tr>
-    <td>
-        <img src="https://raw.githubusercontent.com/xarray-contrib/xdggs/main/docs/_static/logos/xdggs_logo.png" width="300" height="300" /><br/>
-    </td>
-    <td>
-      <h1>xdggs</h1>
-    </td>
-  </tr>
-</table>
+<img src="https://raw.githubusercontent.com/xarray-contrib/xdggs/main/docs/_static/logos/xdggs_logo.png" width="300" height="300" margin="0" /><br/>
 
 # xdggs
 
