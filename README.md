@@ -1,4 +1,4 @@
-[![CI](https://github.com/xarray-contrib/xdggs/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/xarray-contrib/xdggs/actions/ci.yml?query=branch%3Amain+event%3Apush)
+[![CI](https://github.com/xarray-contrib/xdggs/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/xarray-contrib/xdggs/actions/ci.yml?query=branch%3Amain+event%3Apush)
 [![docs](https://readthedocs.org/projects/xdggs/badge/?version=latest)](https://xdggs.readthedocs.io)
 [![PyPI version](https://img.shields.io/pypi/v/xdggs.svg)](https://pypi.org/project/xdggs)
 [![codestyle](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
