@@ -81,6 +81,7 @@ napoleon_type_aliases = {
 # a list of builtin themes.
 #
 html_theme = "sphinx_book_theme"
+html_logo = "_static/logos/xdggs_logo.png"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
