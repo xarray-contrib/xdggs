@@ -1,8 +1,4 @@
-<img src="https://raw.githubusercontent.com/xarray-contrib/xdggs/main/docs/_static/logos/xdggs_logo.png" width="400" height="400" /><br/>
-
----
-
-[![xdggs Logo](https://raw.githubusercontent.com/xarray-contrib/xdggs/main/docs/_static/logos/xdggs_logo.png)](https://xdggs.readthedocs.io/en/stable/)
+<img src="https://raw.githubusercontent.com/xarray-contrib/xdggs/main/docs/_static/logos/xdggs_logo.png" width="300" height="300" /><br/>
 
 ---
 
