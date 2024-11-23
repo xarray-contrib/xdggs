@@ -8,7 +8,7 @@
 
 <img src="https://raw.githubusercontent.com/xarray-contrib/xdggs/main/docs/_static/logos/xdggs_logo.png" width="300" height="300" margin="0" /><br/>
 
-# xdggs
+# xdggs: discrete global grid systems with xarray
 
 `xdggs` is an open-source Python package that provides tools for handling geospatial data using Discrete Global Grid Systems (DGGS).
 
