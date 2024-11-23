@@ -1,3 +1,7 @@
+[![xdggs Logo](https://raw.githubusercontent.com/xarray-contrib/xdggs/main/docs/_static/logos/xdggs_logo.png)](https://xdggs.readthedocs.io/en/stable/)
+
+---
+
 [![CI](https://github.com/xarray-contrib/xdggs/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/xarray-contrib/xdggs/actions/ci.yml?query=branch%3Amain+event%3Apush)
 [![docs](https://readthedocs.org/projects/xdggs/badge/?version=latest)](https://xdggs.readthedocs.io)
 [![PyPI version](https://img.shields.io/pypi/v/xdggs.svg)](https://pypi.org/project/xdggs)
