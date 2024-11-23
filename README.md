@@ -1,3 +1,7 @@
+<img src="https://raw.githubusercontent.com/xarray-contrib/xdggs/main/docs/_static/logos/xdggs_logo.png" width="200", height="200" /><br/>
+
+---
+
 [![xdggs Logo](https://raw.githubusercontent.com/xarray-contrib/xdggs/main/docs/_static/logos/xdggs_logo.png)](https://xdggs.readthedocs.io/en/stable/)
 
 ---
