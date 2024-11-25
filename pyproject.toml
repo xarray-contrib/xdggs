@@ -24,7 +24,7 @@ maintainers = [
 license = { text = "Apache-2.0" }
 description = "Xarray extension for DGGS"
 keywords = ["DGGS", "xarray", "GIS"]
-readme = "Readme.md"
+readme = "README.md"
 classifiers = [
   "Intended Audience :: Science/Research",
   "License :: OSI Approved :: Apache Software License",
