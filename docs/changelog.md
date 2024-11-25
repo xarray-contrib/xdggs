@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 - rename the primary grid parameter to `level` ({pull}`65`)
 - interactive plotting with `lonboard` ({pull}`67`)
 - expose example datasets through `xdggs.tutorial` ({pull}`84`)
+- add a preliminary logo ({pull}`101`, {pull}`103`)
 
 ### Bug fixes
 
