@@ -4,7 +4,11 @@
 [![codestyle](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 [![conda-forge](https://img.shields.io/conda/vn/conda-forge/xdggs)](https://github.com/conda-forge/xdggs-feedstock)
 
-# xdggs
+---
+
+<img src="https://raw.githubusercontent.com/xarray-contrib/xdggs/main/docs/_static/logos/xdggs_logo.png" width="300" height="300" margin="0" /><br/>
+
+# xdggs: discrete global grid systems with xarray
 
 `xdggs` is an open-source Python package that provides tools for handling geospatial data using Discrete Global Grid Systems (DGGS).
 
