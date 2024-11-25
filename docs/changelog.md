@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Bug fixes
 
+- properly reference the readme in the package metadata ({pull}`106`)
+
 ## 0.1.0 (2024-11-25)
 
 ### Enhancements
