@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.2 (_unreleased_)
+
+## New features
+
+## Bug fixes
+
+## Documentation
+
+## Internal changes
+
 ## 0.1.1 (2024-11-25)
 
 ### Bug fixes
