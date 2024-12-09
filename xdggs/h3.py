@@ -141,7 +141,10 @@ class H3Info(DGGSInfo):
         lat : array-like
             The latitude coordinate values of the grid cells in degree
         """
-        lat, lon = cells_to_coordinates(cell_ids, radians=False)
+        result = cells_to_coordinates(cell_ids, radians=False)
+
+        lon = result.column("lng").to_numpy()
+        lat = result.column("lat").to_numpy()
 
         return lon, lat
 
