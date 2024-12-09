@@ -6,7 +6,7 @@ repos:
       - id: end-of-file-fixer
       - id: check-docstring-first
   - repo: https://github.com/rbubley/mirrors-prettier
-    rev: v3.3.3
+    rev: v3.4.1
     hooks:
       - id: prettier
         args: [--cache-location=.prettier_cache/cache]
@@ -22,7 +22,7 @@ repos:
     hooks:
       - id: validate-pyproject
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.7.2
+    rev: v0.8.1
     hooks:
       - id: ruff
         args: [--fix]
@@ -41,7 +41,7 @@ repos:
     hooks:
       - id: validate-cff
   - repo: https://github.com/kynan/nbstripout
-    rev: 0.8.0
+    rev: 0.8.1
     hooks:
       - id: nbstripout
         args: [--extra-keys=metadata.kernelspec metadata.langauge_info.version]
