@@ -6,6 +6,8 @@
 
 ## Bug fixes
 
+- use explicit `arrow` API to extract cell coordinates ({issue}`113`, {pull}`114`)
+
 ## Documentation
 
 ## Internal changes
