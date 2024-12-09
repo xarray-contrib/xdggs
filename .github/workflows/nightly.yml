@@ -53,6 +53,9 @@ jobs:
       matrix:
         python-version: ["3.12"]
 
+    permissions:
+      issues: write
+
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
