@@ -523,6 +523,6 @@ def test_repr_inline(level, max_width) -> None:
 
     actual = index._repr_inline_(max_width)
 
-    assert f"nside={level}" in actual
+    assert f"level={level}" in actual
     # ignore max_width for now
     # assert len(actual) <= max_width
