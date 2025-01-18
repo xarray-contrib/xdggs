@@ -35,14 +35,15 @@ class DGGSAccessor:
         Parameters
         ----------
         grid_info : dict or DGGSInfo, optional
-            Override the grid information.
+            Override the grid parameters on the dataset. Useful to set attributes on
+            the dataset.
         name : str, default: "cell_ids"
             The name of the coordinate containing the cell ids.
 
         Returns
         -------
         obj : xarray.DataArray or xarray.Dataset
-            The object with a new index.
+            The object with a DGGS index on the cell id coordinate.
         """
         var = self._obj[name]
         if isinstance(grid_info, DGGSInfo):
