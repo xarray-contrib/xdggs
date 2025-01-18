@@ -17,7 +17,6 @@ import xdggs
                             "grid_name": "healpix",
                             "resolution": 1,
                             "indexing_scheme": "ring",
-                            "rotation": [0, 0],
                         },
                     )
                 }
@@ -37,7 +36,6 @@ import xdggs
                             "grid_name": "healpix",
                             "resolution": 1,
                             "indexing_scheme": "ring",
-                            "rotation": [0, 0],
                         },
                     )
                 },
@@ -57,7 +55,6 @@ import xdggs
                             "grid_name": "healpix",
                             "resolution": 1,
                             "indexing_scheme": "ring",
-                            "rotation": [0, 0],
                         },
                     )
                 }
@@ -68,12 +65,7 @@ import xdggs
         ),
         pytest.param(
             xr.Dataset(coords={"cell_ids": ("cells", [1])}),
-            {
-                "grid_name": "healpix",
-                "resolution": 1,
-                "indexing_scheme": "ring",
-                "rotation": [0, 0],
-            },
+            {"grid_name": "healpix", "resolution": 1, "indexing_scheme": "ring"},
             None,
             id="dataset-dict-standard name",
         ),
