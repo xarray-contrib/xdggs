@@ -3,7 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - xarray
-  - healpy
+  - cdshealpix
   - ruff
   - pytest
   - h5netcdf

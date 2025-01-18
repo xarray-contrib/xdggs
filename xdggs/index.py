@@ -10,6 +10,21 @@ from xdggs.utils import GRID_REGISTRY, _extract_cell_id_variable
 
 
 def decode(ds):
+    """
+    decode grid parameters and create a DGGS index
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        The input dataset. Must contain a `"cell_ids"` coordinate with at least
+        the attributes `grid_name` and `resolution`.
+
+    Returns
+    -------
+    decoded : xarray.Dataset
+        The input dataset with a DGGS index on the ``"cell_ids"`` coordinate.
+    """
+
     variable_name = "cell_ids"
 
     return ds.drop_indexes(variable_name, errors="ignore").set_xindex(
@@ -71,6 +86,9 @@ class DGGSIndex(Index):
 
     def cell_centers(self) -> tuple[np.ndarray, np.ndarray]:
         return self._grid.cell_ids2geographic(self._pd_index.index.values)
+
+    def cell_boundaries(self) -> np.ndarray:
+        return self.grid_info.cell_boundaries(self._pd_index.index.values)
 
     @property
     def grid_info(self) -> DGGSInfo:
