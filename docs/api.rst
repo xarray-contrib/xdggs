@@ -38,6 +38,7 @@ Parameters
 
    Dataset.dggs.grid_info
    Dataset.dggs.params
+   Dataset.dggs.decode
 
 
 Data inference
@@ -61,6 +62,7 @@ Parameters
 
    DataArray.dggs.grid_info
    DataArray.dggs.params
+   DataArray.dggs.decode
 
 
 Data inference
