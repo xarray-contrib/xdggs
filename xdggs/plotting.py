@@ -63,7 +63,7 @@ def explore(
 
     normalized_data = normalize(arr.variable, center=center)
 
-    colormap = colormaps[cmap]
+    colormap = colormaps[cmap] if isinstance(cmap, str) else cmap
     colors = apply_continuous_cmap(normalized_data, colormap, alpha=alpha)
 
     table = create_arrow_table(polygons, arr)
