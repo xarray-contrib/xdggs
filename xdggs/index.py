@@ -9,27 +9,32 @@ from xdggs.grid import DGGSInfo
 from xdggs.utils import GRID_REGISTRY, _extract_cell_id_variable
 
 
-def decode(ds):
+def decode(ds, grid_info=None, *, name="cell_ids"):
     """
     decode grid parameters and create a DGGS index
 
     Parameters
     ----------
     ds : xarray.Dataset
-        The input dataset. Must contain a `"cell_ids"` coordinate with at least
-        the attributes `grid_name` and `resolution`.
+        The input dataset. Must contain a coordinate for the cell ids with at
+        least the attributes `grid_name` and `level`.
+    grid_info : dict or DGGSInfo, optional
+        Override the grid parameters on the dataset. Useful to set attributes on
+        the dataset.
+    name : str, default: "cell_ids"
+        The name of the coordinate containing the cell ids.
 
     Returns
     -------
-    decoded : xarray.Dataset
-        The input dataset with a DGGS index on the ``"cell_ids"`` coordinate.
+    decoded : xarray.DataArray or xarray.Dataset
+        The input dataset with a DGGS index on the cell id coordinate.
+
+    See Also
+    --------
+    xarray.Dataset.dggs.decode
+    xarray.DataArray.dggs.decode
     """
-
-    variable_name = "cell_ids"
-
-    return ds.drop_indexes(variable_name, errors="ignore").set_xindex(
-        variable_name, DGGSIndex
-    )
+    return ds.dggs.decode(name=name, grid_info=grid_info)
 
 
 class DGGSIndex(Index):

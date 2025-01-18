@@ -343,4 +343,4 @@ class HealpixIndex(DGGSIndex):
         return self._grid
 
     def _repr_inline_(self, max_width: int):
-        return f"HealpixIndex(nside={self._grid.level}, indexing_scheme={self._grid.indexing_scheme})"
+        return f"HealpixIndex(level={self._grid.level}, indexing_scheme={self._grid.indexing_scheme})"
