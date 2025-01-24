@@ -174,23 +174,23 @@ class DGGSAccessor:
             boundaries, coords={self._name: self.cell_ids}, dims=self.cell_ids.dims
         )
 
-    def parents(self, resolution: int) -> xr.DataArray:
+    def parents(self, level: int) -> xr.DataArray:
         """determine the parent cell ids of the cells
 
         Parameters
         ----------
-        resolution : int
-            The parent resolution. Must be smaller than the current resolution.
+        level : int
+            The parent resolution level. Must be smaller than the current resolution.
 
         Returns
         -------
         parents : DataArray
             The parent cell ids, one for each input cell.
         """
-        data = self.index.parents(resolution)
+        data = self.index.parents(level)
 
         params = self.grid_info.to_dict()
-        params["resolution"] = resolution
+        params["resolution"] = level
 
         return self.coord.copy(data=data).assign_attrs(**params).rename("parents")
 
