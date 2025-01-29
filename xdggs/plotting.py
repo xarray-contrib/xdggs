@@ -1,4 +1,45 @@
+from dataclasses import dataclass
+from functools import partial
+from typing import Any
+
+import ipywidgets
 import numpy as np
+import xarray as xr
+from lonboard import Map
+
+
+def on_slider_change(change, container):
+    owner = change["owner"]
+    dim = owner.description
+
+    indexers = {
+        slider.description: slider.value
+        for slider in container.dimension_sliders.children
+        if slider.description != dim
+    } | {dim: change["new"]}
+    new_slice = container.obj.isel(indexers)
+
+    colors = colorize(new_slice.variable, **container.colorize_kwargs)
+
+    layer = container.map.layers[0]
+    layer.get_fill_color = colors
+
+
+@dataclass
+class MapContainer:
+    """container for the map, any control widgets and the data object"""
+
+    dimension_sliders: ipywidgets.VBox
+    map: Map
+    obj: xr.DataArray
+
+    colorize_kwargs: dict[str, Any]
+
+    def render(self):
+        # add any additional control widgets here
+        control_box = ipywidgets.HBox([self.dimension_sliders])
+
+        return ipywidgets.VBox([self.map, control_box])
 
 
 def create_arrow_table(polygons, arr, coords=None):
@@ -71,10 +112,38 @@ def explore(
 
     polygons = grid_info.cell_boundaries(cell_ids, backend="geoarrow")
 
-    colormap = colormaps[cmap] if isinstance(cmap, str) else cmap
-    colors = colorize(arr.variable, center=center, alpha=alpha, colormap=colormap)
+    initial_indexers = {dim: 0 for dim in arr.dims if dim != cell_dim}
+    initial_arr = arr.isel(initial_indexers)
 
-    table = create_arrow_table(polygons, arr)
+    colormap = colormaps[cmap] if isinstance(cmap, str) else cmap
+    colors = colorize(initial_arr, center=center, alpha=alpha, colormap=colormap)
+
+    table = create_arrow_table(polygons, initial_arr)
     layer = SolidPolygonLayer(table=table, filled=True, get_fill_color=colors)
 
-    return lonboard.Map(layer)
+    map_ = lonboard.Map(layer)
+
+    if not initial_indexers:
+        # 1D data
+        return map_
+
+    sliders = ipywidgets.VBox(
+        [
+            ipywidgets.IntSlider(min=0, max=arr.sizes[dim] - 1, description=dim)
+            for dim in arr.dims
+            if dim != cell_dim
+        ]
+    )
+
+    container = MapContainer(
+        sliders,
+        map_,
+        arr,
+        colorize_kwargs={"alpha": alpha, "center": center, "colormap": colormap},
+    )
+
+    # connect slider with map
+    for slider in sliders.children:
+        slider.observe(partial(on_slider_change, container=container), names="value")
+
+    return container.render()
