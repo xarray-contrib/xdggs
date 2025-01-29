@@ -58,9 +58,9 @@ def explore(
     from lonboard import SolidPolygonLayer
     from matplotlib import colormaps
 
-    if len(arr.dims) != 1 or cell_dim not in arr.dims:
+    if cell_dim not in arr.dims:
         raise ValueError(
-            f"exploration only works with a single dimension ('{cell_dim}')"
+            f"exploration plotting only works with a spatial dimension ('{cell_dim}')"
         )
 
     cell_ids = arr.dggs.coord.data
