@@ -174,7 +174,7 @@ class DGGSAccessor:
             boundaries, coords={self._name: self.cell_ids}, dims=self.cell_ids.dims
         )
 
-    def explore(self, *, cmap="viridis", center=None, alpha=None):
+    def explore(self, *, cmap="viridis", center=None, alpha=None, coords=None):
         """interactively explore the data using `lonboard`
 
         Requires `lonboard`, `matplotlib`, and `arro3.core` to be installed.
@@ -187,6 +187,8 @@ class DGGSAccessor:
             If set, will use this as the center value of a diverging color map.
         alpha : float, optional
             If set, controls the transparency of the polygons.
+        coords : list of str, default: ["latitude", "longitude"]
+            Additional coordinates to contain in the table of contents.
 
         Returns
         -------
@@ -207,4 +209,5 @@ class DGGSAccessor:
             cmap=cmap,
             center=center,
             alpha=alpha,
+            coords=coords,
         )
