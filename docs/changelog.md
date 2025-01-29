@@ -4,6 +4,8 @@
 
 ## New features
 
+- allow adding additional coords to the cell inspection table in the map ({pull}`122`)
+
 ## Bug fixes
 
 - use explicit `arrow` API to extract cell coordinates ({issue}`113`, {pull}`114`)

@@ -93,6 +93,7 @@ def explore(
     cmap="viridis",
     center=None,
     alpha=None,
+    coords=None,
 ):
     import lonboard
     from lonboard import SolidPolygonLayer
@@ -118,7 +119,7 @@ def explore(
     colormap = colormaps[cmap] if isinstance(cmap, str) else cmap
     colors = colorize(initial_arr, center=center, alpha=alpha, colormap=colormap)
 
-    table = create_arrow_table(polygons, initial_arr)
+    table = create_arrow_table(polygons, initial_arr, coords=coords)
     layer = SolidPolygonLayer(table=table, filled=True, get_fill_color=colors)
 
     map_ = lonboard.Map(layer)
