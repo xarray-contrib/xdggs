@@ -39,6 +39,14 @@ def normalize(var, center=None):
     return normalizer(var.data)
 
 
+def colorize(var, *, center, colormap, alpha):
+    from lonboard.colormap import apply_continuous_cmap
+
+    normalized_data = normalize(var, center=center)
+
+    return apply_continuous_cmap(normalized_data, colormap, alpha=alpha)
+
+
 def explore(
     arr,
     cell_dim="cells",
@@ -48,7 +56,6 @@ def explore(
 ):
     import lonboard
     from lonboard import SolidPolygonLayer
-    from lonboard.colormap import apply_continuous_cmap
     from matplotlib import colormaps
 
     if len(arr.dims) != 1 or cell_dim not in arr.dims:
@@ -61,10 +68,8 @@ def explore(
 
     polygons = grid_info.cell_boundaries(cell_ids, backend="geoarrow")
 
-    normalized_data = normalize(arr.variable, center=center)
-
     colormap = colormaps[cmap] if isinstance(cmap, str) else cmap
-    colors = apply_continuous_cmap(normalized_data, colormap, alpha=alpha)
+    colors = colorize(arr.variable, center=center, alpha=alpha, colormap=colormap)
 
     table = create_arrow_table(polygons, arr)
     layer = SolidPolygonLayer(table=table, filled=True, get_fill_color=colors)
