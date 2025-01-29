@@ -49,7 +49,6 @@ def colorize(var, *, center, colormap, alpha):
 
 def explore(
     arr,
-    cell_dim="cells",
     cmap="viridis",
     center=None,
     alpha=None,
@@ -58,12 +57,16 @@ def explore(
     from lonboard import SolidPolygonLayer
     from matplotlib import colormaps
 
+    # guaranteed to be 1D
+    cell_id_coord = arr.dggs.coord
+    [cell_dim] = cell_id_coord.dims
+
     if cell_dim not in arr.dims:
         raise ValueError(
             f"exploration plotting only works with a spatial dimension ('{cell_dim}')"
         )
 
-    cell_ids = arr.dggs.coord.data
+    cell_ids = cell_id_coord.data
     grid_info = arr.dggs.grid_info
 
     polygons = grid_info.cell_boundaries(cell_ids, backend="geoarrow")
