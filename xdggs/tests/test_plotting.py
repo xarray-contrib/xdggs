@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 import xarray as xr
 from arro3.core import Array, Table
+from matplotlib import colormaps
 
 from xdggs import plotting
 
@@ -121,3 +122,24 @@ def test_normalize(var, center, expected):
     actual = plotting.normalize(var, center=center)
 
     np.testing.assert_allclose(actual, expected)
+
+
+@pytest.mark.parametrize(
+    ["var", "kwargs", "expected"],
+    (
+        pytest.param(
+            xr.Variable("cells", [0, 3]),
+            {"center": 2, "colormap": colormaps["viridis"], "alpha": 1},
+            np.array([[68, 1, 84], [94, 201, 97]], dtype="uint8"),
+        ),
+        pytest.param(
+            xr.Variable("cells", [-1, 1]),
+            {"center": None, "colormap": colormaps["viridis"], "alpha": 0.8},
+            np.array([[68, 1, 84, 204], [253, 231, 36, 204]], dtype="uint8"),
+        ),
+    ),
+)
+def test_colorize(var, kwargs, expected):
+    actual = plotting.colorize(var, **kwargs)
+
+    np.testing.assert_equal(actual, expected)
