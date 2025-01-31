@@ -202,10 +202,8 @@ class DGGSAccessor:
         if isinstance(self._obj, xr.Dataset):
             raise ValueError("does not work with Dataset objects, yet")
 
-        cell_dim = self._obj[self._name].dims[0]
         return explore(
             self._obj,
-            cell_dim=cell_dim,
             cmap=cmap,
             center=center,
             alpha=alpha,

@@ -1,4 +1,45 @@
+from dataclasses import dataclass
+from functools import partial
+from typing import Any
+
+import ipywidgets
 import numpy as np
+import xarray as xr
+from lonboard import Map
+
+
+def on_slider_change(change, container):
+    owner = change["owner"]
+    dim = owner.description
+
+    indexers = {
+        slider.description: slider.value
+        for slider in container.dimension_sliders.children
+        if slider.description != dim
+    } | {dim: change["new"]}
+    new_slice = container.obj.isel(indexers)
+
+    colors = colorize(new_slice.variable, **container.colorize_kwargs)
+
+    layer = container.map.layers[0]
+    layer.get_fill_color = colors
+
+
+@dataclass
+class MapContainer:
+    """container for the map, any control widgets and the data object"""
+
+    dimension_sliders: ipywidgets.VBox
+    map: Map
+    obj: xr.DataArray
+
+    colorize_kwargs: dict[str, Any]
+
+    def render(self):
+        # add any additional control widgets here
+        control_box = ipywidgets.HBox([self.dimension_sliders])
+
+        return ipywidgets.VBox([self.map, control_box])
 
 
 def create_arrow_table(polygons, arr, coords=None):
@@ -39,9 +80,16 @@ def normalize(var, center=None):
     return normalizer(var.data)
 
 
+def colorize(var, *, center, colormap, alpha):
+    from lonboard.colormap import apply_continuous_cmap
+
+    normalized_data = normalize(var, center=center)
+
+    return apply_continuous_cmap(normalized_data, colormap, alpha=alpha)
+
+
 def explore(
     arr,
-    cell_dim="cells",
     cmap="viridis",
     center=None,
     alpha=None,
@@ -49,25 +97,54 @@ def explore(
 ):
     import lonboard
     from lonboard import SolidPolygonLayer
-    from lonboard.colormap import apply_continuous_cmap
     from matplotlib import colormaps
 
-    if len(arr.dims) != 1 or cell_dim not in arr.dims:
+    # guaranteed to be 1D
+    cell_id_coord = arr.dggs.coord
+    [cell_dim] = cell_id_coord.dims
+
+    if cell_dim not in arr.dims:
         raise ValueError(
-            f"exploration only works with a single dimension ('{cell_dim}')"
+            f"exploration plotting only works with a spatial dimension ('{cell_dim}')"
         )
 
-    cell_ids = arr.dggs.coord.data
+    cell_ids = cell_id_coord.data
     grid_info = arr.dggs.grid_info
 
     polygons = grid_info.cell_boundaries(cell_ids, backend="geoarrow")
 
-    normalized_data = normalize(arr.variable, center=center)
+    initial_indexers = {dim: 0 for dim in arr.dims if dim != cell_dim}
+    initial_arr = arr.isel(initial_indexers)
 
     colormap = colormaps[cmap] if isinstance(cmap, str) else cmap
-    colors = apply_continuous_cmap(normalized_data, colormap, alpha=alpha)
+    colors = colorize(initial_arr, center=center, alpha=alpha, colormap=colormap)
 
-    table = create_arrow_table(polygons, arr, coords=coords)
+    table = create_arrow_table(polygons, initial_arr, coords=coords)
     layer = SolidPolygonLayer(table=table, filled=True, get_fill_color=colors)
 
-    return lonboard.Map(layer)
+    map_ = lonboard.Map(layer)
+
+    if not initial_indexers:
+        # 1D data
+        return map_
+
+    sliders = ipywidgets.VBox(
+        [
+            ipywidgets.IntSlider(min=0, max=arr.sizes[dim] - 1, description=dim)
+            for dim in arr.dims
+            if dim != cell_dim
+        ]
+    )
+
+    container = MapContainer(
+        sliders,
+        map_,
+        arr,
+        colorize_kwargs={"alpha": alpha, "center": center, "colormap": colormap},
+    )
+
+    # connect slider with map
+    for slider in sliders.children:
+        slider.observe(partial(on_slider_change, container=container), names="value")
+
+    return container.render()
