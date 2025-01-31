@@ -147,6 +147,46 @@ def test_colorize(var, kwargs, expected):
     np.testing.assert_equal(actual, expected)
 
 
+class TestMapContainer:
+    def test_init(self):
+        map_ = lonboard.Map(layers=[])
+        sliders = ipywidgets.VBox(
+            [ipywidgets.IntSlider(min=0, max=10, description="time")]
+        )
+        obj = xr.DataArray([[0, 1], [2, 3]], dims=["time", "cells"])
+        colorize_kwargs = {"a": 1, "b": 2}
+
+        container = plotting.MapContainer(
+            dimension_sliders=sliders,
+            map=map_,
+            obj=obj,
+            colorize_kwargs=colorize_kwargs,
+        )
+
+        assert container.map == map_
+        xr.testing.assert_equal(container.obj, obj)
+        assert container.dimension_sliders == sliders
+        assert container.colorize_kwargs == colorize_kwargs
+
+    def test_render(self):
+        map_ = lonboard.Map(layers=[])
+        sliders = ipywidgets.VBox(
+            [ipywidgets.IntSlider(min=0, max=10, description="time")]
+        )
+        obj = xr.DataArray([[0, 1], [2, 3]], dims=["time", "cells"])
+        colorize_kwargs = {"a": 1, "b": 2}
+
+        container = plotting.MapContainer(
+            dimension_sliders=sliders,
+            map=map_,
+            obj=obj,
+            colorize_kwargs=colorize_kwargs,
+        )
+        rendered = container.render()
+
+        assert isinstance(rendered, ipywidgets.VBox)
+
+
 @pytest.mark.parametrize(
     ["arr", "expected_type"],
     (
