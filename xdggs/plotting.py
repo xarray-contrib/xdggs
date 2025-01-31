@@ -103,11 +103,6 @@ def explore(
     cell_id_coord = arr.dggs.coord
     [cell_dim] = cell_id_coord.dims
 
-    if cell_dim not in arr.dims:
-        raise ValueError(
-            f"exploration plotting only works with a spatial dimension ('{cell_dim}')"
-        )
-
     cell_ids = cell_id_coord.data
     grid_info = arr.dggs.grid_info
 
