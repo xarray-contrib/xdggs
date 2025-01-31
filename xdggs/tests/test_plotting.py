@@ -1,3 +1,5 @@
+import ipywidgets
+import lonboard
 import numpy as np
 import pytest
 import xarray as xr
@@ -143,3 +145,34 @@ def test_colorize(var, kwargs, expected):
     actual = plotting.colorize(var, **kwargs)
 
     np.testing.assert_equal(actual, expected)
+
+
+@pytest.mark.parametrize(
+    ["arr", "expected_type"],
+    (
+        pytest.param(
+            xr.DataArray(
+                [0, 1], coords={"cell_ids": ("cells", [10, 26])}, dims="cells"
+            ).dggs.decode(
+                {"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"}
+            ),
+            lonboard.Map,
+            id="1d",
+        ),
+        pytest.param(
+            xr.DataArray(
+                [[0, 1], [2, 3]],
+                coords={"cell_ids": ("cells", [10, 26])},
+                dims=["time", "cells"],
+            ).dggs.decode(
+                {"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"}
+            ),
+            ipywidgets.VBox,
+            id="2d",
+        ),
+    ),
+)
+def test_explore(arr, expected_type):
+    actual = arr.dggs.explore()
+
+    assert isinstance(actual, expected_type)
