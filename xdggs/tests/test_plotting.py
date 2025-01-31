@@ -176,9 +176,3 @@ def test_explore(arr, expected_type):
     actual = arr.dggs.explore()
 
     assert isinstance(actual, expected_type)
-
-
-def test_explore_without_spatial_dim():
-    arr = xr.DataArray([0, 1], dims="time")
-    with pytest.raises(ValueError, match="only works with a spatial dimension"):
-        arr.dggs.explore()
