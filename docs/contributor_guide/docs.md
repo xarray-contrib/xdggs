@@ -1,19 +1,24 @@
 # Contribute to the Documentation
 
 ## Building the docs locally
+
 Set up your local environment with either mamba or conda
 
 ::::{tab-set}
 :::{tab-item} Mamba
+
 ```shell
 mamba env create -f ci/docs.yml
 ```
+
 :::
 
 :::{tab-item} Conda
+
 ```shell
 conda env create -f ci/docs.yml
 ```
+
 :::
 ::::
 
@@ -21,10 +26,12 @@ And build the documentation locally (all commands assume you are in the root rep
 
 ::::{tab-set}
 :::{tab-item} Automatically show changes
+
 ```
 sphinx-autobuild docs docs/_build/html --open-browser
 ```
-This will open a browser window that shows a live preview (meaning that changes you make to the configuration and content will be automatically updated and shown in the browser). 
+
+This will open a browser window that shows a live preview (meaning that changes you make to the configuration and content will be automatically updated and shown in the browser).
 :::
 
 :::{tab-item} Build and open manually

@@ -22,7 +22,7 @@ root_doc = "index"
 
 source_suffix = {
     ".rst": "restructuredtext",
-    ".md": "myst-nb", #enables myst-nb support for plain md files
+    ".md": "myst-nb",  # enables myst-nb support for plain md files
 }
 
 extensions = [
@@ -124,7 +124,7 @@ nb_execution_cache_path = "_build/myst-nb"
 
 # myst options ---------------------------------------------------------------
 myst_enable_extensions = [
-    "colon_fence",      # Enables ::: directive syntax
+    "colon_fence",  # Enables ::: directive syntax
     "deflist",
     "html_admonition",
     "html_image",
