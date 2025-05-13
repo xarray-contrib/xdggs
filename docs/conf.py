@@ -19,6 +19,12 @@ root_doc = "index"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
+
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "myst-nb", #enables myst-nb support for plain md files
+}
+
 extensions = [
     "sphinx.ext.extlinks",
     "sphinx.ext.intersphinx",
@@ -29,6 +35,8 @@ extensions = [
     "IPython.sphinxext.ipython_console_highlighting",
     "sphinx_autosummary_accessors",
     "myst_nb",
+    "sphinx_design",
+    "sphinx_copybutton",
     "sphinxcontrib.bibtex",
 ]
 
@@ -44,6 +52,13 @@ templates_path = ["_templates", sphinx_autosummary_accessors.templates_path]
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ["_build", "directory"]
+
+## Github Buttons
+html_theme_options = {
+    "repository_url": "https://github.com/xarray-contrib/xdggs",
+    "use_repository_button": True,
+    "use_issues_button": True,
+}
 
 # -- autosummary / autodoc ---------------------------------------------------
 
@@ -106,6 +121,16 @@ intersphinx_mapping = {
 
 nb_execution_timeout = -1
 nb_execution_cache_path = "_build/myst-nb"
+
+# myst options ---------------------------------------------------------------
+myst_enable_extensions = [
+    "colon_fence",      # Enables ::: directive syntax
+    "deflist",
+    "html_admonition",
+    "html_image",
+    "replacements",
+    "substitution",
+]
 
 # -- sphinxcontrib-bibtex ----------------------------------------------------
 

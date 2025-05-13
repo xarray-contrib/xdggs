@@ -1,10 +1,11 @@
+name: xdggs-docs
 channels:
   - conda-forge
 dependencies:
   - python=3.12
   - sphinx
-  - myst-parser
   - myst-nb
+  - sphinx-autobuild
   - sphinx-book-theme
   - sphinx-autosummary-accessors
   - sphinx-copybutton
