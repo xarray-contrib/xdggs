@@ -8,6 +8,8 @@
 
 ### Documentation
 
+- Documentation Contributer Guide + Github Button ({pull}`137`)
+
 ### Internal changes
 
 ## 0.2.0 (2025-02-12)
