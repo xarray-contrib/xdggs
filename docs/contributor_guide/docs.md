@@ -1,4 +1,52 @@
-# Contribute to the Documentation
+# Contribute to xdggs
+
+## Getting a development environment
+
+Set up your local environment with either mamba or conda
+
+::::{tab-set}
+:::{tab-item} Mamba
+
+```shell
+mamba create -n xdggs-dev python=3.12
+mamba env update -n xdggs-dev -f ci/environment.yml
+mamba activate xdggs-dev
+pip install --no-deps -e .
+```
+
+:::
+
+:::{tab-item} Conda
+
+```shell
+conda create -n xdggs-dev python=3.12
+conda env update -n xdggs-dev -f ci/environment.yml
+conda activate xdggs-dev
+pip install --no-deps -e .
+```
+
+:::
+::::
+
+From here you can run the tests:
+
+```shell
+pytest
+```
+
+## Running pre-commit hooks locally
+In this project, we use [pre-commit](https://pre-commit.com/) to run some checks before committing code. These are run automatically in CI, but for those wanting to run them locally, install pre-commit (e.g., via [Brew](https://formulae.brew.sh/formula/pre-commit)) then:
+
+```shell
+pre-commit install
+```
+
+Now when you commit code, the pre-commit hooks will run automatically. You can also run them manually with:
+
+```shell
+pre-commit run --all-files
+```
+
 
 ## Building the docs locally
 
@@ -9,6 +57,7 @@ Set up your local environment with either mamba or conda
 
 ```shell
 mamba env create -f ci/docs.yml
+mamba activate xdggs-docs
 ```
 
 :::
@@ -17,6 +66,7 @@ mamba env create -f ci/docs.yml
 
 ```shell
 conda env create -f ci/docs.yml
+conda activate xdggs-docs
 ```
 
 :::
