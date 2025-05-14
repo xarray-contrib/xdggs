@@ -215,7 +215,7 @@ class DGGSAccessor:
             coords=coords,
         )
 
-    def downscale(self, level: int, agg: Callable = np.mean):
+    def downscale(self, level: int, agg: Callable = None):
         """Aggregate data to a lower grid level.
 
         Parameters
@@ -232,11 +232,10 @@ class DGGSAccessor:
 
 
         """
+        if agg is None:
+            agg = np.mean
 
-        if not isinstance(level, int):
-            raise ValueError(
-                f"Expected level to be of type {{int}}. Got {type(level).__name__}"
-            )
+        assert_valid_level(level)
 
         if self.grid_info.level < level:
             raise ValueError(
@@ -267,6 +266,28 @@ class DGGSAccessor:
             raise ValueError("Grouping is currently only supported for Healpix grids.")
 
         raise NotImplementedError()
+
+    def rescale(self, level: int, downscale_agg: Callable | None = None):
+        """Rescale the data to a different grid level by either upscaling or downscaling.
+
+        Parameters
+        ----------
+        level : int
+            The target level of the grid you want to group towards. This is the level of the resulting data.
+        downscale_agg : callable, default: np.mean
+            The aggregation function to use if downscaling. This function must accept a 1D array and return a scalar value.
+
+        Returns
+        -------
+        xarray.Dataset or xarray.DataArray
+            The rescaled data.
+        """
+        assert_valid_level(level)
+
+        if self.grid_info.level < level:
+            return self.upscale(level)
+        else:
+            return self.downscale(level, agg=downscale_agg)
 
 
 def assert_valid_level(level: int) -> None:
