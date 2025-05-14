@@ -38,6 +38,16 @@ API Reference <api>
 Publications <reference_guide/publications>
 ```
 
+```{toctree}
+---
+maxdepth: 3
+caption: Contributor Guide
+hidden: true
+---
+
+Contribute to the Documentation <contributor_guide/docs>
+```
+
 # Welcome to `xdggs`
 
 [![PyPI](https://img.shields.io/pypi/v/xdggs.svg?style=flat)](https://pypi.org/project/xdggs)
