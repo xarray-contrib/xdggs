@@ -1,7 +1,12 @@
+from collections.abc import Callable
+
+import numpy as np
 import numpy.typing as npt
 import xarray as xr
 
 from xdggs.grid import DGGSInfo
+from xdggs.healpix import HealpixInfo
+from xdggs.healpix import downscale as healpix_downscale
 from xdggs.index import DGGSIndex
 from xdggs.plotting import explore
 
@@ -209,3 +214,64 @@ class DGGSAccessor:
             alpha=alpha,
             coords=coords,
         )
+
+    def downscale(self, level: int, agg: Callable = np.mean):
+        """Aggregate data to a lower grid level.
+
+        Parameters
+        ----------
+        level : int, optional
+            The target level of the grid you want to group towards. This is the level of the resulting data.
+        agg : callable, default: np.mean
+            The aggregation function to use. This function must accept a 1D array and return a scalar value.
+
+        Returns
+        -------
+        xarray.Dataset or xarray.DataArray
+            The downscaled data.
+
+
+        """
+
+        if not isinstance(level, int):
+            raise ValueError(
+                f"Expected level to be of type {{int}}. Got {type(level).__name__}"
+            )
+
+        if self.grid_info.level < level:
+            raise ValueError(
+                f"Can't downscale to level {level} from data on level {self.grid_info.level}. Did you mean upscale?"
+            )
+
+        if not isinstance(self.grid_info, HealpixInfo):
+            raise ValueError("Grouping is currently only supported for Healpix grids.")
+
+        offset = self.grid_info.level - level
+
+        return healpix_downscale(
+            self._obj, offset=offset, agg=agg, grid_info=self.grid_info
+        )
+
+    def upscale(self, level: int):
+        if not isinstance(level, int):
+            raise ValueError(
+                f"Expected level to be of type {{int}}. Got {type(level).__name__}"
+            )
+
+        if self.grid_info.level < level:
+            raise ValueError(
+                f"Can't downscale to level {level} from data on level {self.grid_info.level}. Did you mean upscale?"
+            )
+
+        if not isinstance(self.grid_info, HealpixInfo):
+            raise ValueError("Grouping is currently only supported for Healpix grids.")
+
+        raise NotImplementedError()
+
+
+def assert_valid_level(level: int) -> None:
+    if not isinstance(level, int):
+        raise ValueError(f"level must be an integer, got {type(level).__name__}")
+
+    if level < 0:
+        raise ValueError(f"level must be a non-negative integer, got {level}")
