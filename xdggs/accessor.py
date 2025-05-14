@@ -229,8 +229,6 @@ class DGGSAccessor:
         -------
         xarray.Dataset or xarray.DataArray
             The downscaled data.
-
-
         """
         if agg is None:
             agg = np.mean
@@ -242,10 +240,12 @@ class DGGSAccessor:
                 f"Can't downscale to level {level} from data on level {self.grid_info.level}. Did you mean upscale?"
             )
 
-        if not isinstance(self.grid_info, HealpixInfo):
-            raise ValueError("Grouping is currently only supported for Healpix grids.")
-
         offset = self.grid_info.level - level
+
+        if not isinstance(self.grid_info, HealpixInfo):
+            raise ValueError(
+                "Downscaling is currently only supported for Healpix grids."
+            )
 
         return healpix_downscale(
             self._obj, offset=offset, agg=agg, grid_info=self.grid_info
@@ -257,13 +257,15 @@ class DGGSAccessor:
                 f"Expected level to be of type {{int}}. Got {type(level).__name__}"
             )
 
-        if self.grid_info.level < level:
+        if self.grid_info.level > level:
             raise ValueError(
-                f"Can't downscale to level {level} from data on level {self.grid_info.level}. Did you mean upscale?"
+                f"Can't upscale to level {level} from data on level {self.grid_info.level}. Did you mean downscale?"
             )
 
+        offset = level - self.grid_info.level  # noqa
+
         if not isinstance(self.grid_info, HealpixInfo):
-            raise ValueError("Grouping is currently only supported for Healpix grids.")
+            raise ValueError("Upscaling is currently only supported for Healpix grids.")
 
         raise NotImplementedError()
 
