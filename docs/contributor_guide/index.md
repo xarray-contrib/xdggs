@@ -35,6 +35,7 @@ pytest
 ```
 
 ## Running pre-commit hooks locally
+
 In this project, we use [pre-commit](https://pre-commit.com/) to run some checks before committing code. These are run automatically in CI, but for those wanting to run them locally, install pre-commit (e.g., via [Brew](https://formulae.brew.sh/formula/pre-commit)) then:
 
 ```shell
@@ -46,7 +47,6 @@ Now when you commit code, the pre-commit hooks will run automatically. You can a
 ```shell
 pre-commit run --all-files
 ```
-
 
 ## Building the docs locally
 
