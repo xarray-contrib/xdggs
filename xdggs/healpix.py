@@ -12,6 +12,7 @@ import cdshealpix.nested
 import cdshealpix.ring
 import numpy as np
 import xarray as xr
+from healpix_geo.nested import RangeMOCIndex
 from xarray.indexes import PandasIndex
 
 from xdggs.grid import DGGSInfo, translate_parameters
@@ -307,6 +308,51 @@ class HealpixInfo(DGGSInfo):
             raise ValueError("invalid backend: {backend!r}")
 
         return backend_func(vertices)
+
+
+class HealpixMocIndex(xr.Index):
+    def __init__(self, index, *, dim, name, grid_info):
+        self._index = index
+        self._dim = dim
+        self._grid_info = grid_info
+        self._name = name
+
+    @classmethod
+    def from_array(cls, array, *, dim, name, grid_info):
+        index = RangeMOCIndex.from_cell_ids(grid_info.level, array.astype("uint64"))
+        return cls(index, dim=dim, name=name, grid_info=grid_info)
+
+    def _replace(self, index):
+        return type(self)(
+            index, dim=self._dim, name=self._name, grid_info=self._grid_info
+        )
+
+    @classmethod
+    def from_variables(cls, variables, *, options):
+        name, var, dim = _extract_cell_id_variable(variables)
+        grid_info = HealpixInfo.from_dict(var.attrs | options)
+
+        return cls.from_array(var.data, dim=dim, name=name, grid_info=grid_info)
+
+    def create_variables(self, variables):
+        name = self._name
+        if variables is not None and name in variables:
+            var = variables[name]
+            attrs = var.attrs
+            encoding = var.encoding
+        else:
+            attrs = None
+            encoding = None
+
+        var = xr.Variable(
+            self._dim, self._index.cell_ids(), attrs=attrs, encoding=encoding
+        )
+        return {name: var}
+
+    def isel(self, indexers):
+        indexer = indexers[self._dim]
+
+        return self._replace(self._index.isel(indexer))
 
 
 @register_dggs("healpix")
