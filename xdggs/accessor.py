@@ -29,7 +29,9 @@ class DGGSAccessor:
         self._name = name
         self._index = index
 
-    def decode(self, grid_info=None, *, name="cell_ids") -> xr.Dataset | xr.DataArray:
+    def decode(
+        self, grid_info=None, *, name="cell_ids", index_kind="pandas"
+    ) -> xr.Dataset | xr.DataArray:
         """decode the DGGS cell ids
 
         Parameters
@@ -51,7 +53,9 @@ class DGGSAccessor:
         if isinstance(grid_info, dict):
             var.attrs = grid_info
 
-        return self._obj.drop_indexes(name, errors="ignore").set_xindex(name, DGGSIndex)
+        return self._obj.drop_indexes(name, errors="ignore").set_xindex(
+            name, DGGSIndex, index_kind=index_kind
+        )
 
     @property
     def index(self) -> DGGSIndex:

@@ -362,11 +362,24 @@ class HealpixIndex(DGGSIndex):
         cell_ids: Any | PandasIndex,
         dim: str,
         grid_info: DGGSInfo,
+        index_kind: str = "pandas",
     ):
         if not isinstance(grid_info, HealpixInfo):
             raise ValueError(f"grid info object has an invalid type: {type(grid_info)}")
 
-        super().__init__(cell_ids, dim, grid_info)
+        self._dim = dim
+
+        if isinstance(cell_ids, xr.Index):
+            self._pd_index = cell_ids
+        elif index_kind == "pandas":
+            self._pd_index = PandasIndex(cell_ids, dim)
+        elif index_kind == "moc":
+            self._pd_index = HealpixMocIndex.from_array(
+                cell_ids, dim=dim, grid_info=grid_info, name="cell_ids"
+            )
+        self._kind = index_kind
+
+        self._grid = grid_info
 
     @classmethod
     def from_variables(
@@ -377,16 +390,18 @@ class HealpixIndex(DGGSIndex):
     ) -> "HealpixIndex":
         _, var, dim = _extract_cell_id_variable(variables)
 
+        index_kind = options.pop("index_kind", "pandas")
+
         grid_info = HealpixInfo.from_dict(var.attrs | options)
 
-        return cls(var.data, dim, grid_info)
+        return cls(var.data, dim, grid_info, index_kind=index_kind)
 
     def _replace(self, new_pd_index: PandasIndex):
-        return type(self)(new_pd_index, self._dim, self._grid)
+        return type(self)(new_pd_index, self._dim, self._grid, index_kind=self._kind)
 
     @property
     def grid_info(self) -> HealpixInfo:
         return self._grid
 
     def _repr_inline_(self, max_width: int):
-        return f"HealpixIndex(level={self._grid.level}, indexing_scheme={self._grid.indexing_scheme})"
+        return f"HealpixIndex(level={self._grid.level}, indexing_scheme={self._grid.indexing_scheme}, kind={self._kind})"
