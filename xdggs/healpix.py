@@ -381,6 +381,12 @@ class HealpixIndex(DGGSIndex):
 
         self._grid = grid_info
 
+    def values(self):
+        if self._kind == "moc":
+            return self._pd_index._index.cell_ids()
+        else:
+            return self._pd_index.index.values
+
     @classmethod
     def from_variables(
         cls: type["HealpixIndex"],
