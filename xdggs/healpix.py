@@ -325,6 +325,11 @@ class HealpixMocIndex(xr.Index):
             )
 
         index = RangeMOCIndex.from_cell_ids(grid_info.level, array.astype("uint64"))
+
+        if array.size == 12 * 4**grid_info.level:
+            index = RangeMOCIndex.full_domain(grid_info.level)
+        else:
+            index = RangeMOCIndex.from_cell_ids(grid_info.level, array.astype("uint64"))
         return cls(index, dim=dim, name=name, grid_info=grid_info)
 
     def _replace(self, index):
