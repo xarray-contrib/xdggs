@@ -319,6 +319,11 @@ class HealpixMocIndex(xr.Index):
 
     @classmethod
     def from_array(cls, array, *, dim, name, grid_info):
+        if grid_info.indexing_scheme != "nested":
+            raise ValueError(
+                "The MOC index currently only supports the 'nested' scheme"
+            )
+
         index = RangeMOCIndex.from_cell_ids(grid_info.level, array.astype("uint64"))
         return cls(index, dim=dim, name=name, grid_info=grid_info)
 
