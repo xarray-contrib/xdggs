@@ -14,8 +14,8 @@ dependencies:
   - geoarrow-pyarrow
   - lonboard
   - arro3-core
+  - cdshealpix
+  - h3ronpy
   - pip
   - pip:
-      - h3ronpy
-      - cdshealpix
       - healpix-geo
