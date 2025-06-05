@@ -15,6 +15,4 @@ dependencies:
   - lonboard
   - arro3-core
   - cdshealpix
-  - pip
-  - pip:
-      - h3ronpy
+  - h3ronpy
