@@ -324,8 +324,6 @@ class HealpixMocIndex(xr.Index):
                 "The MOC index currently only supports the 'nested' scheme"
             )
 
-        index = RangeMOCIndex.from_cell_ids(grid_info.level, array.astype("uint64"))
-
         if array.size == 12 * 4**grid_info.level:
             index = RangeMOCIndex.full_domain(grid_info.level)
         else:
