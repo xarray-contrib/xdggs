@@ -410,6 +410,9 @@ class HealpixIndex(DGGSIndex):
 
         return cls(var.data, dim, grid_info, index_kind=index_kind)
 
+    def create_variables(self, variables):
+        return self._pd_index.create_variables(variables)
+
     def _replace(self, new_pd_index: PandasIndex):
         return type(self)(new_pd_index, self._dim, self._grid, index_kind=self._kind)
 
