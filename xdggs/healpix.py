@@ -310,6 +310,24 @@ class HealpixInfo(DGGSInfo):
         return backend_func(vertices)
 
 
+def construct_chunk_ranges(chunks, until):
+    start = 0
+
+    for chunksize in chunks:
+        stop = start + chunksize
+        if stop > until:
+            stop = until
+            if start == stop:
+                break
+
+        yield chunksize, slice(start, stop)
+        start = stop
+
+
+def extract_chunk(index, slice_):
+    return index.isel(slice_).cell_ids()
+
+
 class HealpixMocIndex(xr.Index):
     def __init__(self, index, *, dim, name, grid_info):
         self._index = index
@@ -348,13 +366,35 @@ class HealpixMocIndex(xr.Index):
             var = variables[name]
             attrs = var.attrs
             encoding = var.encoding
+            chunks = var.chunksizes.get(self._dim)
         else:
             attrs = None
             encoding = None
+            chunks = None
 
-        var = xr.Variable(
-            self._dim, self._index.cell_ids(), attrs=attrs, encoding=encoding
-        )
+        if chunks is not None:
+            import dask
+            import dask.array as da
+
+            chunk_arrays = [
+                da.from_delayed(
+                    dask.delayed(extract_chunk)(self._index, slice_),
+                    shape=(chunksize,),
+                    dtype="uint64",
+                    name=f"chunk-{index}",
+                    meta=np.array((), dtype="uint64"),
+                )
+                for index, (chunksize, slice_) in enumerate(
+                    construct_chunk_ranges(chunks, self._index.size)
+                )
+            ]
+            data = da.concatenate(chunk_arrays, axis=0)
+            var = xr.Variable(self._dim, data, attrs=attrs, encoding=encoding)
+        else:
+            var = xr.Variable(
+                self._dim, self._index.cell_ids(), attrs=attrs, encoding=encoding
+            )
+
         return {name: var}
 
     def isel(self, indexers):
