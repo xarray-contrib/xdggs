@@ -12,6 +12,7 @@ import cdshealpix.nested
 import cdshealpix.ring
 import numpy as np
 import xarray as xr
+from healpix_geo.nested import RangeMOCIndex
 from xarray.indexes import PandasIndex
 
 from xdggs.grid import DGGSInfo, translate_parameters
@@ -20,6 +21,13 @@ from xdggs.itertools import identity
 from xdggs.utils import _extract_cell_id_variable, register_dggs
 
 T = TypeVar("T")
+
+try:
+    import dask.array as da
+
+    dask_array_type = (da.Array,)
+except ImportError:
+    dask_array_type = ()
 
 
 def polygons_shapely(vertices):
@@ -309,6 +317,131 @@ class HealpixInfo(DGGSInfo):
         return backend_func(vertices)
 
 
+def construct_chunk_ranges(chunks, until):
+    start = 0
+
+    for chunksize in chunks:
+        stop = start + chunksize
+        if stop > until:
+            stop = until
+            if start == stop:
+                break
+
+        yield chunksize, slice(start, stop)
+        start = stop
+
+
+def extract_chunk(index, slice_):
+    return index.isel(slice_).cell_ids()
+
+
+def partition_chunks(chunks, n_partitions):
+    import dask
+    import dask.bag as db
+
+    def _construct_slices(size, n_partitions):
+        partition_size = -(-size // n_partitions)
+        start = 0
+        for _ in range(n_partitions):
+            stop = start + partition_size
+            if stop > size:
+                stop = size
+
+            yield slice(start, stop)
+            start = stop
+
+    return db.from_delayed(
+        dask.delayed(list)(chunks[slice_])
+        for slice_ in _construct_slices(len(chunks), n_partitions)
+    )
+
+
+class HealpixMocIndex(xr.Index):
+    def __init__(self, index, *, dim, name, grid_info):
+        self._index = index
+        self._dim = dim
+        self._grid_info = grid_info
+        self._name = name
+
+    @classmethod
+    def from_array(cls, array, *, dim, name, grid_info, n_partitions=100):
+        if grid_info.indexing_scheme != "nested":
+            raise ValueError(
+                "The MOC index currently only supports the 'nested' scheme"
+            )
+
+        if array.size == 12 * 4**grid_info.level:
+            index = RangeMOCIndex.full_domain(grid_info.level)
+        elif isinstance(array, dask_array_type):
+            import dask
+
+            indexes = [
+                dask.delayed(RangeMOCIndex.from_cell_ids)(grid_info.level, chunk)
+                for chunk in array.astype("uint64").to_delayed()
+            ]
+            bag = partition_chunks(indexes, n_partitions=n_partitions)
+            index = bag.accumulate(
+                lambda index1, index2: index1.union(index2)
+            ).compute()
+        else:
+            index = RangeMOCIndex.from_cell_ids(grid_info.level, array.astype("uint64"))
+        return cls(index, dim=dim, name=name, grid_info=grid_info)
+
+    def _replace(self, index):
+        return type(self)(
+            index, dim=self._dim, name=self._name, grid_info=self._grid_info
+        )
+
+    @classmethod
+    def from_variables(cls, variables, *, options):
+        name, var, dim = _extract_cell_id_variable(variables)
+        grid_info = HealpixInfo.from_dict(var.attrs | options)
+
+        return cls.from_array(var.data, dim=dim, name=name, grid_info=grid_info)
+
+    def create_variables(self, variables):
+        name = self._name
+        if variables is not None and name in variables:
+            var = variables[name]
+            attrs = var.attrs
+            encoding = var.encoding
+            chunks = var.chunksizes.get(self._dim)
+        else:
+            attrs = None
+            encoding = None
+            chunks = None
+
+        if chunks is not None:
+            import dask
+            import dask.array as da
+
+            chunk_arrays = [
+                da.from_delayed(
+                    dask.delayed(extract_chunk)(self._index, slice_),
+                    shape=(chunksize,),
+                    dtype="uint64",
+                    name=f"chunk-{index}",
+                    meta=np.array((), dtype="uint64"),
+                )
+                for index, (chunksize, slice_) in enumerate(
+                    construct_chunk_ranges(chunks, self._index.size)
+                )
+            ]
+            data = da.concatenate(chunk_arrays, axis=0)
+            var = xr.Variable(self._dim, data, attrs=attrs, encoding=encoding)
+        else:
+            var = xr.Variable(
+                self._dim, self._index.cell_ids(), attrs=attrs, encoding=encoding
+            )
+
+        return {name: var}
+
+    def isel(self, indexers):
+        indexer = indexers[self._dim]
+
+        return self._replace(self._index.isel(indexer))
+
+
 @register_dggs("healpix")
 class HealpixIndex(DGGSIndex):
     def __init__(
@@ -316,11 +449,30 @@ class HealpixIndex(DGGSIndex):
         cell_ids: Any | PandasIndex,
         dim: str,
         grid_info: DGGSInfo,
+        index_kind: str = "pandas",
     ):
         if not isinstance(grid_info, HealpixInfo):
             raise ValueError(f"grid info object has an invalid type: {type(grid_info)}")
 
-        super().__init__(cell_ids, dim, grid_info)
+        self._dim = dim
+
+        if isinstance(cell_ids, xr.Index):
+            self._pd_index = cell_ids
+        elif index_kind == "pandas":
+            self._pd_index = PandasIndex(cell_ids, dim)
+        elif index_kind == "moc":
+            self._pd_index = HealpixMocIndex.from_array(
+                cell_ids, dim=dim, grid_info=grid_info, name="cell_ids"
+            )
+        self._kind = index_kind
+
+        self._grid = grid_info
+
+    def values(self):
+        if self._kind == "moc":
+            return self._pd_index._index.cell_ids()
+        else:
+            return self._pd_index.index.values
 
     @classmethod
     def from_variables(
@@ -331,16 +483,21 @@ class HealpixIndex(DGGSIndex):
     ) -> "HealpixIndex":
         _, var, dim = _extract_cell_id_variable(variables)
 
+        index_kind = options.pop("index_kind", "pandas")
+
         grid_info = HealpixInfo.from_dict(var.attrs | options)
 
-        return cls(var.data, dim, grid_info)
+        return cls(var.data, dim, grid_info, index_kind=index_kind)
+
+    def create_variables(self, variables):
+        return self._pd_index.create_variables(variables)
 
     def _replace(self, new_pd_index: PandasIndex):
-        return type(self)(new_pd_index, self._dim, self._grid)
+        return type(self)(new_pd_index, self._dim, self._grid, index_kind=self._kind)
 
     @property
     def grid_info(self) -> HealpixInfo:
         return self._grid
 
     def _repr_inline_(self, max_width: int):
-        return f"HealpixIndex(level={self._grid.level}, indexing_scheme={self._grid.indexing_scheme})"
+        return f"HealpixIndex(level={self._grid.level}, indexing_scheme={self._grid.indexing_scheme}, kind={self._kind})"

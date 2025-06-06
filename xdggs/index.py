@@ -67,6 +67,9 @@ class DGGSIndex(Index):
 
         return cls.from_variables(variables, options=options)
 
+    def values(self):
+        return self._pd_index.index.values
+
     def create_variables(
         self, variables: Mapping[Any, xr.Variable] | None = None
     ) -> dict[Hashable, xr.Variable]:
@@ -90,10 +93,10 @@ class DGGSIndex(Index):
         raise NotImplementedError()
 
     def cell_centers(self) -> tuple[np.ndarray, np.ndarray]:
-        return self._grid.cell_ids2geographic(self._pd_index.index.values)
+        return self._grid.cell_ids2geographic(self.values())
 
     def cell_boundaries(self) -> np.ndarray:
-        return self.grid_info.cell_boundaries(self._pd_index.index.values)
+        return self.grid_info.cell_boundaries(self.values())
 
     @property
     def grid_info(self) -> DGGSInfo:
