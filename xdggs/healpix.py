@@ -22,6 +22,13 @@ from xdggs.utils import _extract_cell_id_variable, register_dggs
 
 T = TypeVar("T")
 
+try:
+    import dask.array as da
+
+    dask_array_type = (da.Array,)
+except ImportError:
+    dask_array_type = ()
+
 
 def polygons_shapely(vertices):
     import shapely
@@ -328,6 +335,27 @@ def extract_chunk(index, slice_):
     return index.isel(slice_).cell_ids()
 
 
+def partition_chunks(chunks, n_partitions):
+    import dask
+    import dask.bag as db
+
+    def _construct_slices(size, n_partitions):
+        partition_size = -(-size // n_partitions)
+        start = 0
+        for _ in range(n_partitions):
+            stop = start + partition_size
+            if stop > size:
+                stop = size
+
+            yield slice(start, stop)
+            start = stop
+
+    return db.from_delayed(
+        dask.delayed(list)(chunks[slice_])
+        for slice_ in _construct_slices(len(chunks), n_partitions)
+    )
+
+
 class HealpixMocIndex(xr.Index):
     def __init__(self, index, *, dim, name, grid_info):
         self._index = index
@@ -336,7 +364,7 @@ class HealpixMocIndex(xr.Index):
         self._name = name
 
     @classmethod
-    def from_array(cls, array, *, dim, name, grid_info):
+    def from_array(cls, array, *, dim, name, grid_info, n_partitions=100):
         if grid_info.indexing_scheme != "nested":
             raise ValueError(
                 "The MOC index currently only supports the 'nested' scheme"
@@ -344,6 +372,17 @@ class HealpixMocIndex(xr.Index):
 
         if array.size == 12 * 4**grid_info.level:
             index = RangeMOCIndex.full_domain(grid_info.level)
+        elif isinstance(array, dask_array_type):
+            import dask
+
+            indexes = [
+                dask.delayed(RangeMOCIndex.from_cell_ids)(grid_info.level, chunk)
+                for chunk in array.astype("uint64").to_delayed()
+            ]
+            bag = partition_chunks(indexes, n_partitions=n_partitions)
+            index = bag.accumulate(
+                lambda index1, index2: index1.union(index2)
+            ).compute()
         else:
             index = RangeMOCIndex.from_cell_ids(grid_info.level, array.astype("uint64"))
         return cls(index, dim=dim, name=name, grid_info=grid_info)
