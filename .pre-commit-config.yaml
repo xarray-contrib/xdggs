@@ -22,7 +22,7 @@ repos:
     hooks:
       - id: validate-pyproject
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.12
+    rev: v0.11.13
     hooks:
       - id: ruff
         args: [--fix]
@@ -31,7 +31,7 @@ repos:
     hooks:
       - id: black-jupyter
   - repo: https://github.com/keewis/blackdoc
-    rev: v0.3.9
+    rev: v0.3.10
     hooks:
       - id: blackdoc
         additional_dependencies: ["black==25.1.0"]
