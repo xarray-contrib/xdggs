@@ -351,8 +351,10 @@ def partition_chunks(chunks, n_partitions):
             start = stop
 
     return db.from_delayed(
-        dask.delayed(list)(chunks[slice_])
-        for slice_ in _construct_slices(len(chunks), n_partitions)
+        [
+            dask.delayed(lambda *args: args)(*chunks[slice_])
+            for slice_ in _construct_slices(len(chunks), n_partitions)
+        ]
     )
 
 
