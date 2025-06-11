@@ -8,7 +8,7 @@
 
 ### Documentation
 
-- Documentation Contributer Guide + Github Button ({pull}`137`)
+- Documentation Contributor's Guide + Github Button ({pull}`137`)
 
 ### Internal changes
 
