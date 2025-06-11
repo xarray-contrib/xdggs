@@ -352,11 +352,15 @@ class HealpixMocIndex(xr.Index):
         if array.size == 12 * 4**grid_info.level:
             index = RangeMOCIndex.full_domain(grid_info.level)
         elif isinstance(array, dask_array_type):
-            raise NotImplementedError(
-                "Creating a HealpixMocIndex from chunked cell ids is not supported, yet."
-                " For now, please manually compute the array (if possible) and construct"
-                " the index from in-memory cell ids."
+            from functools import reduce
+
+            import dask
+
+            [indexes] = dask.compute(
+                dask.delayed(RangeMOCIndex.from_cell_ids)(grid_info.level, chunk)
+                for chunk in array.astype("uint64").to_delayed()
             )
+            index = reduce(RangeMOCIndex.union, indexes)
         else:
             index = RangeMOCIndex.from_cell_ids(grid_info.level, array.astype("uint64"))
         return cls(index, dim=dim, name=name, grid_info=grid_info)
