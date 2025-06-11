@@ -342,6 +342,14 @@ class HealpixMocIndex(xr.Index):
         self._grid_info = grid_info
         self._name = name
 
+    @property
+    def size(self):
+        return self._index.size
+
+    @property
+    def nbytes(self):
+        return self._index.nbytes
+
     @classmethod
     def from_array(cls, array, *, dim, name, grid_info):
         if grid_info.indexing_scheme != "nested":
