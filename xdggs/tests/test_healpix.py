@@ -12,7 +12,13 @@ from hypothesis import given
 from xarray.core.indexes import PandasIndex
 
 from xdggs import healpix
-from xdggs.tests import assert_exceptions_equal, geoarrow_to_shapely
+from xdggs.tests import (
+    assert_exceptions_equal,
+    da,
+    geoarrow_to_shapely,
+    raise_if_dask_computes,
+    requires_dask,
+)
 
 try:
     ExceptionGroup
@@ -526,3 +532,52 @@ def test_repr_inline(level, max_width) -> None:
     assert f"level={level}" in actual
     # ignore max_width for now
     # assert len(actual) <= max_width
+
+
+class TestHealpixMocIndex:
+    @pytest.mark.parametrize(
+        ["depth", "cell_ids", "max_computes"],
+        (
+            pytest.param(
+                2, np.arange(12 * 4**2, dtype="uint64"), 1, id="numpy-2-full_domain"
+            ),
+            pytest.param(
+                2,
+                np.arange(3 * 4**2, 5 * 4**2, dtype="uint64"),
+                1,
+                id="numpy-2-region",
+            ),
+            pytest.param(
+                10,
+                da.arange(12 * 4**10, chunks=(4**6,), dtype="uint64"),
+                0,
+                marks=requires_dask,
+                id="dask-10-full_domain",
+            ),
+            pytest.param(
+                15,
+                da.arange(12 * 4**15, chunks=(4**10,), dtype="uint64"),
+                0,
+                marks=requires_dask,
+                id="dask-15-full_domain",
+            ),
+            pytest.param(
+                10,
+                da.arange(3 * 4**10, 5 * 4**10, chunks=(4**6,), dtype="uint64"),
+                1,
+                marks=requires_dask,
+                id="dask-10-region",
+            ),
+        ),
+    )
+    def test_from_array(self, depth, cell_ids, max_computes):
+        grid_info = healpix.HealpixInfo(level=depth, indexing_scheme="nested")
+
+        with raise_if_dask_computes(max_computes=max_computes):
+            index = healpix.HealpixMocIndex.from_array(
+                cell_ids, dim="cells", name="cell_ids", grid_info=grid_info
+            )
+
+        assert isinstance(index, healpix.HealpixMocIndex)
+        assert index.size == cell_ids.size
+        assert index.nbytes == 16
