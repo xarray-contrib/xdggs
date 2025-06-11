@@ -4,6 +4,8 @@
 
 ### New features
 
+- memory-efficient index implementation based on multi-order coverage maps (MOCs) ({pull}`151`)
+
 ### Bug fixes
 
 ### Documentation
