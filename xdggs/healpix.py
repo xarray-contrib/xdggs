@@ -120,12 +120,12 @@ class HealpixInfo(DGGSInfo):
     level: int
     """int : The hierarchical level of the grid"""
 
-    indexing_scheme: Literal["nested", "ring", "unique"] = "nested"
+    indexing_scheme: Literal["nested", "ring"] = "nested"
     """int : The indexing scheme of the grid"""
 
     valid_parameters: ClassVar[dict[str, Any]] = {
         "level": range(0, 29 + 1),
-        "indexing_scheme": ["nested", "ring", "unique"],
+        "indexing_scheme": ["nested", "ring"],
     }
 
     def __post_init__(self):
