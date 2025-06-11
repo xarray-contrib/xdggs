@@ -471,9 +471,9 @@ class TestHealpixIndex:
 
         assert index._grid == grid
         assert index._dim == dim
-        assert index._pd_index.dim == dim
+        assert index._index.dim == dim
 
-        np.testing.assert_equal(index._pd_index.index.values, cell_ids)
+        np.testing.assert_equal(index._index.index.values, cell_ids)
 
     @given(strategies.grids())
     def test_grid(self, grid):
@@ -497,7 +497,7 @@ def test_from_variables(variable_name, variable, options) -> None:
     assert index._grid.indexing_scheme == expected_scheme
 
     assert (index._dim,) == variable.dims
-    np.testing.assert_equal(index._pd_index.index.values, variable.data)
+    np.testing.assert_equal(index._index.index.values, variable.data)
 
 
 @pytest.mark.parametrize(["old_variable", "new_variable"], variable_combinations)
@@ -517,7 +517,7 @@ def test_replace(old_variable, new_variable) -> None:
     new_index = index._replace(new_pandas_index)
 
     assert new_index._dim == index._dim
-    assert new_index._pd_index == new_pandas_index
+    assert new_index._index == new_pandas_index
     assert index._grid == grid
 
 

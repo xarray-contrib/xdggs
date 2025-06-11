@@ -221,8 +221,8 @@ def test_init(cell_ids, dim, level):
     assert index._dim == dim
 
     # TODO: how do we check the index, if at all?
-    assert index._pd_index.dim == dim
-    assert np.all(index._pd_index.index.values == cell_ids)
+    assert index._index.dim == dim
+    assert np.all(index._index.index.values == cell_ids)
 
 
 @pytest.mark.parametrize("level", levels)
@@ -247,8 +247,8 @@ def test_from_variables(variable_name, variable, options):
     assert (index._dim,) == variable.dims
 
     # TODO: how do we check the index, if at all?
-    assert (index._pd_index.dim,) == variable.dims
-    assert np.all(index._pd_index.index.values == variable.data)
+    assert (index._index.dim,) == variable.dims
+    assert np.all(index._index.index.values == variable.data)
 
 
 @pytest.mark.parametrize(["old_variable", "new_variable"], variable_combinations)
@@ -267,7 +267,7 @@ def test_replace(old_variable, new_variable):
 
     assert new_index._grid == index._grid
     assert new_index._dim == index._dim
-    assert new_index._pd_index == new_pandas_index
+    assert new_index._index == new_pandas_index
 
 
 @pytest.mark.parametrize("max_width", [20, 50, 80, 120])

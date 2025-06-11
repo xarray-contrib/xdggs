@@ -23,7 +23,6 @@ except ImportError:
         cells_to_wkb_polygons,
         coordinates_to_cells,
     )
-from xarray.indexes import PandasIndex
 
 from xdggs.grid import DGGSInfo, translate_parameters
 from xdggs.index import DGGSIndex
@@ -208,7 +207,7 @@ class H3Index(DGGSIndex):
 
     def __init__(
         self,
-        cell_ids: Any | PandasIndex,
+        cell_ids: Any | xr.Index,
         dim: str,
         grid_info: DGGSInfo,
     ):
@@ -232,8 +231,8 @@ class H3Index(DGGSIndex):
     def grid_info(self) -> H3Info:
         return self._grid
 
-    def _replace(self, new_pd_index: PandasIndex):
-        return type(self)(new_pd_index, self._dim, self._grid)
+    def _replace(self, new_index: xr.Index):
+        return type(self)(new_index, self._dim, self._grid)
 
     def _repr_inline_(self, max_width: int):
         return f"H3Index(level={self._grid.level})"

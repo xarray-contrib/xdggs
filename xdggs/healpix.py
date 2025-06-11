@@ -432,7 +432,7 @@ class HealpixMocIndex(xr.Index):
 class HealpixIndex(DGGSIndex):
     def __init__(
         self,
-        cell_ids: Any | PandasIndex,
+        cell_ids: Any | xr.Index,
         dim: str,
         grid_info: DGGSInfo,
         index_kind: str = "pandas",
@@ -443,11 +443,11 @@ class HealpixIndex(DGGSIndex):
         self._dim = dim
 
         if isinstance(cell_ids, xr.Index):
-            self._pd_index = cell_ids
+            self._index = cell_ids
         elif index_kind == "pandas":
-            self._pd_index = PandasIndex(cell_ids, dim)
+            self._index = PandasIndex(cell_ids, dim)
         elif index_kind == "moc":
-            self._pd_index = HealpixMocIndex.from_array(
+            self._index = HealpixMocIndex.from_array(
                 cell_ids, dim=dim, grid_info=grid_info, name="cell_ids"
             )
         self._kind = index_kind
@@ -456,9 +456,9 @@ class HealpixIndex(DGGSIndex):
 
     def values(self):
         if self._kind == "moc":
-            return self._pd_index._index.cell_ids()
+            return self._index._index.cell_ids()
         else:
-            return self._pd_index.index.values
+            return self._index.index.values
 
     @classmethod
     def from_variables(
@@ -476,10 +476,10 @@ class HealpixIndex(DGGSIndex):
         return cls(var.data, dim, grid_info, index_kind=index_kind)
 
     def create_variables(self, variables):
-        return self._pd_index.create_variables(variables)
+        return self._index.create_variables(variables)
 
-    def _replace(self, new_pd_index: PandasIndex):
-        return type(self)(new_pd_index, self._dim, self._grid, index_kind=self._kind)
+    def _replace(self, new_index: xr.Index):
+        return type(self)(new_index, self._dim, self._grid, index_kind=self._kind)
 
     @property
     def grid_info(self) -> HealpixInfo:
