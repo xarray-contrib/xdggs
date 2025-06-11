@@ -38,6 +38,11 @@ Parameters
 
    Dataset.dggs.grid_info
    Dataset.dggs.params
+
+.. autosummary::
+   :toctree: generated
+   :template: autosummary/accessor_method.rst
+
    Dataset.dggs.decode
 
 
@@ -62,7 +67,12 @@ Parameters
 
    DataArray.dggs.grid_info
    DataArray.dggs.params
-   DataArray.dggs.decode
+
+.. autosummary::
+   :toctree: generated
+   :template: autosummary/accessor_method.rst
+
+   Dataset.dggs.decode
 
 
 Data inference
