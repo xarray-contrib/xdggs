@@ -343,7 +343,7 @@ class HealpixMocIndex(xr.Index):
         self._name = name
 
     @classmethod
-    def from_array(cls, array, *, dim, name, grid_info, n_partitions=100):
+    def from_array(cls, array, *, dim, name, grid_info):
         if grid_info.indexing_scheme != "nested":
             raise ValueError(
                 "The MOC index currently only supports the 'nested' scheme"
