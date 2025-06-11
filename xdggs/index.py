@@ -37,7 +37,7 @@ def decode(ds, grid_info=None, *, name="cell_ids", index_kind="pandas"):
     xarray.Dataset.dggs.decode
     xarray.DataArray.dggs.decode
     """
-    return ds.dggs.decode(name=name, grid_info=grid_info, index_kind="pandas")
+    return ds.dggs.decode(name=name, grid_info=grid_info, index_kind=index_kind)
 
 
 class DGGSIndex(Index):
