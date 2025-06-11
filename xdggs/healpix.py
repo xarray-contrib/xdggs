@@ -335,29 +335,6 @@ def extract_chunk(index, slice_):
     return index.isel(slice_).cell_ids()
 
 
-def partition_chunks(chunks, n_partitions):
-    import dask
-    import dask.bag as db
-
-    def _construct_slices(size, n_partitions):
-        partition_size = -(-size // n_partitions)
-        start = 0
-        for _ in range(n_partitions):
-            stop = start + partition_size
-            if stop > size:
-                stop = size
-
-            yield slice(start, stop)
-            start = stop
-
-    return db.from_delayed(
-        [
-            dask.delayed(lambda *args: args)(*chunks[slice_])
-            for slice_ in _construct_slices(len(chunks), n_partitions)
-        ]
-    )
-
-
 class HealpixMocIndex(xr.Index):
     def __init__(self, index, *, dim, name, grid_info):
         self._index = index
@@ -375,16 +352,11 @@ class HealpixMocIndex(xr.Index):
         if array.size == 12 * 4**grid_info.level:
             index = RangeMOCIndex.full_domain(grid_info.level)
         elif isinstance(array, dask_array_type):
-            import dask
-
-            indexes = [
-                dask.delayed(RangeMOCIndex.from_cell_ids)(grid_info.level, chunk)
-                for chunk in array.astype("uint64").to_delayed()
-            ]
-            bag = partition_chunks(indexes, n_partitions=n_partitions)
-            index = bag.accumulate(
-                lambda index1, index2: index1.union(index2)
-            ).compute()
+            raise NotImplementedError(
+                "Creating a HealpixMocIndex from chunked cell ids is not supported, yet."
+                " For now, please manually compute the array (if possible) and construct"
+                " the index from in-memory cell ids."
+            )
         else:
             index = RangeMOCIndex.from_cell_ids(grid_info.level, array.astype("uint64"))
         return cls(index, dim=dim, name=name, grid_info=grid_info)
