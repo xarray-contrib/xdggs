@@ -41,6 +41,9 @@ class DGGSAccessor:
             the dataset.
         name : str, default: "cell_ids"
             The name of the coordinate containing the cell ids.
+        index_kind : str, default: "pandas"
+            The kind of index to use. This is implementation-dependent, with all
+            implementations supporting at least in-memory indexes (``"pandas"``).
 
         Returns
         -------

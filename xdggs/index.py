@@ -9,7 +9,7 @@ from xdggs.grid import DGGSInfo
 from xdggs.utils import GRID_REGISTRY, _extract_cell_id_variable
 
 
-def decode(ds, grid_info=None, *, name="cell_ids"):
+def decode(ds, grid_info=None, *, name="cell_ids", index_kind="pandas"):
     """
     decode grid parameters and create a DGGS index
 
@@ -23,6 +23,9 @@ def decode(ds, grid_info=None, *, name="cell_ids"):
         the dataset.
     name : str, default: "cell_ids"
         The name of the coordinate containing the cell ids.
+    index_kind : str, default: "pandas"
+        The kind of index to use. This is implementation-dependent, with all
+        implementations supporting at least in-memory indexes (``"pandas"``).
 
     Returns
     -------
@@ -34,7 +37,7 @@ def decode(ds, grid_info=None, *, name="cell_ids"):
     xarray.Dataset.dggs.decode
     xarray.DataArray.dggs.decode
     """
-    return ds.dggs.decode(name=name, grid_info=grid_info)
+    return ds.dggs.decode(name=name, grid_info=grid_info, index_kind="pandas")
 
 
 class DGGSIndex(Index):
