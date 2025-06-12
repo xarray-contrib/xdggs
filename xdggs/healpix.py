@@ -327,6 +327,9 @@ def construct_chunk_ranges(chunks, until):
             if start == stop:
                 break
 
+        if until - start < chunksize:
+            chunksize = until - start
+
         yield chunksize, slice(start, stop)
         start = stop
 
