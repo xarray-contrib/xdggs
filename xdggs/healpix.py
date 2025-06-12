@@ -401,7 +401,11 @@ class HealpixMocIndex(xr.Index):
             import dask
             import dask.array as da
 
-            if len(set(chunks)) > 2:
+            n_chunksizes = len(set(chunks))
+            regular_chunks = n_chunksizes < 2 or (
+                n_chunksizes == 2 and chunks[-1] < max(chunks)
+            )
+            if not regular_chunks:
                 raise ValueError("irregular chunk sizes are not supported")
 
             chunk_arrays = [
