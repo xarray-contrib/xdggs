@@ -344,7 +344,7 @@ def subset_chunks(chunks, indexer):
             return chunk
         else:
             # partial chunk
-            left_trim = offset - indexer.start
+            left_trim = indexer.start - offset
             right_trim = offset + chunk - indexer.stop
 
             if left_trim < 0:
@@ -367,7 +367,7 @@ def subset_chunks(chunks, indexer):
         for offset, chunk in zip(chunk_offsets[:-1], chunks)
     )
 
-    return tuple(chunk for chunk in trimmed_chunks if chunk > 0)
+    return tuple(int(chunk) for chunk in trimmed_chunks if chunk > 0)
 
 
 def extract_chunk(index, slice_):
