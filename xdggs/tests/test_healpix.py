@@ -587,44 +587,49 @@ class TestHealpixMocIndex:
         (slice(None), slice(None, 4**1), slice(2 * 4**1, 7 * 4**1), slice(7, 25)),
     )
     @pytest.mark.parametrize(
-        ["chunks", "expected_chunks"],
+        "chunks",
         [
-            (None, None),
-            pytest.param((12, 12, 12, 12), (), marks=requires_dask),
+            pytest.param(None, id="none"),
+            pytest.param((12, 12, 12, 12), marks=requires_dask, id="equally_sized"),
         ],
     )
-    def test_isel(self, indexer, chunks, expected_chunks):
+    def test_isel(self, indexer, chunks):
         from healpix_geo.nested import RangeMOCIndex
 
         grid_info = healpix.HealpixInfo(level=1, indexing_scheme="nested")
+        cell_ids = np.arange(12 * 4**grid_info.level, dtype="uint64")
         if chunks is None:
-            cell_ids = np.arange(12 * 4**grid_info.level, dtype="uint64")
-            cell_ids_ = cell_ids
+            input_chunks = None
+            expected_chunks = None
         else:
             import dask.array as da
 
-            cell_ids_ = np.arange(12 * 4**grid_info.level, dtype="uint64")
-            cell_ids = da.arange(12 * 4**grid_info.level, dtype="uint64", chunks=chunks)
+            cell_ids_ = da.arange(
+                12 * 4**grid_info.level, dtype="uint64", chunks=chunks
+            )
+            input_chunks = cell_ids_.chunks[0]
+            expected_chunks = cell_ids_[indexer].chunks[0]
 
         index = healpix.HealpixMocIndex(
-            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids_),
+            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids),
             dim="cells",
             name="cell_ids",
             grid_info=grid_info,
-            chunksizes={"cells": chunks},
+            chunksizes={"cells": input_chunks},
         )
 
         actual = index.isel({"cells": indexer})
         expected = healpix.HealpixMocIndex(
-            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids_[indexer]),
+            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids[indexer]),
             dim="cells",
             name="cell_ids",
             grid_info=grid_info,
-            chunksizes={"cells": getattr(cell_ids[indexer], "chunks", None)},
+            chunksizes={"cells": expected_chunks},
         )
 
         assert isinstance(actual, healpix.HealpixMocIndex)
         assert actual.nbytes == expected.nbytes
+        assert actual.chunksizes == expected.chunksizes
         np.testing.assert_equal(actual._index.cell_ids(), expected._index.cell_ids())
 
     @pytest.mark.parametrize(
