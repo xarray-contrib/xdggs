@@ -609,8 +609,15 @@ class TestHealpixMocIndex:
         assert actual.nbytes == expected.nbytes
         np.testing.assert_equal(actual._index.cell_ids(), expected._index.cell_ids())
 
-    @pytest.mark.parametrize("dask", [pytest.param(True, marks=requires_dask), False])
-    def test_create_variables(self, dask):
+    @pytest.mark.parametrize(
+        "chunks",
+        [
+            pytest.param((768, 768, 768, 768), marks=requires_dask),
+            pytest.param((780, 780, 780, 732), marks=requires_dask),
+            None,
+        ],
+    )
+    def test_create_variables(self, chunks):
         from healpix_geo.nested import RangeMOCIndex
 
         grid_info = healpix.HealpixInfo(level=4, indexing_scheme="nested")
@@ -623,10 +630,10 @@ class TestHealpixMocIndex:
             grid_info=grid_info,
         )
 
-        if dask:
+        if chunks is not None:
             variables = {
                 "cell_ids": xr.Variable("cells", cell_ids, grid_info.to_dict()).chunk(
-                    {"cells": 4**2}
+                    {"cells": chunks}
                 )
             }
         else:
