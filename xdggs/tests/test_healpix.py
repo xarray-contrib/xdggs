@@ -614,15 +614,16 @@ class TestHealpixMocIndex:
     @pytest.mark.parametrize(
         "chunks",
         [
-            pytest.param((768, 768, 768, 768), marks=requires_dask),
-            pytest.param((780, 780, 780, 732), marks=requires_dask),
+            pytest.param((12, 12, 12, 12), marks=requires_dask),
+            pytest.param((18, 10, 10, 10), marks=requires_dask),
+            pytest.param((8, 12, 14, 14), marks=requires_dask),
             None,
         ],
     )
     def test_create_variables(self, chunks):
         from healpix_geo.nested import RangeMOCIndex
 
-        grid_info = healpix.HealpixInfo(level=4, indexing_scheme="nested")
+        grid_info = healpix.HealpixInfo(level=1, indexing_scheme="nested")
         cell_ids = np.arange(12 * 4**grid_info.level, dtype="uint64")
         indexer = slice(3 * 4**grid_info.level, 7 * 4**grid_info.level)
         index = healpix.HealpixMocIndex(
