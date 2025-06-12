@@ -401,6 +401,9 @@ class HealpixMocIndex(xr.Index):
             import dask
             import dask.array as da
 
+            if len(set(chunks)) > 2:
+                raise ValueError("irregular chunk sizes are not supported")
+
             chunk_arrays = [
                 da.from_delayed(
                     dask.delayed(extract_chunk)(self._index, slice_),
