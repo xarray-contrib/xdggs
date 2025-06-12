@@ -536,7 +536,7 @@ def test_repr_inline(level, max_width) -> None:
 
 class TestHealpixMocIndex:
     @pytest.mark.parametrize(
-        ["depth", "cell_ids", "max_computes"],
+        ["level", "cell_ids", "max_computes"],
         (
             pytest.param(
                 2, np.arange(12 * 4**2, dtype="uint64"), 1, id="numpy-2-full_domain"
@@ -570,8 +570,8 @@ class TestHealpixMocIndex:
             ),
         ),
     )
-    def test_from_array(self, depth, cell_ids, max_computes):
-        grid_info = healpix.HealpixInfo(level=depth, indexing_scheme="nested")
+    def test_from_array(self, level, cell_ids, max_computes):
+        grid_info = healpix.HealpixInfo(level=level, indexing_scheme="nested")
 
         with raise_if_dask_computes(max_computes=max_computes):
             index = healpix.HealpixMocIndex.from_array(
