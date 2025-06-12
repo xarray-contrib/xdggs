@@ -421,10 +421,7 @@ class HealpixMocIndex(xr.Index):
             index, dim=dim, name=name, grid_info=grid_info, chunksizes=chunksizes
         )
 
-    def _replace(self, index, chunksizes=None):
-        if chunksizes is None:
-            chunksizes = self._chunksizes
-
+    def _replace(self, index, chunksizes):
         return type(self)(
             index,
             dim=self._dim,
