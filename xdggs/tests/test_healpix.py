@@ -639,3 +639,26 @@ class TestHealpixMocIndex:
 
         assert actual.keys() == expected.keys()
         xr.testing.assert_equal(actual["cell_ids"], expected["cell_ids"])
+
+    @requires_dask
+    def test_create_variables_irregular_chunks(self):
+        from healpix_geo.nested import RangeMOCIndex
+
+        grid_info = healpix.HealpixInfo(level=1, indexing_scheme="nested")
+        cell_ids = np.arange(12 * 4**grid_info.level, dtype="uint64")
+        index = healpix.HealpixMocIndex(
+            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids),
+            dim="cells",
+            name="cell_ids",
+            grid_info=grid_info,
+        )
+        chunks = (12, 13, 14, 9)
+
+        variables = {
+            "cell_ids": xr.Variable("cells", cell_ids, grid_info.to_dict()).chunk(
+                {"cells": chunks}
+            )
+        }
+
+        with pytest.raises(ValueError, match="irregular chunk sizes.*"):
+            index.create_variables(variables)
