@@ -581,3 +581,30 @@ class TestHealpixMocIndex:
         assert isinstance(index, healpix.HealpixMocIndex)
         assert index.size == cell_ids.size
         assert index.nbytes == 16
+
+    @pytest.mark.parametrize(
+        "indexer", (slice(None), slice(None, 4**4), slice(2 * 4**4, 7 * 4**4))
+    )
+    def test_isel(self, indexer):
+        from healpix_geo.nested import RangeMOCIndex
+
+        grid_info = healpix.HealpixInfo(level=4, indexing_scheme="nested")
+        cell_ids = np.arange(12 * 4**grid_info.level, dtype="uint64")
+        index = healpix.HealpixMocIndex(
+            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids),
+            dim="cells",
+            name="cell_ids",
+            grid_info=grid_info,
+        )
+
+        actual = index.isel({"cells": indexer})
+        expected = healpix.HealpixMocIndex(
+            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids[indexer]),
+            dim="cells",
+            name="cell_ids",
+            grid_info=grid_info,
+        )
+
+        assert isinstance(actual, healpix.HealpixMocIndex)
+        assert actual.nbytes == expected.nbytes
+        np.testing.assert_equal(actual._index.cell_ids(), expected._index.cell_ids())
