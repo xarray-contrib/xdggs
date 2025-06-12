@@ -582,6 +582,36 @@ class TestHealpixMocIndex:
         assert index.size == cell_ids.size
         assert index.nbytes == 16
 
+    @pytest.mark.parametrize("dask", [False, pytest.param(True, marks=requires_dask)])
+    @pytest.mark.parametrize(
+        ["level", "cell_ids"],
+        (
+            (
+                1,
+                np.array(
+                    [0, 1, 2, 3, 4, 5, 6, 7, 8, 22, 23, 24, 25, 43, 45, 46, 47],
+                    dtype="uint64",
+                ),
+            ),
+            (4, np.arange(12 * 4**4, dtype="uint64")),
+        ),
+    )
+    def test_from_variables(self, level, cell_ids, dask):
+        grid_info_mapping = {
+            "grid_name": "healpix",
+            "level": level,
+            "indexing_scheme": "nested",
+        }
+        variables = {"cell_ids": xr.Variable("cells", cell_ids, grid_info_mapping)}
+        if dask:
+            variables["cell_ids"] = variables["cell_ids"].chunk(4**level)
+
+        actual = healpix.HealpixMocIndex.from_variables(variables, options={})
+
+        assert isinstance(actual, healpix.HealpixMocIndex)
+        assert actual.size == cell_ids.size
+        np.testing.assert_equal(actual._index.cell_ids(), cell_ids)
+
     @pytest.mark.parametrize(
         "indexer",
         (slice(None), slice(None, 4**1), slice(2 * 4**1, 7 * 4**1), slice(7, 25)),
