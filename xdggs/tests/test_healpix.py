@@ -608,3 +608,34 @@ class TestHealpixMocIndex:
         assert isinstance(actual, healpix.HealpixMocIndex)
         assert actual.nbytes == expected.nbytes
         np.testing.assert_equal(actual._index.cell_ids(), expected._index.cell_ids())
+
+    @pytest.mark.parametrize("dask", [pytest.param(True, marks=requires_dask), False])
+    def test_create_variables(self, dask):
+        from healpix_geo.nested import RangeMOCIndex
+
+        grid_info = healpix.HealpixInfo(level=4, indexing_scheme="nested")
+        cell_ids = np.arange(12 * 4**grid_info.level, dtype="uint64")
+        indexer = slice(3 * 4**grid_info.level, 7 * 4**grid_info.level)
+        index = healpix.HealpixMocIndex(
+            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids[indexer]),
+            dim="cells",
+            name="cell_ids",
+            grid_info=grid_info,
+        )
+
+        if dask:
+            variables = {
+                "cell_ids": xr.Variable("cells", cell_ids, grid_info.to_dict()).chunk(
+                    {"cells": 4**2}
+                )
+            }
+        else:
+            variables = {
+                "cell_ids": xr.Variable("cells", cell_ids, grid_info.to_dict())
+            }
+
+        actual = index.create_variables(variables)
+        expected = {"cell_ids": variables["cell_ids"].isel(cells=indexer)}
+
+        assert actual.keys() == expected.keys()
+        xr.testing.assert_equal(actual["cell_ids"], expected["cell_ids"])
