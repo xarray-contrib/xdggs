@@ -582,6 +582,16 @@ class TestHealpixMocIndex:
         assert index.size == cell_ids.size
         assert index.nbytes == 16
 
+    def test_from_array_unsupported_indexing_scheme(self):
+        level = 1
+        cell_ids = np.arange(12 * 4**level, dtype="uint64")
+        grid_info = healpix.HealpixInfo(level=level, indexing_scheme="ring")
+
+        with pytest.raises(ValueError, match=".*only supports the 'nested' scheme"):
+            healpix.HealpixMocIndex.from_array(
+                cell_ids, dim="cells", name="cell_ids", grid_info=grid_info
+            )
+
     @pytest.mark.parametrize("dask", [False, pytest.param(True, marks=requires_dask)])
     @pytest.mark.parametrize(
         ["level", "cell_ids"],
@@ -698,6 +708,25 @@ class TestHealpixMocIndex:
 
         actual = index.create_variables(variables)
         expected = {"cell_ids": variables["cell_ids"].isel(cells=indexer)}
+
+        assert actual.keys() == expected.keys()
+        xr.testing.assert_equal(actual["cell_ids"], expected["cell_ids"])
+
+    def test_create_variables_new(self):
+        from healpix_geo.nested import RangeMOCIndex
+
+        grid_info = healpix.HealpixInfo(level=1, indexing_scheme="nested")
+        cell_ids = np.arange(12 * 4**grid_info.level, dtype="uint64")
+        indexer = slice(3 * 4**grid_info.level, 7 * 4**grid_info.level)
+        index = healpix.HealpixMocIndex(
+            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids[indexer]),
+            dim="cells",
+            name="cell_ids",
+            grid_info=grid_info,
+            chunksizes={"cells": None},
+        )
+        actual = index.create_variables({})
+        expected = {"cell_ids": xr.Variable("cells", cell_ids[indexer])}
 
         assert actual.keys() == expected.keys()
         xr.testing.assert_equal(actual["cell_ids"], expected["cell_ids"])
