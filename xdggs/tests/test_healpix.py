@@ -500,6 +500,19 @@ def test_from_variables(variable_name, variable, options) -> None:
     np.testing.assert_equal(index._index.index.values, variable.data)
 
 
+def test_from_variables_moc() -> None:
+    level = 2
+    grid_info = {"grid_name": "healpix", "level": level, "indexing_scheme": "nested"}
+    variables = {"cell_ids": xr.Variable("cells", np.arange(12 * 4**level), grid_info)}
+
+    index = healpix.HealpixIndex.from_variables(
+        variables, options={"index_kind": "moc"}
+    )
+
+    assert isinstance(index._index, healpix.HealpixMocIndex)
+    assert index.grid_info.to_dict() == grid_info
+
+
 @pytest.mark.parametrize(["old_variable", "new_variable"], variable_combinations)
 def test_replace(old_variable, new_variable) -> None:
     grid = healpix.HealpixInfo.from_dict(old_variable.attrs)
