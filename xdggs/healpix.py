@@ -334,16 +334,51 @@ def construct_chunk_ranges(chunks, until):
         start = stop
 
 
+def subset_chunks(chunks, indexer):
+    def _subset(offset, chunk, indexer):
+        if offset >= indexer.stop or offset + chunk < indexer.start:
+            # outside slice
+            return 0
+        elif offset >= indexer.start and offset + chunk < indexer.stop:
+            # full chunk
+            return chunk
+        else:
+            # partial chunk
+            left_trim = offset - indexer.start
+            right_trim = offset + chunk - indexer.stop
+
+            if left_trim < 0:
+                left_trim = 0
+
+            if right_trim < 0:
+                right_trim = 0
+
+            return chunk - left_trim - right_trim
+
+    if chunks is None:
+        return None
+
+    chunk_offsets = np.cumulative_sum(chunks, include_initial=True)
+
+    trimmed_chunks = tuple(
+        _subset(offset, chunk, indexer)
+        for offset, chunk in zip(chunk_offsets[:-1], chunks)
+    )
+
+    return tuple(chunk for chunk in trimmed_chunks if chunk > 0)
+
+
 def extract_chunk(index, slice_):
     return index.isel(slice_).cell_ids()
 
 
 class HealpixMocIndex(xr.Index):
-    def __init__(self, index, *, dim, name, grid_info):
+    def __init__(self, index, *, dim, name, grid_info, chunksizes):
         self._index = index
         self._dim = dim
         self._grid_info = grid_info
         self._name = name
+        self._chunksizes = chunksizes
 
     @property
     def size(self):
@@ -352,6 +387,10 @@ class HealpixMocIndex(xr.Index):
     @property
     def nbytes(self):
         return self._index.nbytes
+
+    @property
+    def chunksizes(self):
+        return self._chunksizes
 
     @classmethod
     def from_array(cls, array, *, dim, name, grid_info):
@@ -374,11 +413,22 @@ class HealpixMocIndex(xr.Index):
             index = reduce(RangeMOCIndex.union, indexes)
         else:
             index = RangeMOCIndex.from_cell_ids(grid_info.level, array.astype("uint64"))
-        return cls(index, dim=dim, name=name, grid_info=grid_info)
 
-    def _replace(self, index):
+        chunksizes = {dim: getattr(array, "chunks", None)}
+        return cls(
+            index, dim=dim, name=name, grid_info=grid_info, chunksizes=chunksizes
+        )
+
+    def _replace(self, index, chunksizes=None):
+        if chunksizes is None:
+            chunksizes = self._chunksizes
+
         return type(self)(
-            index, dim=self._dim, name=self._name, grid_info=self._grid_info
+            index,
+            dim=self._dim,
+            name=self._name,
+            grid_info=self._grid_info,
+            chunksizes=chunksizes,
         )
 
     @classmethod
@@ -394,22 +444,14 @@ class HealpixMocIndex(xr.Index):
             var = variables[name]
             attrs = var.attrs
             encoding = var.encoding
-            chunks = var.chunksizes.get(self._dim)
         else:
             attrs = None
             encoding = None
-            chunks = None
 
+        chunks = self._chunksizes[self._dim]
         if chunks is not None:
             import dask
             import dask.array as da
-
-            n_chunksizes = len(set(chunks))
-            regular_chunks = n_chunksizes < 2 or (
-                n_chunksizes == 2 and chunks[-1] < max(chunks)
-            )
-            if not regular_chunks:
-                raise ValueError("irregular chunk sizes are not supported")
 
             chunk_arrays = [
                 da.from_delayed(
@@ -434,8 +476,11 @@ class HealpixMocIndex(xr.Index):
 
     def isel(self, indexers):
         indexer = indexers[self._dim]
+        new_chunksizes = {
+            self._dim: subset_chunks(self._chunksizes[self._dim], indexer)
+        }
 
-        return self._replace(self._index.isel(indexer))
+        return self._replace(self._index.isel(indexer), chunksizes=new_chunksizes)
 
 
 @register_dggs("healpix")

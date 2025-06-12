@@ -595,6 +595,7 @@ class TestHealpixMocIndex:
             dim="cells",
             name="cell_ids",
             grid_info=grid_info,
+            chunksizes={"cells": None},
         )
 
         actual = index.isel({"cells": indexer})
@@ -603,6 +604,7 @@ class TestHealpixMocIndex:
             dim="cells",
             name="cell_ids",
             grid_info=grid_info,
+            chunksizes={"cells": None},
         )
 
         assert isinstance(actual, healpix.HealpixMocIndex)
@@ -628,6 +630,7 @@ class TestHealpixMocIndex:
             dim="cells",
             name="cell_ids",
             grid_info=grid_info,
+            chunksizes={"cells": chunks},
         )
 
         if chunks is not None:
@@ -646,35 +649,3 @@ class TestHealpixMocIndex:
 
         assert actual.keys() == expected.keys()
         xr.testing.assert_equal(actual["cell_ids"], expected["cell_ids"])
-
-    @requires_dask
-    @pytest.mark.parametrize(
-        "chunks",
-        (
-            pytest.param((12, 13, 14, 9), id="irregular"),
-            pytest.param((13, 13, 9, 13), id="one_chunk_smaller"),
-            pytest.param((14, 10, 10, 14), id="multiple_chunks_smaller"),
-            pytest.param((18, 10, 10, 10), id="only_first_bigger"),
-        ),
-    )
-    def test_create_variables_irregular_chunks(self, chunks):
-        from healpix_geo.nested import RangeMOCIndex
-
-        grid_info = healpix.HealpixInfo(level=1, indexing_scheme="nested")
-        cell_ids = np.arange(12 * 4**grid_info.level, dtype="uint64")
-        index = healpix.HealpixMocIndex(
-            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids),
-            dim="cells",
-            name="cell_ids",
-            grid_info=grid_info,
-        )
-        chunks = (12, 13, 14, 9)
-
-        variables = {
-            "cell_ids": xr.Variable("cells", cell_ids, grid_info.to_dict()).chunk(
-                {"cells": chunks}
-            )
-        }
-
-        with pytest.raises(ValueError, match="irregular chunk sizes.*"):
-            index.create_variables(variables)
