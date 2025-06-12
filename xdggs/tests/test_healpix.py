@@ -583,28 +583,44 @@ class TestHealpixMocIndex:
         assert index.nbytes == 16
 
     @pytest.mark.parametrize(
-        "indexer", (slice(None), slice(None, 4**4), slice(2 * 4**4, 7 * 4**4))
+        "indexer",
+        (slice(None), slice(None, 4**1), slice(2 * 4**1, 7 * 4**1), slice(7, 25)),
     )
-    def test_isel(self, indexer):
+    @pytest.mark.parametrize(
+        ["chunks", "expected_chunks"],
+        [
+            (None, None),
+            pytest.param((12, 12, 12, 12), (), marks=requires_dask),
+        ],
+    )
+    def test_isel(self, indexer, chunks, expected_chunks):
         from healpix_geo.nested import RangeMOCIndex
 
-        grid_info = healpix.HealpixInfo(level=4, indexing_scheme="nested")
-        cell_ids = np.arange(12 * 4**grid_info.level, dtype="uint64")
+        grid_info = healpix.HealpixInfo(level=1, indexing_scheme="nested")
+        if chunks is None:
+            cell_ids = np.arange(12 * 4**grid_info.level, dtype="uint64")
+            cell_ids_ = cell_ids
+        else:
+            import dask.array as da
+
+            cell_ids_ = np.arange(12 * 4**grid_info.level, dtype="uint64")
+            cell_ids = da.arange(12 * 4**grid_info.level, dtype="uint64", chunks=chunks)
+
         index = healpix.HealpixMocIndex(
-            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids),
+            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids_),
             dim="cells",
             name="cell_ids",
             grid_info=grid_info,
-            chunksizes={"cells": None},
+            chunksizes={"cells": chunks},
         )
 
         actual = index.isel({"cells": indexer})
         expected = healpix.HealpixMocIndex(
-            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids[indexer]),
+            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids_[indexer]),
             dim="cells",
             name="cell_ids",
             grid_info=grid_info,
-            chunksizes={"cells": None},
+            chunksizes={"cells": getattr(cell_ids[indexer], "chunks", None)},
         )
 
         assert isinstance(actual, healpix.HealpixMocIndex)

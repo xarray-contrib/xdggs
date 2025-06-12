@@ -359,9 +359,11 @@ def subset_chunks(chunks, indexer):
         return None
 
     chunk_offsets = np.cumulative_sum(chunks, include_initial=True)
+    total_length = chunk_offsets[-1]
+    concrete_slice = slice(*indexer.indices(total_length))
 
     trimmed_chunks = tuple(
-        _subset(offset, chunk, indexer)
+        _subset(offset, chunk, concrete_slice)
         for offset, chunk in zip(chunk_offsets[:-1], chunks)
     )
 
