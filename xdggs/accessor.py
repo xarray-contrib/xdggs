@@ -30,7 +30,7 @@ class DGGSAccessor:
         self._index = index
 
     def decode(
-        self, grid_info=None, *, name="cell_ids", index_kind="pandas"
+        self, grid_info=None, *, name="cell_ids", index_options=None, **index_kwargs
     ) -> xr.Dataset | xr.DataArray:
         """decode the DGGS cell ids
 
@@ -41,9 +41,8 @@ class DGGSAccessor:
             the dataset.
         name : str, default: "cell_ids"
             The name of the coordinate containing the cell ids.
-        index_kind : str, default: "pandas"
-            The kind of index to use. This is implementation-dependent, with all
-            implementations supporting at least in-memory indexes (``"pandas"``).
+        index_options, **index_kwargs : dict, optional
+            Additional options to forward to the index.
 
         Returns
         -------
@@ -56,8 +55,11 @@ class DGGSAccessor:
         if isinstance(grid_info, dict):
             var.attrs = grid_info
 
+        if index_options is None:
+            index_options = {}
+
         return self._obj.drop_indexes(name, errors="ignore").set_xindex(
-            name, DGGSIndex, index_kind=index_kind
+            name, DGGSIndex, **(index_options | index_kwargs)
         )
 
     @property
