@@ -26,6 +26,7 @@ except ImportError:
     has_dask = False
 
 
+# vendored from xarray
 class CountingScheduler:
     """Simple dask scheduler counting the number of computes.
 
@@ -51,6 +52,7 @@ def geoarrow_to_shapely(arr):
     return shapely.from_wkb(ga.as_wkb(arr))
 
 
+# vendored from xarray
 def raise_if_dask_computes(max_computes=0):
     # return a dummy context manager so that this can be used for non-dask objects
     if not has_dask:
