@@ -401,6 +401,9 @@ class HealpixMocIndex(xr.Index):
                 "The MOC index currently only supports the 'nested' scheme"
             )
 
+        if array.ndim != 1:
+            raise ValueError("only 1D cell ids are supported")
+
         if array.size == 12 * 4**grid_info.level:
             index = RangeMOCIndex.full_domain(grid_info.level)
         elif isinstance(array, dask_array_type):
