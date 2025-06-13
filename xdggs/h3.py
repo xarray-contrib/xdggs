@@ -222,7 +222,6 @@ class H3Index(DGGSIndex):
     ) -> "H3Index":
         _, var, dim = _extract_cell_id_variable(variables)
 
-        options.pop("index_kind", None)
         grid_info = H3Info.from_dict(var.attrs | options)
 
         return cls(var.data, dim, grid_info)
