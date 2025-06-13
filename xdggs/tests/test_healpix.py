@@ -592,6 +592,8 @@ class TestHealpixMocIndex:
             )
 
         assert isinstance(index, healpix.HealpixMocIndex)
+        chunks = index.chunksizes["cells"]
+        assert chunks is None or isinstance(chunks[0], int)
         assert index.size == cell_ids.size
         assert index.nbytes == 16
 
