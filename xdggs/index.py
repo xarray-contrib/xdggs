@@ -42,12 +42,12 @@ def decode(ds, grid_info=None, *, name="cell_ids", index_kind="pandas"):
 
 class DGGSIndex(Index):
     _dim: str
-    _index: PandasIndex
+    _index: xr.Index
 
-    def __init__(self, cell_ids: Any | PandasIndex, dim: str, grid_info: DGGSInfo):
+    def __init__(self, cell_ids: Any | xr.Index, dim: str, grid_info: DGGSInfo):
         self._dim = dim
 
-        if isinstance(cell_ids, PandasIndex):
+        if isinstance(cell_ids, xr.Index):
             self._index = cell_ids
         else:
             self._index = PandasIndex(cell_ids, dim)
