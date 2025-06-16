@@ -375,6 +375,13 @@ def extract_chunk(index, slice_):
 
 
 class HealpixMocIndex(xr.Index):
+    """More efficient index for healpix cell ids based on a MOC
+
+    This uses the rust `moc crate <https://crates.io/crates/moc>`_ to represent
+    cell ids as a set of disconnected ranges at level 29, vastly reducing the
+    memory footprint and computation time of set-like operations.
+    """
+
     def __init__(self, index, *, dim, name, grid_info, chunksizes):
         self._index = index
         self._dim = dim
@@ -384,18 +391,47 @@ class HealpixMocIndex(xr.Index):
 
     @property
     def size(self):
+        """The number of indexed cells."""
         return self._index.size
 
     @property
     def nbytes(self):
+        """The number of bytes occupied by the index.
+
+        .. note::
+           This does not take any (constant) overhead into account.
+        """
         return self._index.nbytes
 
     @property
     def chunksizes(self):
+        """The size of the chunks of the indexed coordinate."""
         return self._chunksizes
 
     @classmethod
     def from_array(cls, array, *, dim, name, grid_info):
+        """Construct an index from a raw array.
+
+        Parameters
+        ----------
+        array : array-like
+            The array of cell ids as uint64. If the size is equal to the total
+            number of cells at the given refinement level, creates a full domain
+            index without looking at the cell ids. If a chunked array, it will
+            create indexes for each chunk and then merge the chunk indexes
+            in-memory.
+        dim : hashable
+            The dimension of the index.
+        name : hashable
+            The name of the indexed coordinate.
+        grid_info : xdggs.HealpixInfo
+            The grid parameters.
+
+        Returns
+        -------
+        index : HealpixMocIndex
+            The resulting index.
+        """
         if grid_info.indexing_scheme != "nested":
             raise ValueError(
                 "The MOC index currently only supports the 'nested' scheme"
@@ -435,12 +471,39 @@ class HealpixMocIndex(xr.Index):
 
     @classmethod
     def from_variables(cls, variables, *, options):
+        """Create a new index object from the cell id coordinate variable
+
+        Parameters
+        ----------
+        variables : dict-like
+            Mapping of :py:class:`Variable` objects holding the coordinate labels
+            to index.
+        options : dict-like
+            Mapping of arbitrary options to pass to the HealpixInfo object.
+
+        Returns
+        -------
+        index : Index
+            A new Index object.
+        """
         name, var, dim = _extract_cell_id_variable(variables)
         grid_info = HealpixInfo.from_dict(var.attrs | options)
 
         return cls.from_array(var.data, dim=dim, name=name, grid_info=grid_info)
 
     def create_variables(self, variables):
+        """Create new coordinate variables from this index
+
+        Parameters
+        ----------
+        variables : dict-like, optional
+            Mapping of :py:class:`Variable` objects.
+
+        Returns
+        -------
+        index_variables : dict-like
+            Dictionary of :py:class:`Variable` objects.
+        """
         name = self._name
         if variables is not None and name in variables:
             var = variables[name]
@@ -477,6 +540,21 @@ class HealpixMocIndex(xr.Index):
         return {name: var}
 
     def isel(self, indexers):
+        """Subset the index using positional indexers.
+
+        Parameters
+        ----------
+        indexers : dict-like
+            A dictionary of positional indexers as passed from
+            :py:meth:`Dataset.isel` and where the entries have been filtered for
+            the current index. Note that the underlying index currently only
+            supports slices.
+
+        Returns
+        -------
+        maybe_index : Index
+            A new Index object or ``None``.
+        """
         indexer = indexers[self._dim]
         new_chunksizes = {
             self._dim: subset_chunks(self._chunksizes[self._dim], indexer)
