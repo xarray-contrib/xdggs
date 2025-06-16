@@ -374,6 +374,7 @@ def extract_chunk(index, slice_):
     return index.isel(slice_).cell_ids()
 
 
+# optionally replaces the PandasIndex within HealpixIndex
 class HealpixMocIndex(xr.Index):
     """More efficient index for healpix cell ids based on a MOC
 
@@ -388,6 +389,7 @@ class HealpixMocIndex(xr.Index):
     See Also
     --------
     healpix_geo.nested.RangeMOCIndex
+        The low-level implementation of the index functionality.
     """
 
     def __init__(self, index, *, dim, name, grid_info, chunksizes):
