@@ -380,6 +380,10 @@ class HealpixMocIndex(xr.Index):
     This uses the rust `moc crate <https://crates.io/crates/moc>`_ to represent
     cell ids as a set of disconnected ranges at level 29, vastly reducing the
     memory footprint and computation time of set-like operations.
+
+    See Also
+    --------
+    healpix_geo.nested.RangeMOCIndex
     """
 
     def __init__(self, index, *, dim, name, grid_info, chunksizes):
