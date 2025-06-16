@@ -381,6 +381,10 @@ class HealpixMocIndex(xr.Index):
     cell ids as a set of disconnected ranges at level 29, vastly reducing the
     memory footprint and computation time of set-like operations.
 
+    .. warning::
+
+       Only supported for the ``nested`` scheme.
+
     See Also
     --------
     healpix_geo.nested.RangeMOCIndex
