@@ -12,12 +12,14 @@ import numpy as np
 import xarray as xr
 
 try:
+    from h3ronpy import change_resolution
     from h3ronpy.vector import (
         cells_to_coordinates,
         cells_to_wkb_polygons,
         coordinates_to_cells,
     )
 except ImportError:
+    from h3ronpy.arrow import change_resolution
     from h3ronpy.arrow.vector import (
         cells_to_coordinates,
         cells_to_wkb_polygons,
@@ -201,13 +203,11 @@ class H3Info(DGGSInfo):
             raise ValueError("invalid backend: {backend!r}")
         return backend_func(wkb)
 
-    def parents(self, cell_ids, resolution):
-        if resolution >= self.resolution:
-            raise ValueError(
-                f"resolution is not a parent: {resolution} >= {self.resolution}"
-            )
+    def zoom_to(self, cell_ids, level):
+        if level > self.level:
+            raise ValueError("extracting children is not supported for H3, yet.")
 
-        return change_resolution(cell_ids, resolution)
+        return np.asarray(change_resolution(cell_ids, level))
 
 
 @register_dggs("h3")
