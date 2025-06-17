@@ -371,6 +371,48 @@ class TestHealpixInfo:
 
         np.testing.assert_equal(actual, expected)
 
+    @pytest.mark.parametrize(
+        ["level", "cell_ids", "new_level", "expected"],
+        (
+            pytest.param(
+                1,
+                np.array([0, 4, 8, 12, 16]),
+                0,
+                np.array([0, 1, 2, 3, 4]),
+                id="level1-parents",
+            ),
+            pytest.param(
+                1,
+                np.array([0, 1, 2, 3]),
+                2,
+                np.array(
+                    [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11], [12, 13, 14, 15]]
+                ),
+                id="level1-children",
+            ),
+            pytest.param(
+                1,
+                np.array([0, 4]),
+                3,
+                np.stack([np.arange(16), 4 * 4**2 + np.arange(16)]),
+                id="level1-grandchildren",
+            ),
+        ),
+    )
+    def test_zoom_to(self, level, cell_ids, new_level, expected):
+        grid = healpix.HealpixInfo(level=level, indexing_scheme="nested")
+
+        actual = grid.zoom_to(cell_ids, level=new_level)
+
+        np.testing.assert_equal(actual, expected)
+
+    def test_zoom_to_ring(self):
+        cell_ids = np.array([1, 2, 3])
+        grid = healpix.HealpixInfo(level=1, indexing_scheme="ring")
+
+        with pytest.raises(ValueError, match="Scaling does not make sense.*'ring'.*"):
+            grid.zoom_to(cell_ids, level=0)
+
 
 @pytest.mark.parametrize(
     ["mapping", "expected"],
