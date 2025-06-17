@@ -174,7 +174,22 @@ class DGGSAccessor:
             boundaries, coords={self._name: self.cell_ids}, dims=self.cell_ids.dims
         )
 
-    def zoom_to(self, level):
+    def zoom_to(self, level: int):
+        """Change the refinement level of the cell ids to `level`.
+
+        Parameters
+        ----------
+        level : int
+            The refinement level to change to. Can be smaller than the dataset's
+            level to compute parents, or bigger to fetch the children. In the
+            latter case, the array will have an additional `"children"`
+            dimension.
+
+        Returns
+        -------
+        zoomed : xr.DataArray
+            The children or parents of the current cells.
+        """
         zoomed = self.index.zoom_to(level=level)
 
         if zoomed.ndim == 1:
