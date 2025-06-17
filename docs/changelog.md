@@ -1,16 +1,35 @@
 # Changelog
 
-## 0.1.2 (_unreleased_)
+## 0.2.1 (_unreleased_)
+
+### New features
+
+### Bug fixes
+
+### Documentation
+
+- Documentation Contributer Guide + Github Button ({pull}`137`)
+
+### Internal changes
+
+## 0.2.0 (2025-02-12)
 
 ## New features
+
+- allow adding additional coords to the cell inspection table in the map ({pull}`122`)
+- allow passing `matplotlib` colormap objects to `explore` ({pull}`120`)
+- support plotting multi-dimensional data ({pull}`124`)
+- allow overriding the grid info data using the function or a new accessor ({pull}`63`, {pull}`121`)
 
 ## Bug fixes
 
 - use explicit `arrow` API to extract cell coordinates ({issue}`113`, {pull}`114`)
-
-## Documentation
+- correct the `HealpixIndex` `repr` ({pull}`119`)
 
 ## Internal changes
+
+- add initial set of tests for `explore` ({pull}`127`)
+- adapt to recent changes on RTD ({pull}`122`)
 
 ## 0.1.1 (2024-11-25)
 

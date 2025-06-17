@@ -174,27 +174,7 @@ class DGGSAccessor:
             boundaries, coords={self._name: self.cell_ids}, dims=self.cell_ids.dims
         )
 
-    def parents(self, level: int) -> xr.DataArray:
-        """determine the parent cell ids of the cells
-
-        Parameters
-        ----------
-        level : int
-            The parent resolution level. Must be smaller than the current resolution.
-
-        Returns
-        -------
-        parents : DataArray
-            The parent cell ids, one for each input cell.
-        """
-        data = self.index.parents(level)
-
-        params = self.grid_info.to_dict()
-        params["resolution"] = level
-
-        return self.coord.copy(data=data).assign_attrs(**params).rename("parents")
-
-    def explore(self, *, cmap="viridis", center=None, alpha=None):
+    def explore(self, *, cmap="viridis", center=None, alpha=None, coords=None):
         """interactively explore the data using `lonboard`
 
         Requires `lonboard`, `matplotlib`, and `arro3.core` to be installed.
@@ -207,6 +187,8 @@ class DGGSAccessor:
             If set, will use this as the center value of a diverging color map.
         alpha : float, optional
             If set, controls the transparency of the polygons.
+        coords : list of str, default: ["latitude", "longitude"]
+            Additional coordinates to contain in the table of contents.
 
         Returns
         -------
@@ -220,11 +202,10 @@ class DGGSAccessor:
         if isinstance(self._obj, xr.Dataset):
             raise ValueError("does not work with Dataset objects, yet")
 
-        cell_dim = self._obj[self._name].dims[0]
         return explore(
             self._obj,
-            cell_dim=cell_dim,
             cmap=cmap,
             center=center,
             alpha=alpha,
+            coords=coords,
         )

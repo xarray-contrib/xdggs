@@ -1,7 +1,10 @@
+import ipywidgets
+import lonboard
 import numpy as np
 import pytest
 import xarray as xr
 from arro3.core import Array, Table
+from matplotlib import colormaps
 
 from xdggs import plotting
 
@@ -121,3 +124,95 @@ def test_normalize(var, center, expected):
     actual = plotting.normalize(var, center=center)
 
     np.testing.assert_allclose(actual, expected)
+
+
+@pytest.mark.parametrize(
+    ["var", "kwargs", "expected"],
+    (
+        pytest.param(
+            xr.Variable("cells", [0, 3]),
+            {"center": 2, "colormap": colormaps["viridis"], "alpha": 1},
+            np.array([[68, 1, 84], [94, 201, 97]], dtype="uint8"),
+        ),
+        pytest.param(
+            xr.Variable("cells", [-1, 1]),
+            {"center": None, "colormap": colormaps["viridis"], "alpha": 0.8},
+            np.array([[68, 1, 84, 204], [253, 231, 36, 204]], dtype="uint8"),
+        ),
+    ),
+)
+def test_colorize(var, kwargs, expected):
+    actual = plotting.colorize(var, **kwargs)
+
+    np.testing.assert_equal(actual, expected)
+
+
+class TestMapContainer:
+    def test_init(self):
+        map_ = lonboard.Map(layers=[])
+        sliders = ipywidgets.VBox(
+            [ipywidgets.IntSlider(min=0, max=10, description="time")]
+        )
+        obj = xr.DataArray([[0, 1], [2, 3]], dims=["time", "cells"])
+        colorize_kwargs = {"a": 1, "b": 2}
+
+        container = plotting.MapContainer(
+            dimension_sliders=sliders,
+            map=map_,
+            obj=obj,
+            colorize_kwargs=colorize_kwargs,
+        )
+
+        assert container.map == map_
+        xr.testing.assert_equal(container.obj, obj)
+        assert container.dimension_sliders == sliders
+        assert container.colorize_kwargs == colorize_kwargs
+
+    def test_render(self):
+        map_ = lonboard.Map(layers=[])
+        sliders = ipywidgets.VBox(
+            [ipywidgets.IntSlider(min=0, max=10, description="time")]
+        )
+        obj = xr.DataArray([[0, 1], [2, 3]], dims=["time", "cells"])
+        colorize_kwargs = {"a": 1, "b": 2}
+
+        container = plotting.MapContainer(
+            dimension_sliders=sliders,
+            map=map_,
+            obj=obj,
+            colorize_kwargs=colorize_kwargs,
+        )
+        rendered = container.render()
+
+        assert isinstance(rendered, ipywidgets.VBox)
+
+
+@pytest.mark.parametrize(
+    ["arr", "expected_type"],
+    (
+        pytest.param(
+            xr.DataArray(
+                [0, 1], coords={"cell_ids": ("cells", [10, 26])}, dims="cells"
+            ).dggs.decode(
+                {"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"}
+            ),
+            lonboard.Map,
+            id="1d",
+        ),
+        pytest.param(
+            xr.DataArray(
+                [[0, 1], [2, 3]],
+                coords={"cell_ids": ("cells", [10, 26])},
+                dims=["time", "cells"],
+            ).dggs.decode(
+                {"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"}
+            ),
+            ipywidgets.VBox,
+            id="2d",
+        ),
+    ),
+)
+def test_explore(arr, expected_type):
+    actual = arr.dggs.explore()
+
+    assert isinstance(actual, expected_type)
