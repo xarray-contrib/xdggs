@@ -174,6 +174,16 @@ class DGGSAccessor:
             boundaries, coords={self._name: self.cell_ids}, dims=self.cell_ids.dims
         )
 
+    def zoom_to(self, level):
+        zoomed = self.index.zoom_to(level=level)
+
+        if zoomed.ndim == 1:
+            dims = self.cell_ids.dims
+        else:
+            dims = [*self.cell_ids.dims, "children"]
+
+        return xr.DataArray(zoomed, coords={self._name: self.cell_ids}, dims=dims)
+
     def explore(self, *, cmap="viridis", center=None, alpha=None, coords=None):
         """interactively explore the data using `lonboard`
 
