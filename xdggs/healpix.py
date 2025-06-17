@@ -308,17 +308,16 @@ class HealpixInfo(DGGSInfo):
 
         return backend_func(vertices)
 
-    def parents(self, cell_ids, level):
-        if level >= self.level:
-            raise ValueError(f"given level is not a parent: {level} >= {self.level}")
+    def zoom_to(self, cell_ids, level):
+        if self.indexing_scheme == "ring":
+            raise ValueError(
+                "Scaling does not make sense for the 'ring' scheme."
+                " Please convert to a nested scheme first."
+            )
 
-        # TODO: reimplement using `cdshealpix`
-        offset = self.level - level
-        x, y, f = healpy.pix2xyf(self.nside, cell_ids, nest=self.nest)
-        x_ = x >> offset
-        y_ = y >> offset
+        from healpix_geo.nested import zoom_to
 
-        return healpy.xyf2pix(self.nside, x_, y_, f, nest=self.nest)
+        return zoom_to(cell_ids, self.level, level)
 
 
 @register_dggs("healpix")
