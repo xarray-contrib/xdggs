@@ -39,6 +39,7 @@ requires-python = ">=3.10"
 dependencies = [
   "xarray",
   "cdshealpix",
+  "healpix-geo>=0.0.3",
   "h3ronpy",
   "typing-extensions",
   "lonboard>=0.9.3",
