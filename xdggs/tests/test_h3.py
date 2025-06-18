@@ -209,6 +209,38 @@ class TestH3Info:
 
         shapely.testing.assert_geometries_equal(converter(actual), expected)
 
+    @pytest.mark.parametrize(
+        ["level", "cell_ids", "new_level", "expected"],
+        (
+            pytest.param(
+                3,
+                np.array([0x832833FFFFFFFFF, 0x832834FFFFFFFFF, 0x832835FFFFFFFFF]),
+                2,
+                np.array([]),
+                id="parents",
+            ),
+            pytest.param(
+                3,
+                np.array([0x832833FFFFFFFFF, 0x832834FFFFFFFFF, 0x832835FFFFFFFFF]),
+                1,
+                np.array([]),
+                id="grandparents",
+            ),
+        ),
+    )
+    def test_zoom_to(self, level, cell_ids, new_level, expected):
+        grid = h3.H3Info(level=level)
+
+        actual = grid.zoom_to(cell_ids, level=new_level)
+        np.testing.assert_equal(actual, expected)
+
+    def test_zoom_to_children_not_implemented(self):
+        grid = h3.H3Info(level=3)
+        cell_ids = np.arange(3)
+
+        with pytest.raises(NotImplementedError):
+            grid.zoom_to(cell_ids, level=4)
+
 
 @pytest.mark.parametrize("level", levels)
 @pytest.mark.parametrize("dim", dims)
