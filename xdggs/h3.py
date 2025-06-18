@@ -205,7 +205,9 @@ class H3Info(DGGSInfo):
 
     def zoom_to(self, cell_ids, level):
         if level > self.level:
-            raise ValueError("extracting children is not supported for H3, yet.")
+            raise NotImplementedError(
+                "extracting children is not supported for H3, yet."
+            )
 
         return np.asarray(change_resolution(cell_ids, level))
 
