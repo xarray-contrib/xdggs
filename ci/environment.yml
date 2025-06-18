@@ -16,3 +16,6 @@ dependencies:
   - arro3-core
   - cdshealpix
   - h3ronpy
+  - pip
+  - pip:
+      - healpix-geo
