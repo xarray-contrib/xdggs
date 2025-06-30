@@ -335,7 +335,7 @@ def construct_chunk_ranges(chunks, until):
 
 
 def subset_chunks(chunks, indexer):
-    def _subset(offset, chunk, indexer):
+    def _subset_slice(offset, chunk, indexer):
         if offset >= indexer.stop or offset + chunk < indexer.start:
             # outside slice
             return 0
@@ -354,6 +354,17 @@ def subset_chunks(chunks, indexer):
                 right_trim = 0
 
             return chunk - left_trim - right_trim
+
+    def _subset_array(offset, chunk, indexer):
+        mask = (indexer >= offset) & (indexer < offset + chunk)
+
+        return np.sum(mask.asdtype(int))
+
+    def _subset(offset, chunk, indexer):
+        if isinstance(indexer, slice):
+            return _subset_slice(offset, chunk, indexer)
+        else:
+            return _subset_array(offset, chunk, indexer)
 
     if chunks is None:
         return None
