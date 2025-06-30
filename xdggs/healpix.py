@@ -577,6 +577,16 @@ class HealpixMocIndex(xr.Index):
             A new Index object or ``None``.
         """
         indexer = indexers[self._dim]
+        if isinstance(indexer, np.ndarray):
+            if np.isdtype(indexer.dtype, "signed integer"):
+                indexer = np.where(indexer >= 0, indexer, self.size + indexer).astype(
+                    "uint64"
+                )
+            elif np.isdtype(indexer, "unsigned integer"):
+                indexer = indexer.astype("uint64")
+            else:
+                raise ValueError("can only index with integer arrays or slices")
+
         new_chunksizes = {
             self._dim: subset_chunks(self._chunksizes[self._dim], indexer)
         }
