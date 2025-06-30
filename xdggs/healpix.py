@@ -358,7 +358,7 @@ def subset_chunks(chunks, indexer):
     def _subset_array(offset, chunk, indexer):
         mask = (indexer >= offset) & (indexer < offset + chunk)
 
-        return np.sum(mask.asdtype(int))
+        return np.sum(mask.astype(int))
 
     def _subset(offset, chunk, indexer):
         if isinstance(indexer, slice):
@@ -371,10 +371,12 @@ def subset_chunks(chunks, indexer):
 
     chunk_offsets = np.cumulative_sum(chunks, include_initial=True)
     total_length = chunk_offsets[-1]
-    concrete_slice = slice(*indexer.indices(total_length))
+
+    if isinstance(indexer, slice):
+        indexer = slice(*indexer.indices(total_length))
 
     trimmed_chunks = tuple(
-        _subset(offset, chunk, concrete_slice)
+        _subset(offset, chunk, indexer)
         for offset, chunk in zip(chunk_offsets[:-1], chunks)
     )
 
@@ -582,7 +584,7 @@ class HealpixMocIndex(xr.Index):
                 indexer = np.where(indexer >= 0, indexer, self.size + indexer).astype(
                     "uint64"
                 )
-            elif np.isdtype(indexer, "unsigned integer"):
+            elif np.isdtype(indexer.dtype, "unsigned integer"):
                 indexer = indexer.astype("uint64")
             else:
                 raise ValueError("can only index with integer arrays or slices")
