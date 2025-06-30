@@ -639,7 +639,15 @@ class TestHealpixMocIndex:
 
     @pytest.mark.parametrize(
         "indexer",
-        (slice(None), slice(None, 4**1), slice(2 * 4**1, 7 * 4**1), slice(7, 25)),
+        (
+            slice(None),
+            slice(None, 4**1),
+            slice(2 * 4**1, 7 * 4**1),
+            slice(7, 25),
+            np.array([-4, -3, -2], dtype="int64"),
+            np.array([12, 13, 14, 15, 16], dtype="uint64"),
+            np.array([1, 2, 3, 4, 5], dtype="uint32"),
+        ),
     )
     @pytest.mark.parametrize(
         "chunks",
