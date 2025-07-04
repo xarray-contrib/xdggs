@@ -71,7 +71,7 @@ We welcome contributions to `xdggs`! Please follow these steps to get involved:
 
 ## License
 
-`xdggs` is licensed under the Apache License License. See [LICENSE](https://github.com/xarray-contrib/xdggs/blob/main/LICENSE) for more details.
+`xdggs` is licensed under the Apache License. See [LICENSE](https://github.com/xarray-contrib/xdggs/blob/main/LICENSE) for more details.
 
 ## Acknowledgments
 
