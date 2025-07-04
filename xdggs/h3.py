@@ -198,7 +198,7 @@ class H3Info(DGGSInfo):
         }
         backend_func = backends.get(backend)
         if backend_func is None:
-            raise ValueError("invalid backend: {backend!r}")
+            raise ValueError(f"invalid backend: {backend!r}")
         return backend_func(wkb)
 
 
