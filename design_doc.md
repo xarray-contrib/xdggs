@@ -136,9 +136,7 @@ A DGGSIndex can be set directly from a cell ids coordinate using the Xarray API:
 import xarray as xr
 import xdggs
 
-ds = xr.Dataset(
-    coords={"cell": ("cell", [...], {"grid_name": "h3", "resolution": 3})}
-)
+ds = xr.Dataset(coords={"cell": ("cell", [...], {"grid_name": "h3", "resolution": 3})})
 
 # auto-detect grid system and parameters
 ds.set_xindex("cell", xdggs.DGGSIndex)

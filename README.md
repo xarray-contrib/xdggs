@@ -51,8 +51,7 @@ ds_idx = ds.pipe(xdggs.decode)
 ds_idx = ds_idx.dggs.assign_latlon_coords()
 
 # Interactive visualization
-ds_idx['air'].isel(time=0).compute().dggs.explore(center=0, cmap="viridis", alpha=0.5)
-
+ds_idx["air"].isel(time=0).compute().dggs.explore(center=0, cmap="viridis", alpha=0.5)
 ```
 
 ## Roadmap
