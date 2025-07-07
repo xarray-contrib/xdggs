@@ -6,7 +6,7 @@ repos:
       - id: end-of-file-fixer
       - id: check-docstring-first
   - repo: https://github.com/rbubley/mirrors-prettier
-    rev: v3.5.3
+    rev: v3.6.2
     hooks:
       - id: prettier
         args: [--cache-location=.prettier_cache/cache]
@@ -22,7 +22,7 @@ repos:
     hooks:
       - id: validate-pyproject
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.13
+    rev: v0.12.2
     hooks:
       - id: ruff-check
         args: [--fix]
@@ -31,7 +31,7 @@ repos:
     hooks:
       - id: black-jupyter
   - repo: https://github.com/keewis/blackdoc
-    rev: v0.3.10
+    rev: v0.4.1
     hooks:
       - id: blackdoc
         additional_dependencies: ["black==25.1.0"]
