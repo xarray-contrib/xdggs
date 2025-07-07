@@ -1,3 +1,4 @@
+name: xdggs
 channels:
   - conda-forge
 dependencies:
