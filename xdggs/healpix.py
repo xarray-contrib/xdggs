@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 import json
 from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any, ClassVar, Literal, TypeVar
 
 try:
+    from collections.abc import Callable
     from typing import Self
 except ImportError:  # pragma: no cover
     from typing_extensions import Self
@@ -86,6 +89,26 @@ def center_around_prime_meridian(lon, lat):
     )
 
     return result
+
+
+def downscale(
+    obj: xr.DataArray | xr.Dataset,
+    *,
+    offset: int,
+    agg: Callable,
+    grid_info: HealpixInfo,
+):
+    if not grid_info.nest:
+        raise NotImplementedError(
+            "Downscaling is only supported for nested Healpix grids."
+        )
+
+    if offset == 0:
+        return obj
+
+    upper_cell_membership = np.floor(obj.cell_ids / (4**offset))
+
+    return obj.groupby(upper_cell_membership).reduce(agg)
 
 
 @dataclass(frozen=True)
@@ -324,11 +347,11 @@ class HealpixIndex(DGGSIndex):
 
     @classmethod
     def from_variables(
-        cls: type["HealpixIndex"],
+        cls: type[HealpixIndex],
         variables: Mapping[Any, xr.Variable],
         *,
         options: Mapping[str, Any],
-    ) -> "HealpixIndex":
+    ) -> HealpixIndex:
         _, var, dim = _extract_cell_id_variable(variables)
 
         grid_info = HealpixInfo.from_dict(var.attrs | options)
