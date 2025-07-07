@@ -4,11 +4,13 @@
 
 ### New features
 
+- memory-efficient index implementation based on multi-order coverage maps (MOCs) ({pull}`151`)
+
 ### Bug fixes
 
 ### Documentation
 
-- Documentation Contributer Guide + Github Button ({pull}`137`)
+- Documentation Contributor's Guide + Github Button ({pull}`137`)
 
 ### Internal changes
 
