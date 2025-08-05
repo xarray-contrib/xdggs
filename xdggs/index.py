@@ -58,7 +58,7 @@ class DGGSIndex(Index):
         *,
         options: Mapping[str, Any],
     ) -> "DGGSIndex":
-        _, var, _ = _extract_cell_id_variable(variables)
+        name, var, _ = _extract_cell_id_variable(variables)
 
         grid_name = var.attrs["grid_name"]
         cls = GRID_REGISTRY.get(grid_name)
@@ -66,7 +66,7 @@ class DGGSIndex(Index):
             raise ValueError(f"unknown DGGS grid name: {grid_name}")
 
         index = cls.from_variables(variables, options=options)
-        index._pd_index.index.name = "cell_ids"
+        index._pd_index.index.name = name
 
         return index
 
