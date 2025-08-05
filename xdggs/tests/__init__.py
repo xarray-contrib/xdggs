@@ -1,3 +1,5 @@
+import warnings
+
 import geoarrow.pyarrow as ga
 import shapely
 
@@ -6,6 +8,8 @@ from xdggs.tests.matchers import (  # noqa: F401
     MatchResult,
     assert_exceptions_equal,
 )
+
+warnings.filterwarnings("ignore", message="numpy.ndarray size changed")
 
 
 def geoarrow_to_shapely(arr):
