@@ -6,7 +6,7 @@
 
 ---
 
-<img src="https://raw.githubusercontent.com/xarray-contrib/xdggs/main/docs/_static/logos/xdggs_logo.png" width="300" height="300" margin="0" /><br/>
+<img src="https://raw.githubusercontent.com/xarray-contrib/xdggs/main/docs/_static/logos/xdggs_logo.png" width="259" height="300" margin="0" /><br/>
 
 # xdggs: discrete global grid systems with xarray
 
