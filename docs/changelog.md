@@ -4,6 +4,12 @@
 
 ### New features
 
+- officially support python 3.13 ({pull}`162`)
+
+### Breaking changes
+
+- drop support for python 3.10 ({pull}`162`)
+
 ### Bug fixes
 
 ### Documentation
