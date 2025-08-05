@@ -110,4 +110,8 @@ exclude_lines = ["pragma: no cover", "if TYPE_CHECKING"]
 [tool.pytest.ini_options]
 filterwarnings = [
   "error:::xdggs.*",
+  # weird cython error, see https://github.com/Unidata/netcdf4-python/issues/1354
+  "ignore:numpy.ndarray size changed",
+  # traitlets deprecation
+  "ignore:.*is deprecated in traitlets:DeprecationWarning",
 ]
