@@ -884,3 +884,41 @@ class TestHealpixMocIndex:
 
         with pytest.raises(ValueError, match="Cell ids can't be negative"):
             index.sel({"cell_ids": indexer})
+
+
+def test_join():
+    data1 = np.array([0, 5, 7, 9], dtype="uint64")
+    data2 = np.array([0, 7])
+
+    dim = "cells"
+    grid_info = healpix.HealpixInfo(level=2)
+
+    index1 = healpix.HealpixIndex(data1, dim=dim, grid_info=grid_info)
+    index2 = healpix.HealpixIndex(data2, dim=dim, grid_info=grid_info)
+
+    actual = index1.join(index2, how="inner")
+    expected = healpix.HealpixIndex(data2, dim=dim, grid_info=grid_info)
+
+    assert actual._grid == expected._grid
+    assert actual._dim == expected._dim
+    assert np.all(actual._pd_index.index == expected._pd_index.index)
+
+
+def test_reindex_like():
+    grid = healpix.HealpixInfo(level=2)
+    index1 = healpix.HealpixIndex(
+        cell_ids=np.array([0, 7]),
+        dim="cells",
+        grid_info=grid,
+    )
+    index2 = healpix.HealpixIndex(
+        cell_ids=np.array([0, 5, 7, 9]),
+        dim="cells",
+        grid_info=grid,
+    )
+
+    actual = index1.reindex_like(index2)
+
+    expected = {"cells": np.array([0, -1, 1, -1])}
+
+    np.testing.assert_equal(actual["cells"], expected["cells"])
