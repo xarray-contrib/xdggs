@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.1 (_unreleased_)
+## 0.2.1 (2025-08-05)
 
 ### New features
 
