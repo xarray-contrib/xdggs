@@ -4,6 +4,8 @@
 
 ### New features
 
+- support for alignment between indexes with the same grid parameters ({pull}`166`)
+
 ### Bug fixes
 
 ### Documentation
