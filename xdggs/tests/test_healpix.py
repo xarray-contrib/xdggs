@@ -753,3 +753,81 @@ class TestHealpixMocIndex:
 
         assert actual.keys() == expected.keys()
         xr.testing.assert_equal(actual["cell_ids"], expected["cell_ids"])
+
+    @pytest.mark.parametrize(
+        "indexer",
+        (
+            slice(None),
+            slice(None, 4**1),
+            slice(2 * 4**1, 7 * 4**1),
+            slice(7, 25),
+            np.array([12, 13, 14, 15, 16], dtype="uint64"),
+            np.array([1, 2, 3, 4, 5], dtype="uint32"),
+        ),
+    )
+    @pytest.mark.parametrize(
+        "chunks",
+        [
+            pytest.param(None, id="none"),
+            pytest.param((12, 12, 12, 12), marks=requires_dask, id="equally_sized"),
+        ],
+    )
+    def test_sel(self, indexer, chunks):
+        from healpix_geo.nested import RangeMOCIndex
+
+        grid_info = healpix.HealpixInfo(level=1, indexing_scheme="nested")
+        cell_ids = np.arange(12 * 4**grid_info.level, dtype="uint64")
+
+        if isinstance(indexer, slice):
+            start, stop, step = indexer.indices(cell_ids.size)
+            if stop < cell_ids.size:
+                stop += 1
+
+            expected_indexer = slice(start, stop, step)
+        else:
+            expected_indexer = indexer
+
+        if chunks is None:
+            input_chunks = None
+            expected_chunks = None
+        else:
+            import dask.array as da
+
+            cell_ids_ = da.arange(
+                12 * 4**grid_info.level, dtype="uint64", chunks=chunks
+            )
+            input_chunks = cell_ids_.chunks[0]
+            expected_chunks = cell_ids_[expected_indexer].chunks[0]
+
+        index = healpix.HealpixMocIndex(
+            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids),
+            dim="cells",
+            name="cell_ids",
+            grid_info=grid_info,
+            chunksizes={"cells": input_chunks},
+        )
+
+        print(indexer)
+        print(index._index.cell_ids())
+        result = index.sel({"cell_ids": indexer})
+        actual = result.indexes["cell_ids"]
+        actual_indexer = result.dim_indexers["cells"]
+
+        expected = healpix.HealpixMocIndex(
+            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids[expected_indexer]),
+            dim="cells",
+            name="cell_ids",
+            grid_info=grid_info,
+            chunksizes={"cells": expected_chunks},
+        )
+
+        print("initial indexer:", indexer)
+        if isinstance(actual_indexer, slice):
+            assert actual_indexer == expected_indexer
+        else:
+            np.testing.assert_equal(actual_indexer, expected_indexer)
+
+        assert isinstance(actual, healpix.HealpixMocIndex)
+        assert actual.nbytes == expected.nbytes
+        assert actual.chunksizes == expected.chunksizes
+        np.testing.assert_equal(actual._index.cell_ids(), expected._index.cell_ids())
