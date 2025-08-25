@@ -73,7 +73,8 @@ class DGGSIndex(Index):
             raise ValueError(f"unknown DGGS grid name: {grid_name}")
 
         index = cls.from_variables(variables, options=options)
-        index._pd_index.index.name = name
+        if isinstance(index._index, PandasIndex):
+            index._index.index.name = name
 
         return index
 
