@@ -194,6 +194,11 @@ pooch = "*"
 shapely = ">=2.1.1"
 sphinx-autobuild = ">=2024.10.3"
 
+[tool.pixi.feature.docs.tasks]
+build-docs = { cmd = "rm -rf generated/; python -m sphinx -b html -w warnings.log -W -Tn -j auto . _build", cwd = "docs" }
+autobuild-docs = { cmd = "sphinx-autobuild -b html -w warnings.log -W -Tn -j auto . _build", cwd = "docs" }
+build-docs-rtd = { cmd = "python -m sphinx -b html -W -T -j auto . $READTHEDOCS_OUTPUT/html", cwd = "docs" }
+
 [tool.pixi.environments]
 nightly = { features = ["tests", "nightly"], no-default-feature = true }
 ci-py311 = ["tests", "ci-py311"]
