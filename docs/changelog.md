@@ -5,6 +5,11 @@
 ### New features
 
 - memory-efficient index implementation based on multi-order coverage maps (MOCs) ({pull}`151`)
+- officially support python 3.13 ({pull}`162`)
+
+### Breaking changes
+
+- drop support for python 3.10 ({pull}`162`)
 
 ### Bug fixes
 

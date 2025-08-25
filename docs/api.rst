@@ -45,6 +45,15 @@ Parameters
 
    Dataset.dggs.decode
 
+Indexing
+--------
+
+.. autosummary::
+   :toctree: generated
+   :template: autosummary/accessor_method.rst
+
+   Dataset.dggs.sel_latlon
+
 
 Data inference
 --------------
@@ -55,6 +64,7 @@ Data inference
 
    Dataset.dggs.cell_centers
    Dataset.dggs.cell_boundaries
+   Dataset.dggs.assign_latlon_coords
 
 DataArray
 =========
@@ -74,6 +84,16 @@ Parameters
 
    Dataset.dggs.decode
 
+Indexing
+--------
+
+.. autosummary::
+   :toctree: generated
+   :template: autosummary/accessor_method.rst
+
+   DataArray.dggs.sel_latlon
+
+
 
 Data inference
 --------------
@@ -84,6 +104,7 @@ Data inference
 
    DataArray.dggs.cell_centers
    DataArray.dggs.cell_boundaries
+   DataArray.dggs.assign_latlon_coords
 
 Plotting
 --------
