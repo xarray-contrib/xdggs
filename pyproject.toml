@@ -115,3 +115,25 @@ filterwarnings = [
   # traitlets deprecation
   "ignore:.*is deprecated in traitlets:DeprecationWarning",
 ]
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[tool.pixi.system-requirements]
+libc = { family = "glibc", version = "2.34" }
+
+[tool.pixi.pypi-dependencies]
+xdggs = { path = ".", editable = true }
+
+[tool.pixi.tasks]
+
+[tool.pixi.dependencies]
+xarray = ">=2025.08.0"
+cdshealpix = ">=0.7.1"
+h3ronpy = ">=0.22.0"
+lonboard = ">=0.9.3"
+pyproj = ">=3.3"
+matplotlib-base = ">=3.10.5"
+arro3-core = ">=0.4.0"
+pooch = ">=1.8.2"
