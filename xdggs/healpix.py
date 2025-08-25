@@ -13,7 +13,7 @@ import cdshealpix.ring
 import numpy as np
 import xarray as xr
 from healpix_geo.nested import RangeMOCIndex
-from xarray.indexes import PandasIndex
+from xarray.core.indexes import IndexSelResult, PandasIndex
 
 from xdggs.grid import DGGSInfo, translate_parameters
 from xdggs.index import DGGSIndex
@@ -593,6 +593,44 @@ class HealpixMocIndex(xr.Index):
         }
 
         return self._replace(self._index.isel(indexer), chunksizes=new_chunksizes)
+
+    def sel(self, labels: dict[Any, Any], **options) -> IndexSelResult:
+        """Query the index using cell ids.
+
+        Parameters
+        ----------
+        labels : dict-like of hashable to slice or array-like
+            A dictionary of coordinate label indexers passed from
+            :py:meth:`Dataset.sel` and where the entries have been filtered
+            for the current index.
+
+        Returns
+        -------
+        sel_results : :py:class:`IndexSelResult`
+            An index query result object that contains dimension positional indexers.
+            It may also contain new indexes, coordinate variables, etc.
+        """
+        indexer = labels[self._name]
+        if isinstance(indexer, np.ndarray):
+            if np.isdtype(indexer.dtype, "signed integer"):
+                indexer = np.astype(
+                    np.where(indexer >= 0, indexer, np.iinfo(indexer.dtype).max),
+                    "uint64",
+                )
+            elif np.isdtype(indexer.dtype, "unsigned integer"):
+                indexer = np.astype(indexer, "uint64")
+            else:
+                raise ValueError("Can only index with cell id arrays or slices")
+
+        dim_indexer, new_index = self._index.sel(indexer)
+        new_chunksizes = {
+            self._dim: subset_chunks(self._chunksizes[self._dim], indexer)
+        }
+
+        return IndexSelResult(
+            dim_indexers={self._dim: dim_indexer},
+            indexes={self._name: self._replace(new_index, chunksizes=new_chunksizes)},
+        )
 
 
 @register_dggs("healpix")
