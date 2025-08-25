@@ -40,17 +40,17 @@ Documentation = "https://xdggs.readthedocs.io"
 Repository = "https://github.com/xarray-contrib/xdggs"
 
 [build-system]
-requires = ["setuptools>=61.0", "setuptools_scm[toml]>=6.2"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
 
-[tool.setuptools_scm]
-fallback_version = "9999"
+[tool.hatch]
+version.source = "vcs"
 
-[tool.setuptools.packages.find]
-include = [
-  "xdggs",
-  "xdggs.*",
-]
+[tool.hatch.build]
+hooks.vcs.version-file = "xdggs/_version.py"
+
+[tool.hatch.build.targets.sdist]
+only-include = ["xdggs"]
 
 [tool.ruff]
 target-version = "py310"
