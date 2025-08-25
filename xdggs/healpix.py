@@ -570,8 +570,7 @@ class HealpixMocIndex(xr.Index):
         indexers : dict-like
             A dictionary of positional indexers as passed from
             :py:meth:`Dataset.isel` and where the entries have been filtered for
-            the current index. Note that the underlying index currently only
-            supports slices.
+            the current index.
 
         Returns
         -------
