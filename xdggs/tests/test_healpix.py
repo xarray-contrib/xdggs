@@ -828,3 +828,22 @@ class TestHealpixMocIndex:
         assert actual.nbytes == expected.nbytes
         assert actual.chunksizes == expected.chunksizes
         np.testing.assert_equal(actual._index.cell_ids(), expected._index.cell_ids())
+
+    def test_sel_error(self):
+        from healpix_geo.nested import RangeMOCIndex
+
+        grid_info = healpix.HealpixInfo(level=1, indexing_scheme="nested")
+        cell_ids = np.arange(12 * 4**grid_info.level, dtype="uint64")
+
+        index = healpix.HealpixMocIndex(
+            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids),
+            dim="cells",
+            name="cell_ids",
+            grid_info=grid_info,
+            chunksizes={"cells": None},
+        )
+
+        indexer = np.array([-4, 2, 1], dtype="int64")
+
+        with pytest.raises(ValueError, match="Cell ids can't be negative"):
+            index.sel({"cell_ids": indexer})
