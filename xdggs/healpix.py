@@ -1,5 +1,5 @@
 import json
-from collections.abc import Mapping
+from collections.abc import Hashable, Mapping
 from dataclasses import dataclass
 from typing import Any, ClassVar, Literal, TypeVar
 
@@ -594,7 +594,7 @@ class HealpixMocIndex(xr.Index):
 
         return self._replace(self._index.isel(indexer), chunksizes=new_chunksizes)
 
-    def sel(self, labels: dict[Any, Any], **options) -> IndexSelResult:
+    def sel(self, labels: dict[Hashable, Any]) -> IndexSelResult:
         """Query the index using cell ids.
 
         Parameters
@@ -613,10 +613,10 @@ class HealpixMocIndex(xr.Index):
         indexer = labels[self._name]
         if isinstance(indexer, np.ndarray):
             if np.isdtype(indexer.dtype, "signed integer"):
-                indexer = np.astype(
-                    np.where(indexer >= 0, indexer, np.iinfo(indexer.dtype).max),
-                    "uint64",
-                )
+                if np.any(indexer < 0):
+                    raise ValueError("Cell ids can't be negative")
+
+                indexer = np.astype(indexer, "uint64")
             elif np.isdtype(indexer.dtype, "unsigned integer"):
                 indexer = np.astype(indexer, "uint64")
             else:
@@ -624,7 +624,7 @@ class HealpixMocIndex(xr.Index):
 
         dim_indexer, new_index = self._index.sel(indexer)
         new_chunksizes = {
-            self._dim: subset_chunks(self._chunksizes[self._dim], indexer)
+            self._dim: subset_chunks(self._chunksizes[self._dim], dim_indexer)
         }
 
         return IndexSelResult(
