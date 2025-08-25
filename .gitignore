@@ -167,6 +167,8 @@ cython_debug/
 # bibtex
 .auctex-auto
 *.bib.untidy
+
 # pixi environments
 .pixi/*
 !.pixi/config.toml
+pixi.lock
