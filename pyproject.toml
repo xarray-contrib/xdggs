@@ -179,8 +179,24 @@ python = "3.12.*"
 [tool.pixi.feature.ci-py313.dependencies]
 python = "3.13.*"
 
+[tool.pixi.feature.docs.dependencies]
+python = "3.13.*"
+sphinx = "*"
+myst-nb = "*"
+sphinx-book-theme = "*"
+sphinx-autosummary-accessors = "*"
+sphinx-copybutton = "*"
+sphinx-design = "*"
+sphinx-inline-tabs = "*"
+sphinxcontrib-bibtex = "*"
+h5netcdf = "*"
+pooch = "*"
+shapely = ">=2.1.1"
+sphinx-autobuild = ">=2024.10.3"
+
 [tool.pixi.environments]
 nightly = { features = ["tests", "nightly"], no-default-feature = true }
 ci-py311 = ["tests", "ci-py311"]
 ci-py312 = ["tests", "ci-py312"]
 ci-py313 = ["tests", "ci-py313"]
+docs = ["docs"]
