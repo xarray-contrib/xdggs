@@ -13404,8 +13404,8 @@ packages:
     timestamp: 1755208520958
   - pypi: ./
     name: xdggs
-    version: 0.2.2.dev74+g37f04e78c.d20250825
-    sha256: 9432baa697228ad114585794f0683030aaf96cad17e8d4bc946ef6caa7eedb27
+    version: 0.2.2.dev78+g7acfe5e13.d20250825
+    sha256: e7ce2dc114b54c8cf460dd6535b1fcfd8ad0f295baf0910c9e266347dcb5e094
     requires_dist:
       - arro3-core>=0.4.0
       - cdshealpix
