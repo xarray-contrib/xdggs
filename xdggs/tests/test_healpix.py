@@ -807,8 +807,6 @@ class TestHealpixMocIndex:
             chunksizes={"cells": input_chunks},
         )
 
-        print(indexer)
-        print(index._index.cell_ids())
         result = index.sel({"cell_ids": indexer})
         actual = result.indexes["cell_ids"]
         actual_indexer = result.dim_indexers["cells"]
@@ -821,7 +819,6 @@ class TestHealpixMocIndex:
             chunksizes={"cells": expected_chunks},
         )
 
-        print("initial indexer:", indexer)
         if isinstance(actual_indexer, slice):
             assert actual_indexer == expected_indexer
         else:
