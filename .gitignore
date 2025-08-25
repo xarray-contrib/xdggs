@@ -25,6 +25,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+/xdggs/_version.py
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -71,6 +72,7 @@ instance/
 # Sphinx documentation
 docs/_build/
 docs/**/generated/
+jupyter_execute/
 
 # PyBuilder
 .pybuilder/
@@ -167,3 +169,7 @@ cython_debug/
 # bibtex
 .auctex-auto
 *.bib.untidy
+
+# pixi environments
+.pixi/*
+!.pixi/config.toml

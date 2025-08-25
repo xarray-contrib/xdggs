@@ -45,13 +45,7 @@ jobs:
 
     defaults:
       run:
-        shell: bash -leo pipefail {0} {0}
-
-    strategy:
-      fail-fast: false
-
-      matrix:
-        python-version: ["3.12"]
+        shell: bash -l {0}
 
     permissions:
       issues: write
@@ -62,34 +56,24 @@ jobs:
         with:
           fetch-depth: 0 # Fetch all history for all branches and tags
 
-      - name: Setup micromamba
-        uses: mamba-org/setup-micromamba@v2
+      - name: remove lockfile
+        run: |
+          rm pixi.lock
+
+      - name: setup environment
+        uses: prefix-dev/setup-pixi@fef5c9568ca6c4ff7707bf840ab0692ba3f08293 # 0.9.0
         with:
-          environment-file: ci/environment.yml
-          environment-name: xdggs-tests
-          cache-environment: false
-          create-args: >-
-            python=${{matrix.python-version}}
-            pytest-reportlog
-            conda
-
-      - name: Install upstream versions
-        run: |
-          bash ci/install-upstream-wheels.sh
-
-      - name: Install xdggs
-        run: |
-          python -m pip install --no-deps -e .
+          environments: "nightly"
 
       - name: Import xdggs
         run: |
-          python -c "import xdggs"
+          pixi run -e nightly python -c "import xdggs"
 
-      - name: Run tests
+      - name: run tests
         if: success()
-        id: run-tests
+        id: status
         run: |
-          python -m pytest --report-log output-${{ matrix.python-version }}-log.jsonl
+          pixi run -e nightly tests -rf --report-log=pytest-log.jsonl
 
       - name: Generate and publish a failure report
         if: |
@@ -99,4 +83,4 @@ jobs:
           && github.repository_owner == 'xarray-contrib'
         uses: xarray-contrib/issue-from-pytest-log@v1
         with:
-          log-path: output-${{ matrix.python-version }}-log.jsonl
+          log-path: pytest-log.jsonl
