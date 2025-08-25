@@ -150,6 +150,7 @@ netcdf4 = "*"
 hypothesis = "*"
 geoarrow-pyarrow = "*"
 shapely = ">=2.1.1,<3"
+dask = ">=2025.7.0"
 
 [tool.pixi.feature.tests.tasks]
 tests = "pytest -n auto --cov=xdggs"
