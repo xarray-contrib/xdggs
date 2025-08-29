@@ -119,6 +119,17 @@ class DGGSAccessor:
         }
         return self._obj.sel(cell_indexers)
 
+    def query(self, geom):
+        index, indexer = self._index.query(geom)
+
+        coords = xr.Coordinates.from_xindex(index)
+
+        return (
+            self._obj.drop_indexes(self._name)
+            .isel({self._index._dim: indexer})
+            .assign_coords(coords)
+        )
+
     def assign_latlon_coords(self) -> xr.Dataset | xr.DataArray:
         """Return a new Dataset or DataArray with new "latitude" and "longitude"
         coordinates representing the grid cell centers."""

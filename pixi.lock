@@ -4031,7 +4031,7 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/linux-64/zlib-1.3.1-hb9d3cd8_2.conda
         - conda: https://conda.anaconda.org/conda-forge/linux-64/zstandard-0.23.0-py313h07c4f96_3.conda
         - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.7-hb8e6e7a_2.conda
-        - pypi: git+https://github.com/astropy/astropy.git#aebdc68ef3c4d94530eb23338c0b8c46981ab604
+        - pypi: git+https://github.com/astropy/astropy.git#b502a328acd635d4ad7dcaccadc53c609f709c61
         - pypi: https://files.pythonhosted.org/packages/d3/4b/7392dd3f6d32d4a0cb329f63168c68039bdc562c9ae5026c33bee8aeb127/astropy_iers_data-0.2025.8.25.0.36.58-py3-none-any.whl
         - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#258cc3feeccb2742761995f5793608eac6870371
         - pypi: git+https://github.com/keewis/h3ronpy.git?subdirectory=h3ronpy&rev=version#98fa563245092e2578cc6f1f0d860a9f511475f1
@@ -4240,7 +4240,7 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zlib-1.3.1-h8359307_2.conda
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstandard-0.23.0-py313hcdf3177_3.conda
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.7-h6491c7d_2.conda
-        - pypi: git+https://github.com/astropy/astropy.git#aebdc68ef3c4d94530eb23338c0b8c46981ab604
+        - pypi: git+https://github.com/astropy/astropy.git#b502a328acd635d4ad7dcaccadc53c609f709c61
         - pypi: https://files.pythonhosted.org/packages/d3/4b/7392dd3f6d32d4a0cb329f63168c68039bdc562c9ae5026c33bee8aeb127/astropy_iers_data-0.2025.8.25.0.36.58-py3-none-any.whl
         - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#258cc3feeccb2742761995f5793608eac6870371
         - pypi: git+https://github.com/keewis/h3ronpy.git?subdirectory=h3ronpy&rev=version#98fa563245092e2578cc6f1f0d860a9f511475f1
@@ -4441,7 +4441,7 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/win-64/zlib-1.3.1-h2466b09_2.conda
         - conda: https://conda.anaconda.org/conda-forge/win-64/zstandard-0.23.0-py313h5ea7bf4_3.conda
         - conda: https://conda.anaconda.org/conda-forge/win-64/zstd-1.5.7-hbeecb71_2.conda
-        - pypi: git+https://github.com/astropy/astropy.git#aebdc68ef3c4d94530eb23338c0b8c46981ab604
+        - pypi: git+https://github.com/astropy/astropy.git#b502a328acd635d4ad7dcaccadc53c609f709c61
         - pypi: https://files.pythonhosted.org/packages/d3/4b/7392dd3f6d32d4a0cb329f63168c68039bdc562c9ae5026c33bee8aeb127/astropy_iers_data-0.2025.8.25.0.36.58-py3-none-any.whl
         - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#258cc3feeccb2742761995f5793608eac6870371
         - pypi: git+https://github.com/keewis/h3ronpy.git?subdirectory=h3ronpy&rev=version#98fa563245092e2578cc6f1f0d860a9f511475f1
@@ -5090,9 +5090,9 @@ packages:
       - pkg:pypi/arrow?source=hash-mapping
     size: 99951
     timestamp: 1733584345583
-  - pypi: git+https://github.com/astropy/astropy.git#aebdc68ef3c4d94530eb23338c0b8c46981ab604
+  - pypi: git+https://github.com/astropy/astropy.git#b502a328acd635d4ad7dcaccadc53c609f709c61
     name: astropy
-    version: 7.2.dev486+gaebdc68ef
+    version: 7.2.dev489+gb502a328a
     requires_dist:
       - numpy>=1.24
       - pyerfa>=2.0.1.1
@@ -17587,7 +17587,7 @@ packages:
     timestamp: 1755208520958
   - pypi: ./
     name: xdggs
-    version: 0.2.2.dev10+g54988bb45
+    version: 0.2.2.dev13+gfd1fec804
     sha256: 1ff1fee26ebd659edf34376fe67d929ce787f961ef39b6d05c54340d14314437
     requires_dist:
       - arro3-core>=0.4.0

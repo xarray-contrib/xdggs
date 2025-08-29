@@ -308,6 +308,29 @@ class HealpixInfo(DGGSInfo):
 
         return backend_func(vertices)
 
+    def rasterize_geometry(self, geom, *, mode=None):
+        from astropy.coordinates import Latitude, Longitude
+
+        if self.indexing_scheme != "nested":
+            raise ValueError(
+                "rasterizing geometries is only supported for the 'nested' scheme"
+            )
+
+        if geom.geom_type != "Polygon":
+            raise NotImplementedError(
+                f"geometries of type {geom.geom_type!r} are not supported, yet"
+            )
+
+        coords = np.asarray(geom.exterior.coords)
+        lon_ = Longitude(coords[:, 0], unit="deg")
+        lat_ = Latitude(coords[:, 1], unit="deg")
+
+        ipix, _, _ = cdshealpix.nested.polygon_search(
+            lon_, lat_, depth=self.level, flat=True
+        )
+
+        return ipix
+
 
 @register_dggs("healpix")
 class HealpixIndex(DGGSIndex):
