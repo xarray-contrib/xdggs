@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.1 (_unreleased_)
+## 0.2.1 (2025-08-05)
 
 ### New features
 
@@ -10,13 +10,9 @@
 
 - drop support for python 3.10 ({pull}`162`)
 
-### Bug fixes
-
 ### Documentation
 
-- Documentation Contributer Guide + Github Button ({pull}`137`)
-
-### Internal changes
+- Documentation Contributor's Guide + Github Button ({pull}`137`)
 
 ## 0.2.0 (2025-02-12)
 
