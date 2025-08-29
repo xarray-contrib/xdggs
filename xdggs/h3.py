@@ -13,15 +13,19 @@ import xarray as xr
 
 try:
     from h3ronpy.vector import (
+        ContainmentMode,
         cells_to_coordinates,
         cells_to_wkb_polygons,
         coordinates_to_cells,
+        geometry_to_cells,
     )
 except ImportError:
     from h3ronpy.arrow.vector import (
+        ContainmentMode,
         cells_to_coordinates,
         cells_to_wkb_polygons,
         coordinates_to_cells,
+        geometry_to_cells,
     )
 from xarray.indexes import PandasIndex
 
@@ -200,6 +204,22 @@ class H3Info(DGGSInfo):
         if backend_func is None:
             raise ValueError(f"invalid backend: {backend!r}")
         return backend_func(wkb)
+
+    def rasterize_geometry(self, geom, *, mode="contains_centroid"):
+        modes = {
+            "contains_centroid": ContainmentMode.ContainsCentroid,
+            "contains_boundary": ContainmentMode.ContainsBoundary,
+            "covers": ContainmentMode.Covers,
+            "intersects_boundary": ContainmentMode.IntersectsBoundary,
+        }
+        containment_mode = modes.get(mode)
+        if containment_mode is None:
+            raise ValueError(
+                f"invalid mode: {mode}."
+                f" Must be one of [{', '.join(repr(m) for m in modes)}]"
+            )
+
+        return geometry_to_cells(geom, resolution=self.level)
 
 
 @register_dggs("h3")
