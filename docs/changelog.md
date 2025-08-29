@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0 (_unreleased_)
+
+### New features
+
+### Breaking changes
+
+### Bug fixes
+
+### Documentation
+
 ## 0.2.1 (2025-08-05)
 
 ### New features
