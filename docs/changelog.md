@@ -8,6 +8,8 @@
 
 ### Bug fixes
 
+- make sure arrays passed to `arro3` are C contiguous ({pull}`168`)
+
 ### Documentation
 
 ## 0.2.1 (2025-08-05)
