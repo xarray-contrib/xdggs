@@ -46,8 +46,10 @@ build-backend = "hatchling.build"
 [tool.hatch]
 version.source = "vcs"
 
-[tool.hatch.build]
-hooks.vcs.version-file = "xdggs/_version.py"
+[tool.hatch.build.hooks.vcs]
+version-file = "xdggs/_version.py"
+
+[tool.hatch.metadata.hooks.vcs]
 
 [tool.hatch.build.targets.sdist]
 only-include = ["xdggs"]
