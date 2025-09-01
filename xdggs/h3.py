@@ -1,12 +1,7 @@
 import json
 from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Any, ClassVar
-
-try:
-    from typing import Self
-except ImportError:  # pragma: no cover
-    from typing_extensions import Self
+from typing import Any, ClassVar, Self
 
 import numpy as np
 import xarray as xr

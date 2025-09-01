@@ -1,23 +1,30 @@
 # Changelog
 
-## 0.2.1 (_unreleased_)
+## 0.3.0 (_unreleased_)
 
 ### New features
 
-- memory-efficient index implementation based on multi-order coverage maps (MOCs) ({pull}`151`)
+### Breaking changes
+
+### Bug fixes
+
+- make sure arrays passed to `arro3` are C contiguous ({pull}`168`)
+
+### Documentation
+
+## 0.2.1 (2025-08-05)
+
+### New features
+
 - officially support python 3.13 ({pull}`162`)
 
 ### Breaking changes
 
 - drop support for python 3.10 ({pull}`162`)
 
-### Bug fixes
-
 ### Documentation
 
 - Documentation Contributor's Guide + Github Button ({pull}`137`)
-
-### Internal changes
 
 ## 0.2.0 (2025-02-12)
 

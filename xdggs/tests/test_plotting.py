@@ -77,6 +77,29 @@ from xdggs import plotting
                 }
             ),
         ),
+        pytest.param(
+            Array.from_numpy(np.array([1, 3])),
+            xr.DataArray(
+                np.arange(4).reshape((2, 2))[:, 0],
+                coords={
+                    "cell_ids": ("cells", [0, 1]),
+                    "latitude": ("cells", [-5, 10]),
+                    "longitude": ("cells", [-60, -50]),
+                },
+                dims="cells",
+                name="new_data",
+            ),
+            ["longitude"],
+            Table.from_pydict(
+                {
+                    "geometry": Array.from_numpy(np.array([1, 3])),
+                    "cell_ids": Array.from_numpy(np.array([0, 1])),
+                    "new_data": Array.from_numpy(np.array([0, 2])),
+                    "longitude": Array.from_numpy(np.array([-60, -50])),
+                }
+            ),
+            id="non-contiguous",
+        ),
     ),
 )
 def test_create_arrow_table(polygons, arr, coords, expected):

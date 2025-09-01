@@ -20,11 +20,6 @@ from xdggs.tests import (
     requires_dask,
 )
 
-try:
-    ExceptionGroup
-except NameError:  # pragma: no cover
-    from exceptiongroup import ExceptionGroup
-
 
 # namespace class
 class strategies:

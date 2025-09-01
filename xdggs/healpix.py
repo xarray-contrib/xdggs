@@ -1,12 +1,7 @@
 import json
 from collections.abc import Hashable, Mapping
 from dataclasses import dataclass
-from typing import Any, ClassVar, Literal, TypeVar
-
-try:
-    from typing import Self
-except ImportError:  # pragma: no cover
-    from typing_extensions import Self
+from typing import Any, ClassVar, Literal, Self, TypeVar
 
 import cdshealpix.nested
 import cdshealpix.ring
