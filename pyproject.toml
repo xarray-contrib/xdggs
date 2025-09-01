@@ -26,7 +26,6 @@ dependencies = [
   "xarray",
   "cdshealpix",
   "h3ronpy",
-  "typing-extensions",
   "lonboard>=0.9.3",
   "pyproj>=3.3",
   "matplotlib",
@@ -55,7 +54,7 @@ version-file = "xdggs/_version.py"
 only-include = ["xdggs"]
 
 [tool.ruff]
-target-version = "py310"
+target-version = "py311"
 builtins = ["ellipsis"]
 exclude = [
   ".git",
