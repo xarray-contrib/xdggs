@@ -4009,13 +4009,12 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/linux-64/zlib-1.3.1-hb9d3cd8_2.conda
         - conda: https://conda.anaconda.org/conda-forge/linux-64/zstandard-0.23.0-py313h07c4f96_3.conda
         - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.7-hb8e6e7a_2.conda
-        - pypi: git+https://github.com/astropy/astropy.git#32e73db895f36c4f9022c22471407f1ce0fbc55b
+        - pypi: git+https://github.com/astropy/astropy.git#378566916b411d63e777bb352565dd37c998cfe3
         - pypi: https://files.pythonhosted.org/packages/d3/4b/7392dd3f6d32d4a0cb329f63168c68039bdc562c9ae5026c33bee8aeb127/astropy_iers_data-0.2025.8.25.0.36.58-py3-none-any.whl
         - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#258cc3feeccb2742761995f5793608eac6870371
         - pypi: git+https://github.com/keewis/h3ronpy.git?subdirectory=h3ronpy&rev=version#98fa563245092e2578cc6f1f0d860a9f511475f1
-        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/2.3.1+13.ga91c50a58c/pandas-2.3.1+13.ga91c50a58c-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/3.0.0.dev0+2348.g7bfef3b1cb/pandas-3.0.0.dev0+2348.g7bfef3b1cb-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
         - pypi: https://files.pythonhosted.org/packages/e5/e0/050018d855d26d3c0b4a7d1b2ed692be758ce276d8289e2a2b44ba1014a5/pyerfa-2.0.1.5-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
-        - pypi: https://files.pythonhosted.org/packages/81/c4/34e93fe5f5429d7570ec1fa436f1986fb1f00c3e0f43a589fe2bbcd22c3f/pytz-2025.2-py2.py3-none-any.whl
         - pypi: https://files.pythonhosted.org/packages/04/24/b7721e4845c2f162d26f50521b825fb061bc0a5afcf9a386840f23ea19fa/PyYAML-6.0.2-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
         - pypi: https://files.pythonhosted.org/packages/5c/23/c7abc0ca0a1526a0774eca151daeb8de62ec457e77262b66b359c3c7679e/tzdata-2025.2-py2.py3-none-any.whl
         - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/xarray/2025.8.1.dev14+gfc698ab1b/xarray-2025.8.1.dev14+gfc698ab1b-py3-none-any.whl
@@ -4219,13 +4218,12 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zlib-1.3.1-h8359307_2.conda
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstandard-0.23.0-py313hcdf3177_3.conda
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.7-h6491c7d_2.conda
-        - pypi: git+https://github.com/astropy/astropy.git#32e73db895f36c4f9022c22471407f1ce0fbc55b
+        - pypi: git+https://github.com/astropy/astropy.git#378566916b411d63e777bb352565dd37c998cfe3
         - pypi: https://files.pythonhosted.org/packages/d3/4b/7392dd3f6d32d4a0cb329f63168c68039bdc562c9ae5026c33bee8aeb127/astropy_iers_data-0.2025.8.25.0.36.58-py3-none-any.whl
         - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#258cc3feeccb2742761995f5793608eac6870371
         - pypi: git+https://github.com/keewis/h3ronpy.git?subdirectory=h3ronpy&rev=version#98fa563245092e2578cc6f1f0d860a9f511475f1
-        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/2.3.1+13.ga91c50a58c/pandas-2.3.1+13.ga91c50a58c-cp313-cp313-macosx_11_0_arm64.whl
+        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/3.0.0.dev0+2348.g7bfef3b1cb/pandas-3.0.0.dev0+2348.g7bfef3b1cb-cp313-cp313-macosx_11_0_arm64.whl
         - pypi: https://files.pythonhosted.org/packages/11/4a/31a363370478b63c6289a34743f2ba2d3ae1bd8223e004d18ab28fb92385/pyerfa-2.0.1.5-cp39-abi3-macosx_11_0_arm64.whl
-        - pypi: https://files.pythonhosted.org/packages/81/c4/34e93fe5f5429d7570ec1fa436f1986fb1f00c3e0f43a589fe2bbcd22c3f/pytz-2025.2-py2.py3-none-any.whl
         - pypi: https://files.pythonhosted.org/packages/45/9f/3b1c20a0b7a3200524eb0076cc027a970d320bd3a6592873c85c92a08731/PyYAML-6.0.2-cp313-cp313-macosx_11_0_arm64.whl
         - pypi: https://files.pythonhosted.org/packages/5c/23/c7abc0ca0a1526a0774eca151daeb8de62ec457e77262b66b359c3c7679e/tzdata-2025.2-py2.py3-none-any.whl
         - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/xarray/2025.8.1.dev14+gfc698ab1b/xarray-2025.8.1.dev14+gfc698ab1b-py3-none-any.whl
@@ -4421,13 +4419,12 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/win-64/zlib-1.3.1-h2466b09_2.conda
         - conda: https://conda.anaconda.org/conda-forge/win-64/zstandard-0.23.0-py313h5ea7bf4_3.conda
         - conda: https://conda.anaconda.org/conda-forge/win-64/zstd-1.5.7-hbeecb71_2.conda
-        - pypi: git+https://github.com/astropy/astropy.git#32e73db895f36c4f9022c22471407f1ce0fbc55b
+        - pypi: git+https://github.com/astropy/astropy.git#378566916b411d63e777bb352565dd37c998cfe3
         - pypi: https://files.pythonhosted.org/packages/d3/4b/7392dd3f6d32d4a0cb329f63168c68039bdc562c9ae5026c33bee8aeb127/astropy_iers_data-0.2025.8.25.0.36.58-py3-none-any.whl
         - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#258cc3feeccb2742761995f5793608eac6870371
         - pypi: git+https://github.com/keewis/h3ronpy.git?subdirectory=h3ronpy&rev=version#98fa563245092e2578cc6f1f0d860a9f511475f1
-        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/2.3.1+13.ga91c50a58c/pandas-2.3.1+13.ga91c50a58c-cp313-cp313-win_amd64.whl
+        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/3.0.0.dev0+2348.g7bfef3b1cb/pandas-3.0.0.dev0+2348.g7bfef3b1cb-cp313-cp313-win_amd64.whl
         - pypi: https://files.pythonhosted.org/packages/b4/11/97233cf23ad5411ac6f13b1d6ee3888f90ace4f974d9bf9db887aa428912/pyerfa-2.0.1.5-cp39-abi3-win_amd64.whl
-        - pypi: https://files.pythonhosted.org/packages/81/c4/34e93fe5f5429d7570ec1fa436f1986fb1f00c3e0f43a589fe2bbcd22c3f/pytz-2025.2-py2.py3-none-any.whl
         - pypi: https://files.pythonhosted.org/packages/fa/de/02b54f42487e3d3c6efb3f89428677074ca7bf43aae402517bc7cca949f3/PyYAML-6.0.2-cp313-cp313-win_amd64.whl
         - pypi: https://files.pythonhosted.org/packages/5c/23/c7abc0ca0a1526a0774eca151daeb8de62ec457e77262b66b359c3c7679e/tzdata-2025.2-py2.py3-none-any.whl
         - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/xarray/2025.8.1.dev14+gfc698ab1b/xarray-2025.8.1.dev14+gfc698ab1b-py3-none-any.whl
@@ -5060,9 +5057,9 @@ packages:
       - pkg:pypi/arrow?source=hash-mapping
     size: 99951
     timestamp: 1733584345583
-  - pypi: git+https://github.com/astropy/astropy.git#32e73db895f36c4f9022c22471407f1ce0fbc55b
+  - pypi: git+https://github.com/astropy/astropy.git#378566916b411d63e777bb352565dd37c998cfe3
     name: astropy
-    version: 7.2.dev473+g32e73db89
+    version: 7.2.dev494+g378566916
     requires_dist:
       - numpy>=1.24
       - pyerfa>=2.0.1.1
@@ -13053,276 +13050,267 @@ packages:
       - pkg:pypi/packaging?source=hash-mapping
     size: 62477
     timestamp: 1745345660407
-  - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/2.3.1+13.ga91c50a58c/pandas-2.3.1+13.ga91c50a58c-cp313-cp313-macosx_11_0_arm64.whl
+  - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/3.0.0.dev0+2348.g7bfef3b1cb/pandas-3.0.0.dev0+2348.g7bfef3b1cb-cp313-cp313-macosx_11_0_arm64.whl
     name: pandas
-    version: 2.3.1+13.ga91c50a58c
+    version: 3.0.0.dev0+2348.g7bfef3b1cb
     requires_dist:
-      - numpy>=1.22.4 ; python_full_version < '3.11'
-      - numpy>=1.23.2 ; python_full_version == '3.11.*'
-      - numpy>=1.26.0 ; python_full_version >= '3.12'
+      - numpy>=1.26.0
       - python-dateutil>=2.8.2
-      - pytz>=2020.1
-      - tzdata>=2022.7
-      - hypothesis>=6.46.1 ; extra == 'test'
+      - tzdata>=2023.3
+      - hypothesis>=6.84.0 ; extra == 'test'
       - pytest>=7.3.2 ; extra == 'test'
-      - pytest-xdist>=2.2.0 ; extra == 'test'
-      - pyarrow>=10.0.1 ; extra == 'pyarrow'
+      - pytest-xdist>=3.4.0 ; extra == 'test'
+      - pyarrow>=12.0.1 ; extra == 'pyarrow'
       - bottleneck>=1.3.6 ; extra == 'performance'
-      - numba>=0.56.4 ; extra == 'performance'
-      - numexpr>=2.8.4 ; extra == 'performance'
-      - scipy>=1.10.0 ; extra == 'computation'
-      - xarray>=2022.12.0 ; extra == 'computation'
-      - fsspec>=2022.11.0 ; extra == 'fss'
-      - s3fs>=2022.11.0 ; extra == 'aws'
-      - gcsfs>=2022.11.0 ; extra == 'gcp'
-      - pandas-gbq>=0.19.0 ; extra == 'gcp'
+      - numba>=0.59.0 ; extra == 'performance'
+      - numexpr>=2.9.0 ; extra == 'performance'
+      - scipy>=1.12.0 ; extra == 'computation'
+      - xarray>=2024.1.1 ; extra == 'computation'
+      - fsspec>=2023.12.2 ; extra == 'fss'
+      - s3fs>=2023.12.2 ; extra == 'aws'
+      - gcsfs>=2023.12.2 ; extra == 'gcp'
       - odfpy>=1.4.1 ; extra == 'excel'
-      - openpyxl>=3.1.0 ; extra == 'excel'
+      - openpyxl>=3.1.2 ; extra == 'excel'
       - python-calamine>=0.1.7 ; extra == 'excel'
       - pyxlsb>=1.0.10 ; extra == 'excel'
       - xlrd>=2.0.1 ; extra == 'excel'
-      - xlsxwriter>=3.0.5 ; extra == 'excel'
-      - pyarrow>=10.0.1 ; extra == 'parquet'
-      - pyarrow>=10.0.1 ; extra == 'feather'
+      - xlsxwriter>=3.2.0 ; extra == 'excel'
+      - pyarrow>=12.0.1 ; extra == 'parquet'
+      - pyarrow>=12.0.1 ; extra == 'feather'
+      - pyiceberg>=0.7.1 ; extra == 'iceberg'
       - tables>=3.8.0 ; extra == 'hdf5'
-      - pyreadstat>=1.2.0 ; extra == 'spss'
+      - pyreadstat>=1.2.6 ; extra == 'spss'
       - sqlalchemy>=2.0.0 ; extra == 'postgresql'
-      - psycopg2>=2.9.6 ; extra == 'postgresql'
-      - adbc-driver-postgresql>=0.8.0 ; extra == 'postgresql'
+      - psycopg2>=2.9.9 ; extra == 'postgresql'
+      - adbc-driver-postgresql>=1.2.0 ; extra == 'postgresql'
       - sqlalchemy>=2.0.0 ; extra == 'mysql'
-      - pymysql>=1.0.2 ; extra == 'mysql'
+      - pymysql>=1.1.0 ; extra == 'mysql'
       - sqlalchemy>=2.0.0 ; extra == 'sql-other'
-      - adbc-driver-postgresql>=0.8.0 ; extra == 'sql-other'
-      - adbc-driver-sqlite>=0.8.0 ; extra == 'sql-other'
-      - beautifulsoup4>=4.11.2 ; extra == 'html'
+      - adbc-driver-postgresql>=1.2.0 ; extra == 'sql-other'
+      - adbc-driver-sqlite>=1.2.0 ; extra == 'sql-other'
+      - beautifulsoup4>=4.12.3 ; extra == 'html'
       - html5lib>=1.1 ; extra == 'html'
       - lxml>=4.9.2 ; extra == 'html'
       - lxml>=4.9.2 ; extra == 'xml'
-      - matplotlib>=3.6.3 ; extra == 'plot'
-      - jinja2>=3.1.2 ; extra == 'output-formatting'
+      - matplotlib>=3.8.3 ; extra == 'plot'
+      - jinja2>=3.1.3 ; extra == 'output-formatting'
       - tabulate>=0.9.0 ; extra == 'output-formatting'
       - pyqt5>=5.15.9 ; extra == 'clipboard'
       - qtpy>=2.3.0 ; extra == 'clipboard'
-      - zstandard>=0.19.0 ; extra == 'compression'
-      - dataframe-api-compat>=0.1.7 ; extra == 'consortium-standard'
-      - adbc-driver-postgresql>=0.8.0 ; extra == 'all'
-      - adbc-driver-sqlite>=0.8.0 ; extra == 'all'
-      - beautifulsoup4>=4.11.2 ; extra == 'all'
+      - zstandard>=0.22.0 ; extra == 'compression'
+      - pytz>=2023.4 ; extra == 'timezone'
+      - adbc-driver-postgresql>=1.2.0 ; extra == 'all'
+      - adbc-driver-sqlite>=1.2.0 ; extra == 'all'
+      - beautifulsoup4>=4.12.3 ; extra == 'all'
       - bottleneck>=1.3.6 ; extra == 'all'
-      - dataframe-api-compat>=0.1.7 ; extra == 'all'
-      - fastparquet>=2022.12.0 ; extra == 'all'
-      - fsspec>=2022.11.0 ; extra == 'all'
-      - gcsfs>=2022.11.0 ; extra == 'all'
+      - fastparquet>=2024.2.0 ; extra == 'all'
+      - fsspec>=2023.12.2 ; extra == 'all'
+      - gcsfs>=2023.12.2 ; extra == 'all'
       - html5lib>=1.1 ; extra == 'all'
-      - hypothesis>=6.46.1 ; extra == 'all'
-      - jinja2>=3.1.2 ; extra == 'all'
+      - hypothesis>=6.84.0 ; extra == 'all'
+      - jinja2>=3.1.3 ; extra == 'all'
       - lxml>=4.9.2 ; extra == 'all'
-      - matplotlib>=3.6.3 ; extra == 'all'
-      - numba>=0.56.4 ; extra == 'all'
-      - numexpr>=2.8.4 ; extra == 'all'
+      - matplotlib>=3.8.3 ; extra == 'all'
+      - numba>=0.59.0 ; extra == 'all'
+      - numexpr>=2.9.0 ; extra == 'all'
       - odfpy>=1.4.1 ; extra == 'all'
-      - openpyxl>=3.1.0 ; extra == 'all'
-      - pandas-gbq>=0.19.0 ; extra == 'all'
-      - psycopg2>=2.9.6 ; extra == 'all'
-      - pyarrow>=10.0.1 ; extra == 'all'
-      - pymysql>=1.0.2 ; extra == 'all'
+      - openpyxl>=3.1.2 ; extra == 'all'
+      - psycopg2>=2.9.9 ; extra == 'all'
+      - pyarrow>=12.0.1 ; extra == 'all'
+      - pyiceberg>=0.7.1 ; extra == 'all'
+      - pymysql>=1.1.0 ; extra == 'all'
       - pyqt5>=5.15.9 ; extra == 'all'
-      - pyreadstat>=1.2.0 ; extra == 'all'
+      - pyreadstat>=1.2.6 ; extra == 'all'
       - pytest>=7.3.2 ; extra == 'all'
-      - pytest-xdist>=2.2.0 ; extra == 'all'
+      - pytest-xdist>=3.4.0 ; extra == 'all'
       - python-calamine>=0.1.7 ; extra == 'all'
+      - pytz>=2023.4 ; extra == 'all'
       - pyxlsb>=1.0.10 ; extra == 'all'
       - qtpy>=2.3.0 ; extra == 'all'
-      - scipy>=1.10.0 ; extra == 'all'
-      - s3fs>=2022.11.0 ; extra == 'all'
+      - scipy>=1.12.0 ; extra == 'all'
+      - s3fs>=2023.12.2 ; extra == 'all'
       - sqlalchemy>=2.0.0 ; extra == 'all'
       - tables>=3.8.0 ; extra == 'all'
       - tabulate>=0.9.0 ; extra == 'all'
-      - xarray>=2022.12.0 ; extra == 'all'
+      - xarray>=2024.1.1 ; extra == 'all'
       - xlrd>=2.0.1 ; extra == 'all'
-      - xlsxwriter>=3.0.5 ; extra == 'all'
-      - zstandard>=0.19.0 ; extra == 'all'
-    requires_python: ">=3.9"
-  - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/2.3.1+13.ga91c50a58c/pandas-2.3.1+13.ga91c50a58c-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+      - xlsxwriter>=3.2.0 ; extra == 'all'
+      - zstandard>=0.22.0 ; extra == 'all'
+    requires_python: ">=3.11"
+  - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/3.0.0.dev0+2348.g7bfef3b1cb/pandas-3.0.0.dev0+2348.g7bfef3b1cb-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
     name: pandas
-    version: 2.3.1+13.ga91c50a58c
+    version: 3.0.0.dev0+2348.g7bfef3b1cb
     requires_dist:
-      - numpy>=1.22.4 ; python_full_version < '3.11'
-      - numpy>=1.23.2 ; python_full_version == '3.11.*'
-      - numpy>=1.26.0 ; python_full_version >= '3.12'
+      - numpy>=1.26.0
       - python-dateutil>=2.8.2
-      - pytz>=2020.1
-      - tzdata>=2022.7
-      - hypothesis>=6.46.1 ; extra == 'test'
+      - tzdata>=2023.3
+      - hypothesis>=6.84.0 ; extra == 'test'
       - pytest>=7.3.2 ; extra == 'test'
-      - pytest-xdist>=2.2.0 ; extra == 'test'
-      - pyarrow>=10.0.1 ; extra == 'pyarrow'
+      - pytest-xdist>=3.4.0 ; extra == 'test'
+      - pyarrow>=12.0.1 ; extra == 'pyarrow'
       - bottleneck>=1.3.6 ; extra == 'performance'
-      - numba>=0.56.4 ; extra == 'performance'
-      - numexpr>=2.8.4 ; extra == 'performance'
-      - scipy>=1.10.0 ; extra == 'computation'
-      - xarray>=2022.12.0 ; extra == 'computation'
-      - fsspec>=2022.11.0 ; extra == 'fss'
-      - s3fs>=2022.11.0 ; extra == 'aws'
-      - gcsfs>=2022.11.0 ; extra == 'gcp'
-      - pandas-gbq>=0.19.0 ; extra == 'gcp'
+      - numba>=0.59.0 ; extra == 'performance'
+      - numexpr>=2.9.0 ; extra == 'performance'
+      - scipy>=1.12.0 ; extra == 'computation'
+      - xarray>=2024.1.1 ; extra == 'computation'
+      - fsspec>=2023.12.2 ; extra == 'fss'
+      - s3fs>=2023.12.2 ; extra == 'aws'
+      - gcsfs>=2023.12.2 ; extra == 'gcp'
       - odfpy>=1.4.1 ; extra == 'excel'
-      - openpyxl>=3.1.0 ; extra == 'excel'
+      - openpyxl>=3.1.2 ; extra == 'excel'
       - python-calamine>=0.1.7 ; extra == 'excel'
       - pyxlsb>=1.0.10 ; extra == 'excel'
       - xlrd>=2.0.1 ; extra == 'excel'
-      - xlsxwriter>=3.0.5 ; extra == 'excel'
-      - pyarrow>=10.0.1 ; extra == 'parquet'
-      - pyarrow>=10.0.1 ; extra == 'feather'
+      - xlsxwriter>=3.2.0 ; extra == 'excel'
+      - pyarrow>=12.0.1 ; extra == 'parquet'
+      - pyarrow>=12.0.1 ; extra == 'feather'
+      - pyiceberg>=0.7.1 ; extra == 'iceberg'
       - tables>=3.8.0 ; extra == 'hdf5'
-      - pyreadstat>=1.2.0 ; extra == 'spss'
+      - pyreadstat>=1.2.6 ; extra == 'spss'
       - sqlalchemy>=2.0.0 ; extra == 'postgresql'
-      - psycopg2>=2.9.6 ; extra == 'postgresql'
-      - adbc-driver-postgresql>=0.8.0 ; extra == 'postgresql'
+      - psycopg2>=2.9.9 ; extra == 'postgresql'
+      - adbc-driver-postgresql>=1.2.0 ; extra == 'postgresql'
       - sqlalchemy>=2.0.0 ; extra == 'mysql'
-      - pymysql>=1.0.2 ; extra == 'mysql'
+      - pymysql>=1.1.0 ; extra == 'mysql'
       - sqlalchemy>=2.0.0 ; extra == 'sql-other'
-      - adbc-driver-postgresql>=0.8.0 ; extra == 'sql-other'
-      - adbc-driver-sqlite>=0.8.0 ; extra == 'sql-other'
-      - beautifulsoup4>=4.11.2 ; extra == 'html'
+      - adbc-driver-postgresql>=1.2.0 ; extra == 'sql-other'
+      - adbc-driver-sqlite>=1.2.0 ; extra == 'sql-other'
+      - beautifulsoup4>=4.12.3 ; extra == 'html'
       - html5lib>=1.1 ; extra == 'html'
       - lxml>=4.9.2 ; extra == 'html'
       - lxml>=4.9.2 ; extra == 'xml'
-      - matplotlib>=3.6.3 ; extra == 'plot'
-      - jinja2>=3.1.2 ; extra == 'output-formatting'
+      - matplotlib>=3.8.3 ; extra == 'plot'
+      - jinja2>=3.1.3 ; extra == 'output-formatting'
       - tabulate>=0.9.0 ; extra == 'output-formatting'
       - pyqt5>=5.15.9 ; extra == 'clipboard'
       - qtpy>=2.3.0 ; extra == 'clipboard'
-      - zstandard>=0.19.0 ; extra == 'compression'
-      - dataframe-api-compat>=0.1.7 ; extra == 'consortium-standard'
-      - adbc-driver-postgresql>=0.8.0 ; extra == 'all'
-      - adbc-driver-sqlite>=0.8.0 ; extra == 'all'
-      - beautifulsoup4>=4.11.2 ; extra == 'all'
+      - zstandard>=0.22.0 ; extra == 'compression'
+      - pytz>=2023.4 ; extra == 'timezone'
+      - adbc-driver-postgresql>=1.2.0 ; extra == 'all'
+      - adbc-driver-sqlite>=1.2.0 ; extra == 'all'
+      - beautifulsoup4>=4.12.3 ; extra == 'all'
       - bottleneck>=1.3.6 ; extra == 'all'
-      - dataframe-api-compat>=0.1.7 ; extra == 'all'
-      - fastparquet>=2022.12.0 ; extra == 'all'
-      - fsspec>=2022.11.0 ; extra == 'all'
-      - gcsfs>=2022.11.0 ; extra == 'all'
+      - fastparquet>=2024.2.0 ; extra == 'all'
+      - fsspec>=2023.12.2 ; extra == 'all'
+      - gcsfs>=2023.12.2 ; extra == 'all'
       - html5lib>=1.1 ; extra == 'all'
-      - hypothesis>=6.46.1 ; extra == 'all'
-      - jinja2>=3.1.2 ; extra == 'all'
+      - hypothesis>=6.84.0 ; extra == 'all'
+      - jinja2>=3.1.3 ; extra == 'all'
       - lxml>=4.9.2 ; extra == 'all'
-      - matplotlib>=3.6.3 ; extra == 'all'
-      - numba>=0.56.4 ; extra == 'all'
-      - numexpr>=2.8.4 ; extra == 'all'
+      - matplotlib>=3.8.3 ; extra == 'all'
+      - numba>=0.59.0 ; extra == 'all'
+      - numexpr>=2.9.0 ; extra == 'all'
       - odfpy>=1.4.1 ; extra == 'all'
-      - openpyxl>=3.1.0 ; extra == 'all'
-      - pandas-gbq>=0.19.0 ; extra == 'all'
-      - psycopg2>=2.9.6 ; extra == 'all'
-      - pyarrow>=10.0.1 ; extra == 'all'
-      - pymysql>=1.0.2 ; extra == 'all'
+      - openpyxl>=3.1.2 ; extra == 'all'
+      - psycopg2>=2.9.9 ; extra == 'all'
+      - pyarrow>=12.0.1 ; extra == 'all'
+      - pyiceberg>=0.7.1 ; extra == 'all'
+      - pymysql>=1.1.0 ; extra == 'all'
       - pyqt5>=5.15.9 ; extra == 'all'
-      - pyreadstat>=1.2.0 ; extra == 'all'
+      - pyreadstat>=1.2.6 ; extra == 'all'
       - pytest>=7.3.2 ; extra == 'all'
-      - pytest-xdist>=2.2.0 ; extra == 'all'
+      - pytest-xdist>=3.4.0 ; extra == 'all'
       - python-calamine>=0.1.7 ; extra == 'all'
+      - pytz>=2023.4 ; extra == 'all'
       - pyxlsb>=1.0.10 ; extra == 'all'
       - qtpy>=2.3.0 ; extra == 'all'
-      - scipy>=1.10.0 ; extra == 'all'
-      - s3fs>=2022.11.0 ; extra == 'all'
+      - scipy>=1.12.0 ; extra == 'all'
+      - s3fs>=2023.12.2 ; extra == 'all'
       - sqlalchemy>=2.0.0 ; extra == 'all'
       - tables>=3.8.0 ; extra == 'all'
       - tabulate>=0.9.0 ; extra == 'all'
-      - xarray>=2022.12.0 ; extra == 'all'
+      - xarray>=2024.1.1 ; extra == 'all'
       - xlrd>=2.0.1 ; extra == 'all'
-      - xlsxwriter>=3.0.5 ; extra == 'all'
-      - zstandard>=0.19.0 ; extra == 'all'
-    requires_python: ">=3.9"
-  - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/2.3.1+13.ga91c50a58c/pandas-2.3.1+13.ga91c50a58c-cp313-cp313-win_amd64.whl
+      - xlsxwriter>=3.2.0 ; extra == 'all'
+      - zstandard>=0.22.0 ; extra == 'all'
+    requires_python: ">=3.11"
+  - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/3.0.0.dev0+2348.g7bfef3b1cb/pandas-3.0.0.dev0+2348.g7bfef3b1cb-cp313-cp313-win_amd64.whl
     name: pandas
-    version: 2.3.1+13.ga91c50a58c
+    version: 3.0.0.dev0+2348.g7bfef3b1cb
     requires_dist:
-      - numpy>=1.22.4 ; python_full_version < '3.11'
-      - numpy>=1.23.2 ; python_full_version == '3.11.*'
-      - numpy>=1.26.0 ; python_full_version >= '3.12'
+      - numpy>=1.26.0
       - python-dateutil>=2.8.2
-      - pytz>=2020.1
-      - tzdata>=2022.7
-      - hypothesis>=6.46.1 ; extra == 'test'
+      - tzdata>=2023.3
+      - hypothesis>=6.84.0 ; extra == 'test'
       - pytest>=7.3.2 ; extra == 'test'
-      - pytest-xdist>=2.2.0 ; extra == 'test'
-      - pyarrow>=10.0.1 ; extra == 'pyarrow'
+      - pytest-xdist>=3.4.0 ; extra == 'test'
+      - pyarrow>=12.0.1 ; extra == 'pyarrow'
       - bottleneck>=1.3.6 ; extra == 'performance'
-      - numba>=0.56.4 ; extra == 'performance'
-      - numexpr>=2.8.4 ; extra == 'performance'
-      - scipy>=1.10.0 ; extra == 'computation'
-      - xarray>=2022.12.0 ; extra == 'computation'
-      - fsspec>=2022.11.0 ; extra == 'fss'
-      - s3fs>=2022.11.0 ; extra == 'aws'
-      - gcsfs>=2022.11.0 ; extra == 'gcp'
-      - pandas-gbq>=0.19.0 ; extra == 'gcp'
+      - numba>=0.59.0 ; extra == 'performance'
+      - numexpr>=2.9.0 ; extra == 'performance'
+      - scipy>=1.12.0 ; extra == 'computation'
+      - xarray>=2024.1.1 ; extra == 'computation'
+      - fsspec>=2023.12.2 ; extra == 'fss'
+      - s3fs>=2023.12.2 ; extra == 'aws'
+      - gcsfs>=2023.12.2 ; extra == 'gcp'
       - odfpy>=1.4.1 ; extra == 'excel'
-      - openpyxl>=3.1.0 ; extra == 'excel'
+      - openpyxl>=3.1.2 ; extra == 'excel'
       - python-calamine>=0.1.7 ; extra == 'excel'
       - pyxlsb>=1.0.10 ; extra == 'excel'
       - xlrd>=2.0.1 ; extra == 'excel'
-      - xlsxwriter>=3.0.5 ; extra == 'excel'
-      - pyarrow>=10.0.1 ; extra == 'parquet'
-      - pyarrow>=10.0.1 ; extra == 'feather'
+      - xlsxwriter>=3.2.0 ; extra == 'excel'
+      - pyarrow>=12.0.1 ; extra == 'parquet'
+      - pyarrow>=12.0.1 ; extra == 'feather'
+      - pyiceberg>=0.7.1 ; extra == 'iceberg'
       - tables>=3.8.0 ; extra == 'hdf5'
-      - pyreadstat>=1.2.0 ; extra == 'spss'
+      - pyreadstat>=1.2.6 ; extra == 'spss'
       - sqlalchemy>=2.0.0 ; extra == 'postgresql'
-      - psycopg2>=2.9.6 ; extra == 'postgresql'
-      - adbc-driver-postgresql>=0.8.0 ; extra == 'postgresql'
+      - psycopg2>=2.9.9 ; extra == 'postgresql'
+      - adbc-driver-postgresql>=1.2.0 ; extra == 'postgresql'
       - sqlalchemy>=2.0.0 ; extra == 'mysql'
-      - pymysql>=1.0.2 ; extra == 'mysql'
+      - pymysql>=1.1.0 ; extra == 'mysql'
       - sqlalchemy>=2.0.0 ; extra == 'sql-other'
-      - adbc-driver-postgresql>=0.8.0 ; extra == 'sql-other'
-      - adbc-driver-sqlite>=0.8.0 ; extra == 'sql-other'
-      - beautifulsoup4>=4.11.2 ; extra == 'html'
+      - adbc-driver-postgresql>=1.2.0 ; extra == 'sql-other'
+      - adbc-driver-sqlite>=1.2.0 ; extra == 'sql-other'
+      - beautifulsoup4>=4.12.3 ; extra == 'html'
       - html5lib>=1.1 ; extra == 'html'
       - lxml>=4.9.2 ; extra == 'html'
       - lxml>=4.9.2 ; extra == 'xml'
-      - matplotlib>=3.6.3 ; extra == 'plot'
-      - jinja2>=3.1.2 ; extra == 'output-formatting'
+      - matplotlib>=3.8.3 ; extra == 'plot'
+      - jinja2>=3.1.3 ; extra == 'output-formatting'
       - tabulate>=0.9.0 ; extra == 'output-formatting'
       - pyqt5>=5.15.9 ; extra == 'clipboard'
       - qtpy>=2.3.0 ; extra == 'clipboard'
-      - zstandard>=0.19.0 ; extra == 'compression'
-      - dataframe-api-compat>=0.1.7 ; extra == 'consortium-standard'
-      - adbc-driver-postgresql>=0.8.0 ; extra == 'all'
-      - adbc-driver-sqlite>=0.8.0 ; extra == 'all'
-      - beautifulsoup4>=4.11.2 ; extra == 'all'
+      - zstandard>=0.22.0 ; extra == 'compression'
+      - pytz>=2023.4 ; extra == 'timezone'
+      - adbc-driver-postgresql>=1.2.0 ; extra == 'all'
+      - adbc-driver-sqlite>=1.2.0 ; extra == 'all'
+      - beautifulsoup4>=4.12.3 ; extra == 'all'
       - bottleneck>=1.3.6 ; extra == 'all'
-      - dataframe-api-compat>=0.1.7 ; extra == 'all'
-      - fastparquet>=2022.12.0 ; extra == 'all'
-      - fsspec>=2022.11.0 ; extra == 'all'
-      - gcsfs>=2022.11.0 ; extra == 'all'
+      - fastparquet>=2024.2.0 ; extra == 'all'
+      - fsspec>=2023.12.2 ; extra == 'all'
+      - gcsfs>=2023.12.2 ; extra == 'all'
       - html5lib>=1.1 ; extra == 'all'
-      - hypothesis>=6.46.1 ; extra == 'all'
-      - jinja2>=3.1.2 ; extra == 'all'
+      - hypothesis>=6.84.0 ; extra == 'all'
+      - jinja2>=3.1.3 ; extra == 'all'
       - lxml>=4.9.2 ; extra == 'all'
-      - matplotlib>=3.6.3 ; extra == 'all'
-      - numba>=0.56.4 ; extra == 'all'
-      - numexpr>=2.8.4 ; extra == 'all'
+      - matplotlib>=3.8.3 ; extra == 'all'
+      - numba>=0.59.0 ; extra == 'all'
+      - numexpr>=2.9.0 ; extra == 'all'
       - odfpy>=1.4.1 ; extra == 'all'
-      - openpyxl>=3.1.0 ; extra == 'all'
-      - pandas-gbq>=0.19.0 ; extra == 'all'
-      - psycopg2>=2.9.6 ; extra == 'all'
-      - pyarrow>=10.0.1 ; extra == 'all'
-      - pymysql>=1.0.2 ; extra == 'all'
+      - openpyxl>=3.1.2 ; extra == 'all'
+      - psycopg2>=2.9.9 ; extra == 'all'
+      - pyarrow>=12.0.1 ; extra == 'all'
+      - pyiceberg>=0.7.1 ; extra == 'all'
+      - pymysql>=1.1.0 ; extra == 'all'
       - pyqt5>=5.15.9 ; extra == 'all'
-      - pyreadstat>=1.2.0 ; extra == 'all'
+      - pyreadstat>=1.2.6 ; extra == 'all'
       - pytest>=7.3.2 ; extra == 'all'
-      - pytest-xdist>=2.2.0 ; extra == 'all'
+      - pytest-xdist>=3.4.0 ; extra == 'all'
       - python-calamine>=0.1.7 ; extra == 'all'
+      - pytz>=2023.4 ; extra == 'all'
       - pyxlsb>=1.0.10 ; extra == 'all'
       - qtpy>=2.3.0 ; extra == 'all'
-      - scipy>=1.10.0 ; extra == 'all'
-      - s3fs>=2022.11.0 ; extra == 'all'
+      - scipy>=1.12.0 ; extra == 'all'
+      - s3fs>=2023.12.2 ; extra == 'all'
       - sqlalchemy>=2.0.0 ; extra == 'all'
       - tables>=3.8.0 ; extra == 'all'
       - tabulate>=0.9.0 ; extra == 'all'
-      - xarray>=2022.12.0 ; extra == 'all'
+      - xarray>=2024.1.1 ; extra == 'all'
       - xlrd>=2.0.1 ; extra == 'all'
-      - xlsxwriter>=3.0.5 ; extra == 'all'
-      - zstandard>=0.19.0 ; extra == 'all'
-    requires_python: ">=3.9"
+      - xlsxwriter>=3.2.0 ; extra == 'all'
+      - zstandard>=0.22.0 ; extra == 'all'
+    requires_python: ">=3.11"
   - conda: https://conda.anaconda.org/conda-forge/linux-64/pandas-2.3.2-py311hed34c8f_0.conda
     sha256: ac5372b55c12644ba4bab81270bb294fb70197f86c9b3ede57dfe367ecc6f198
     md5: f98711aba4ad00ea3c286dcea5f57c1f
@@ -15502,10 +15490,6 @@ packages:
     purls: []
     size: 7002
     timestamp: 1752805902938
-  - pypi: https://files.pythonhosted.org/packages/81/c4/34e93fe5f5429d7570ec1fa436f1986fb1f00c3e0f43a589fe2bbcd22c3f/pytz-2025.2-py2.py3-none-any.whl
-    name: pytz
-    version: "2025.2"
-    sha256: 5ddf76296dd8c44c26eb8f4b6f35488f3ccbf6fbbd7adee0b7262d43f0ec2f00
   - conda: https://conda.anaconda.org/conda-forge/noarch/pytz-2025.2-pyhd8ed1ab_0.conda
     sha256: 8d2a8bf110cc1fc3df6904091dead158ba3e614d8402a83e51ed3a8aa93cdeb0
     md5: bc8e3267d44011051f2eb14d22fb0960
@@ -17532,8 +17516,8 @@ packages:
     timestamp: 1755208520958
   - pypi: ./
     name: xdggs
-    version: 0.2.2.dev20+g4c55b18fa
-    sha256: 2cffbade0878c2d4828fabfd672653a428285a9a0830d7e2abcea2195d23a667
+    version: 0.2.2.dev9+ge06547acb
+    sha256: 1fa9649afbaf3d1a795c98db21c0b6d5a5e7d1023372774e69eb6db3e99a103d
     requires_dist:
       - arro3-core>=0.4.0
       - cdshealpix
@@ -17542,7 +17526,6 @@ packages:
       - matplotlib
       - pooch
       - pyproj>=3.3
-      - typing-extensions
       - xarray
     requires_python: ">=3.11"
     editable: true
