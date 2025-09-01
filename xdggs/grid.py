@@ -4,11 +4,6 @@ from typing import Any, Self, TypeVar
 
 from xdggs.itertools import groupby, identity
 
-try:
-    ExceptionGroup
-except NameError:  # pragma: no cover
-    from exceptiongroup import ExceptionGroup
-
 T = TypeVar("T")
 
 
