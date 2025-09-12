@@ -25,7 +25,7 @@ requires-python = ">=3.11"
 dependencies = [
   "xarray",
   "cdshealpix",
-  "healpix-geo>=0.0.3",
+  "healpix-geo>=0.0.6",
   "h3ronpy",
   "lonboard>=0.9.3",
   "pyproj>=3.3",
