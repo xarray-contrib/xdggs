@@ -14,11 +14,6 @@ from xarray.core.indexes import PandasIndex
 from xdggs import healpix
 from xdggs.tests import assert_exceptions_equal, geoarrow_to_shapely
 
-try:
-    ExceptionGroup
-except NameError:  # pragma: no cover
-    from exceptiongroup import ExceptionGroup
-
 
 # namespace class
 class strategies:

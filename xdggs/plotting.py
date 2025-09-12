@@ -53,7 +53,7 @@ def create_arrow_table(polygons, arr, coords=None):
     arrow_arrays = {
         "geometry": array,
         "cell_ids": ChunkedArray([Array.from_numpy(arr.coords["cell_ids"])]),
-        name: ChunkedArray([Array.from_numpy(arr.data)]),
+        name: ChunkedArray([Array.from_numpy(np.ascontiguousarray(arr.data))]),
     } | {
         coord: ChunkedArray([Array.from_numpy(arr.coords[coord].data)])
         for coord in coords

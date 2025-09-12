@@ -45,7 +45,7 @@ caption: Contributor Guide
 hidden: true
 ---
 
-Contribute to the Documentation <contributor_guide/docs>
+contributor_guide/index
 ```
 
 # Welcome to `xdggs`
