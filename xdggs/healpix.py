@@ -303,6 +303,17 @@ class HealpixInfo(DGGSInfo):
 
         return backend_func(vertices)
 
+    def zoom_to(self, cell_ids, level):
+        if self.indexing_scheme == "ring":
+            raise ValueError(
+                "Scaling does not make sense for the 'ring' scheme."
+                " Please convert to a nested scheme first."
+            )
+
+        from healpix_geo.nested import zoom_to
+
+        return zoom_to(cell_ids, self.level, level)
+
 
 @register_dggs("healpix")
 class HealpixIndex(DGGSIndex):
