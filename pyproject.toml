@@ -167,6 +167,7 @@ pyarrow = "*"
 h3ronpy = { git = "git+https://github.com/keewis/h3ronpy.git", subdirectory = "h3ronpy", rev = "version" }
 cdshealpix = { git = "git+https://github.com/cds-astro/cds-healpix-python.git" }
 astropy = { git = "git+https://github.com/astropy/astropy.git" }
+healpix-geo = { git = "git+https://github.com/eopf-dggs/healpix-geo.git" }
 
 [tool.pixi.feature.nightly.dependencies]
 lonboard = ">=0.11.1"
