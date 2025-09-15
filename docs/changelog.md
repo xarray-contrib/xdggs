@@ -12,7 +12,7 @@
 
 ## Internals
 
-- migrate to pixi ({pull}`167`)
+- migrate to `pixi` and `hatchling` ({pull}`167`)
 
 ## 0.2.1 (2025-08-05)
 
