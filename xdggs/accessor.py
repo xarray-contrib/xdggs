@@ -1,6 +1,7 @@
 import numpy.typing as npt
 import xarray as xr
 
+from xdggs import conventions
 from xdggs.grid import DGGSInfo
 from xdggs.index import DGGSIndex
 from xdggs.plotting import explore
@@ -234,3 +235,31 @@ class DGGSAccessor:
             alpha=alpha,
             coords=coords,
         )
+
+    def as_convention(self, *, convention: str):
+        """Convert the dataset to a specific convention
+
+        Parameters
+        ----------
+        convention : str
+            The name of the convention. Supported are:
+            - "easygems": ``grid_mapping`` coordinate and ``cell`` dimension and ``cell`` coordinate with a `pandas` index.
+            - "cf": ``grid_mapping`` coordinate with ``cell_index`` coordinate and ``cell`` dimension.
+            - "xdggs": ``cell_ids`` coordinate with grid metadata and a ``cells`` coordinate.
+
+        Returns
+        -------
+        obj : xr.DataArray or xr.Dataset
+            The object converted to the given dimension.
+        """
+        converters = {
+            "easygems": conventions.easygems,
+            "cf": conventions.cf,
+            "xdggs": conventions.xdggs,
+        }
+
+        converter = converters.get(convention)
+        if converter is None:
+            raise ValueError(f"unknown convention: {convention}")
+
+        return converter(self._obj)
