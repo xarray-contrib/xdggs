@@ -236,7 +236,7 @@ class DGGSAccessor:
             coords=coords,
         )
 
-    def as_convention(self, *, convention: str):
+    def as_convention(self, convention: str):
         """Convert the dataset to a specific convention
 
         Parameters
