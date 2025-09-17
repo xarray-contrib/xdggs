@@ -86,3 +86,15 @@ def cf(obj):
         return new.assign_coords({"crs": crs})
 
     return call_on_dataset(_convert, obj)
+
+
+def xdggs(obj):
+    def _convert(ds):
+        coord = ds.dggs._name
+
+        grid_name = infer_grid_name(ds.dggs.index)
+        metadata = {"grid_name": grid_name} | ds.dggs.grid_info.to_dict()
+
+        return ds.assign_coords({coord: lambda ds: ds[coord].assign_attrs(metadata)})
+
+    return call_on_dataset(_convert, obj)
