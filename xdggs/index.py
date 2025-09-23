@@ -97,7 +97,7 @@ class DGGSIndex(Index):
         ):
             return False
 
-        return self._pd_index.equals(other._pd_index, **kwargs)
+        return self._index.equals(other._index, **kwargs)
 
     def create_variables(
         self, variables: Mapping[Any, xr.Variable] | None = None
@@ -124,7 +124,7 @@ class DGGSIndex(Index):
                 "Alignment with different grid parameters is not supported."
             )
 
-        return self._replace(self._pd_index.join(other._pd_index, how=how))
+        return self._replace(self._index.join(other._index, how=how))
 
     def reindex_like(self, other: Self) -> dict[Hashable, Any]:
         if self.grid_info != other.grid_info:
@@ -132,7 +132,7 @@ class DGGSIndex(Index):
                 "Reindexing to different grid parameters is not supported."
             )
 
-        return self._pd_index.reindex_like(other._pd_index)
+        return self._index.reindex_like(other._index)
 
     def _replace(self, new_index: PandasIndex):
         raise NotImplementedError()

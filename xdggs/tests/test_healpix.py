@@ -901,7 +901,7 @@ def test_join():
 
     assert actual._grid == expected._grid
     assert actual._dim == expected._dim
-    assert np.all(actual._pd_index.index == expected._pd_index.index)
+    assert np.all(actual._index.index == expected._index.index)
 
 
 def test_join_error():
