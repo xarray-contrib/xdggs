@@ -144,7 +144,7 @@ class DGGSIndex(Index):
         return self.grid_info.cell_boundaries(self.values())
 
     def zoom_to(self, level: int) -> np.ndarray:
-        return self._grid.zoom_to(self._pd_index.index.values, level=level)
+        return self._grid.zoom_to(self.values(), level=level)
 
     @property
     def grid_info(self) -> DGGSInfo:
