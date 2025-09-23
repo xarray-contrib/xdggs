@@ -954,3 +954,33 @@ def test_reindex_like_error():
 
     with pytest.raises(ValueError, match="different grid parameters"):
         index1.reindex_like(index2)
+
+
+@pytest.mark.parametrize(
+    "variant", ("identical", "all-different", "dim", "grid-info", "values")
+)
+def test_equals(variant):
+    values = [np.array([0, 7], dtype="uint64"), np.array([0, 5, 7], dtype="uint64")]
+    dims = ["cells", "zones"]
+    grid_info = [healpix.HealpixInfo(level=1), healpix.HealpixInfo(level=6)]
+
+    dim1 = dims[0]
+    values1 = values[0]
+    grid_info1 = grid_info[0]
+
+    variants = {
+        "identical": (dims[0], values[0], grid_info[0]),
+        "all-different": (dims[1], values[1], grid_info[1]),
+        "dim": (dims[1], values[0], grid_info[0]),
+        "grid-info": (dims[0], values[0], grid_info[1]),
+        "values": (dims[0], values[1], grid_info[0]),
+    }
+    expected_results = {"identical": True}
+
+    expected = expected_results.get(variant, False)
+    dim2, values2, grid_info2 = variants[variant]
+
+    index1 = healpix.HealpixIndex(values1, dim=dim1, grid_info=grid_info1)
+    index2 = healpix.HealpixIndex(values2, dim=dim2, grid_info=grid_info2)
+
+    assert index1.equals(index2) == expected

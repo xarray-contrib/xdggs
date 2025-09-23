@@ -89,6 +89,16 @@ class DGGSIndex(Index):
     def values(self):
         return self._index.index.values
 
+    def equals(self, other: Index, **kwargs) -> bool:
+        if (
+            type(self) is not type(other)
+            or self._dim != other._dim
+            or self._grid != other._grid
+        ):
+            return False
+
+        return self._pd_index.equals(other._pd_index, **kwargs)
+
     def create_variables(
         self, variables: Mapping[Any, xr.Variable] | None = None
     ) -> dict[Hashable, xr.Variable]:
