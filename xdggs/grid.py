@@ -39,6 +39,9 @@ class DGGSInfo:
     def cell_boundaries(self, cell_ids, backend="shapely"):
         raise NotImplementedError()
 
+    def rasterize_geometry(self, geom, *, mode=None):
+        raise NotImplementedError()
+
     def zoom_to(self, cell_ids, level: int):
         raise NotImplementedError()
 
