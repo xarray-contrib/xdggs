@@ -4,13 +4,23 @@
 
 ### New features
 
-### Breaking changes
+### Bug fixes
+
+### Documentation
+
+## 0.2.2 (2025-09-15)
+
+### New features
+
+- Compute parent and child cell ids ({pull}`62`)
 
 ### Bug fixes
 
 - make sure arrays passed to `arro3` are C contiguous ({pull}`168`)
 
-### Documentation
+## Internals
+
+- migrate to `pixi` and `hatchling` ({pull}`167`)
 
 ## 0.2.1 (2025-08-05)
 

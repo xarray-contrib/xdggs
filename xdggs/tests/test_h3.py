@@ -209,6 +209,38 @@ class TestH3Info:
 
         shapely.testing.assert_geometries_equal(converter(actual), expected)
 
+    @pytest.mark.parametrize(
+        ["level", "cell_ids", "new_level", "expected"],
+        (
+            pytest.param(
+                3,
+                np.array([0x832833FFFFFFFFF, 0x832834FFFFFFFFF, 0x832835FFFFFFFFF]),
+                2,
+                np.array([0x822837FFFFFFFFF, 0x822837FFFFFFFFF, 0x822837FFFFFFFFF]),
+                id="parents",
+            ),
+            pytest.param(
+                3,
+                np.array([0x832833FFFFFFFFF, 0x832834FFFFFFFFF, 0x832835FFFFFFFFF]),
+                1,
+                np.array([0x81283FFFFFFFFFF, 0x81283FFFFFFFFFF, 0x81283FFFFFFFFFF]),
+                id="grandparents",
+            ),
+        ),
+    )
+    def test_zoom_to(self, level, cell_ids, new_level, expected):
+        grid = h3.H3Info(level=level)
+
+        actual = grid.zoom_to(cell_ids, level=new_level)
+        np.testing.assert_equal(actual, expected)
+
+    def test_zoom_to_children_not_implemented(self):
+        grid = h3.H3Info(level=3)
+        cell_ids = np.arange(3)
+
+        with pytest.raises(NotImplementedError):
+            grid.zoom_to(cell_ids, level=4)
+
 
 @pytest.mark.parametrize("level", levels)
 @pytest.mark.parametrize("dim", dims)
@@ -221,8 +253,8 @@ def test_init(cell_ids, dim, level):
     assert index._dim == dim
 
     # TODO: how do we check the index, if at all?
-    assert index._pd_index.dim == dim
-    assert np.all(index._pd_index.index.values == cell_ids)
+    assert index._index.dim == dim
+    assert np.all(index._index.index.values == cell_ids)
 
 
 @pytest.mark.parametrize("level", levels)
@@ -247,8 +279,8 @@ def test_from_variables(variable_name, variable, options):
     assert (index._dim,) == variable.dims
 
     # TODO: how do we check the index, if at all?
-    assert (index._pd_index.dim,) == variable.dims
-    assert np.all(index._pd_index.index.values == variable.data)
+    assert (index._index.dim,) == variable.dims
+    assert np.all(index._index.index.values == variable.data)
 
 
 @pytest.mark.parametrize(["old_variable", "new_variable"], variable_combinations)
@@ -267,7 +299,7 @@ def test_replace(old_variable, new_variable):
 
     assert new_index._grid == index._grid
     assert new_index._dim == index._dim
-    assert new_index._pd_index == new_pandas_index
+    assert new_index._index == new_pandas_index
 
 
 @pytest.mark.parametrize("max_width", [20, 50, 80, 120])

@@ -29,7 +29,9 @@ class DGGSAccessor:
         self._name = name
         self._index = index
 
-    def decode(self, grid_info=None, *, name="cell_ids") -> xr.Dataset | xr.DataArray:
+    def decode(
+        self, grid_info=None, *, name="cell_ids", index_options=None, **index_kwargs
+    ) -> xr.Dataset | xr.DataArray:
         """decode the DGGS cell ids
 
         Parameters
@@ -39,6 +41,8 @@ class DGGSAccessor:
             the dataset.
         name : str, default: "cell_ids"
             The name of the coordinate containing the cell ids.
+        index_options, **index_kwargs : dict, optional
+            Additional options to forward to the index.
 
         Returns
         -------
@@ -51,7 +55,12 @@ class DGGSAccessor:
         if isinstance(grid_info, dict):
             var.attrs = grid_info
 
-        return self._obj.drop_indexes(name, errors="ignore").set_xindex(name, DGGSIndex)
+        if index_options is None:
+            index_options = {}
+
+        return self._obj.drop_indexes(name, errors="ignore").set_xindex(
+            name, DGGSIndex, **(index_options | index_kwargs)
+        )
 
     @property
     def index(self) -> DGGSIndex:
@@ -184,6 +193,31 @@ class DGGSAccessor:
         return xr.DataArray(
             boundaries, coords={self._name: self.cell_ids}, dims=self.cell_ids.dims
         )
+
+    def zoom_to(self, level: int):
+        """Change the refinement level of the cell ids to `level`.
+
+        Parameters
+        ----------
+        level : int
+            The refinement level to change to. Can be smaller than the dataset's
+            level to compute parents, or bigger to fetch the children. In the
+            latter case, the array will have an additional `"children"`
+            dimension.
+
+        Returns
+        -------
+        zoomed : xr.DataArray
+            The children or parents of the current cells.
+        """
+        zoomed = self.index.zoom_to(level=level)
+
+        if zoomed.ndim == 1:
+            dims = self.cell_ids.dims
+        else:
+            dims = [*self.cell_ids.dims, "children"]
+
+        return xr.DataArray(zoomed, coords={self._name: self.cell_ids}, dims=dims)
 
     def explore(self, *, cmap="viridis", center=None, alpha=None, coords=None):
         """interactively explore the data using `lonboard`

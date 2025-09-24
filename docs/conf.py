@@ -115,6 +115,7 @@ intersphinx_mapping = {
     "healpy": ("https://healpy.readthedocs.io/en/latest", None),
     "cdshealpix-python": ("https://cds-astro.github.io/cds-healpix-python", None),
     "shapely": ("https://shapely.readthedocs.io/en/stable", None),
+    "healpix-geo": ("https://healpix-geo.readthedocs.io/en/latest", None),
 }
 
 # -- myst-nb options ---------------------------------------------------------

@@ -1,18 +1,8 @@
 import operator
 from dataclasses import dataclass
-from typing import Any, TypeVar
+from typing import Any, Self, TypeVar
 
 from xdggs.itertools import groupby, identity
-
-try:
-    from typing import Self
-except ImportError:  # pragma: no cover
-    from typing_extensions import Self
-
-try:
-    ExceptionGroup
-except NameError:  # pragma: no cover
-    from exceptiongroup import ExceptionGroup
 
 T = TypeVar("T")
 
@@ -50,6 +40,9 @@ class DGGSInfo:
         raise NotImplementedError()
 
     def rasterize_geometry(self, geom, *, mode=None):
+        raise NotImplementedError()
+
+    def zoom_to(self, cell_ids, level: int):
         raise NotImplementedError()
 
 

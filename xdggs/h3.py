@@ -1,17 +1,13 @@
 import json
 from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Any, ClassVar
-
-try:
-    from typing import Self
-except ImportError:  # pragma: no cover
-    from typing_extensions import Self
+from typing import Any, ClassVar, Self
 
 import numpy as np
 import xarray as xr
 
 try:
+    from h3ronpy import change_resolution
     from h3ronpy.vector import (
         ContainmentMode,
         cells_to_coordinates,
@@ -20,6 +16,7 @@ try:
         geometry_to_cells,
     )
 except ImportError:
+    from h3ronpy.arrow import change_resolution
     from h3ronpy.arrow.vector import (
         ContainmentMode,
         cells_to_coordinates,
@@ -27,7 +24,6 @@ except ImportError:
         coordinates_to_cells,
         geometry_to_cells,
     )
-from xarray.indexes import PandasIndex
 
 from xdggs.grid import DGGSInfo, translate_parameters
 from xdggs.index import DGGSIndex
@@ -221,6 +217,14 @@ class H3Info(DGGSInfo):
 
         return geometry_to_cells(geom, resolution=self.level)
 
+    def zoom_to(self, cell_ids, level):
+        if level > self.level:
+            raise NotImplementedError(
+                "extracting children is not supported for H3, yet."
+            )
+
+        return np.asarray(change_resolution(cell_ids, level))
+
 
 @register_dggs("h3")
 class H3Index(DGGSIndex):
@@ -228,7 +232,7 @@ class H3Index(DGGSIndex):
 
     def __init__(
         self,
-        cell_ids: Any | PandasIndex,
+        cell_ids: Any | xr.Index,
         dim: str,
         grid_info: DGGSInfo,
     ):
@@ -251,8 +255,8 @@ class H3Index(DGGSIndex):
     def grid_info(self) -> H3Info:
         return self._grid
 
-    def _replace(self, new_pd_index: PandasIndex):
-        return type(self)(new_pd_index, self._dim, self._grid)
+    def _replace(self, new_index: xr.Index):
+        return type(self)(new_index, self._dim, self._grid)
 
     def _repr_inline_(self, max_width: int):
         return f"H3Index(level={self._grid.level})"

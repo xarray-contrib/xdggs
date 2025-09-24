@@ -2,11 +2,6 @@ import pytest
 
 from xdggs.tests import matchers
 
-try:
-    ExceptionGroup
-except NameError:  # pragma: no cover
-    from exceptiongroup import ExceptionGroup
-
 
 class TestMatch:
     def test_construct_simple(self):
