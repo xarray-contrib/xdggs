@@ -4,6 +4,8 @@
 
 ### New features
 
+- Implement a healpix index based on multi-order coverage (MOC) for reduced memory footprints ({pull}`151`)
+
 ### Bug fixes
 
 ### Documentation
