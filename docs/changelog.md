@@ -7,10 +7,6 @@
 - support for alignment between indexes with the same grid parameters ({pull}`166`)
 - allow choosing a moc-based index for healpix ({pull}`153`)
 
-### Bug fixes
-
-### Documentation
-
 ## 0.2.2 (2025-09-15)
 
 ### New features
