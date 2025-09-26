@@ -1,14 +1,11 @@
 # Changelog
 
-## 0.3.0 (_unreleased_)
+## 0.3.0 (2025-09-26)
 
 ### New features
 
 - support for alignment between indexes with the same grid parameters ({pull}`166`)
-
-### Bug fixes
-
-### Documentation
+- allow choosing a moc-based index for healpix ({pull}`153`)
 
 ## 0.2.2 (2025-09-15)
 
