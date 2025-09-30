@@ -42,6 +42,9 @@ class DGGSInfo:
     def zoom_to(self, cell_ids, level: int):
         raise NotImplementedError()
 
+    def neighbours(self, cell_ids, ring=1):
+        raise NotImplementedError()
+
 
 def translate_parameters(mapping, translations):
     def translate(name, value):
