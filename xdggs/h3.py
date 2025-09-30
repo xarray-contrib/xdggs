@@ -7,14 +7,14 @@ import numpy as np
 import xarray as xr
 
 try:
-    from h3ronpy import change_resolution
+    from h3ronpy import change_resolution, grid_disk
     from h3ronpy.vector import (
         cells_to_coordinates,
         cells_to_wkb_polygons,
         coordinates_to_cells,
     )
 except ImportError:
-    from h3ronpy.arrow import change_resolution
+    from h3ronpy.arrow import change_resolution, grid_disk
     from h3ronpy.arrow.vector import (
         cells_to_coordinates,
         cells_to_wkb_polygons,
@@ -204,6 +204,11 @@ class H3Info(DGGSInfo):
             )
 
         return np.asarray(change_resolution(cell_ids, level))
+
+    def neighbours(self, cell_ids, ring=1):
+        neighbours = grid_disk(cell_ids, k=ring, flatten=False)
+
+        return neighbours
 
 
 @register_dggs("h3")
