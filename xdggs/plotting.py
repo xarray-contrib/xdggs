@@ -75,6 +75,9 @@ class MapGrid(ipywidgets.HBox):
 
 
 class MapWithSliders(ipywidgets.VBox):
+    def change_layout(self, layout):
+        return type(self)(self.children, layout=layout)
+
     @property
     def sliders(self):
         return self.children[1]
@@ -91,7 +94,12 @@ class MapWithSliders(ipywidgets.VBox):
 
         layout = ipywidgets.Layout(width="50%")
 
-        return MapGrid([self, other], layout=layout)
+        return MapGrid(
+            [
+                self.change_layout(layout),
+                other.change_layout(layout) if not isinstance(other, Map) else other,
+            ]
+        )
 
     def merge(self, layers, sliders):
         all_layers = list(self.map.layers) + list(layers)
