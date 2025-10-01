@@ -57,7 +57,7 @@ class MapContainer:
         # add any additional control widgets here
         control_box = ipywidgets.HBox([self.dimension_sliders])
 
-        return ipywidgets.VBox([self.map, control_box])
+        return MapWithSliders([self.map, control_box])
 
 
 class MapGrid(ipywidgets.HBox):
