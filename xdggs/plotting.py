@@ -1,11 +1,20 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from functools import partial
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import ipywidgets
 import numpy as np
 import xarray as xr
 from lonboard import Map
+from lonboard.models import ViewState
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    import traitlets
+    from lonboard import BaseLayer
 
 
 def on_slider_change(change, container):
@@ -25,6 +34,15 @@ def on_slider_change(change, container):
     layer.get_fill_color = colors
 
 
+def link_maps(
+    event: traitlets.utils.bunch.Bunch,
+    other_maps: Sequence[Map] = (),
+) -> None:
+    if isinstance(event.get("new"), ViewState):
+        for lonboard_map in other_maps:
+            lonboard_map.view_state = event["new"]
+
+
 @dataclass
 class MapContainer:
     """container for the map, any control widgets and the data object"""
@@ -40,6 +58,61 @@ class MapContainer:
         control_box = ipywidgets.HBox([self.dimension_sliders])
 
         return ipywidgets.VBox([self.map, control_box])
+
+
+class MapGrid(ipywidgets.HBox):
+    def __init__(self, maps: MapWithSliders | Map):
+        super().__init__(maps, layout=ipywidgets.Layout(width="100%"))
+
+    def __or__(self, other: MapGrid | MapWithSliders | Map):
+        if isinstance(other, type(self)):
+            other_widgets = other.children
+        else:
+            other_widgets = [other]
+        return type(self)(self.children + other_widgets)
+
+
+class MapWithSliders(ipywidgets.VBox):
+    @property
+    def sliders(self):
+        return self.children[1]
+
+    @property
+    def map(self):
+        return self.children[0]
+
+    def __or__(self, other: MapWithSliders | Map):
+        other_map = other.map if isinstance(other, MapWithSliders) else other
+
+        self.map.observe(partial(link_maps, other_maps=[other_map]))
+        other_map.observe(partial(link_maps, other_maps=[self.map]))
+
+        return MapGrid([self, other])
+
+    def merge(self, layers, sliders):
+        for layer in layers:
+            self.map.add_layer(layer)
+
+        slider_widgets = [self.sliders]
+        if sliders:
+            slider_widgets.append(sliders)
+
+        return type(self)(
+            [self.map, ipywidgets.HBox(slider_widgets)], layout=self.layout
+        )
+
+    def __and__(self, other: MapWithSliders | Map | BaseLayer):
+        if isinstance(other, MapWithSliders):
+            layers = other.map.layers
+            sliders = other.sliders
+        elif isinstance(other, Map):
+            layers = other.layers
+            sliders = []
+        else:
+            layers = [other]
+            sliders = []
+
+        return self.merge(layers, sliders)
 
 
 def create_arrow_table(polygons, arr, coords=None):
