@@ -57,7 +57,9 @@ class MapContainer:
         # add any additional control widgets here
         control_box = ipywidgets.HBox([self.dimension_sliders])
 
-        return MapWithSliders([self.map, control_box])
+        return MapWithSliders(
+            [self.map, control_box], layout=ipywidgets.Layout(width="100%")
+        )
 
 
 class MapGrid(ipywidgets.HBox):
@@ -87,7 +89,9 @@ class MapWithSliders(ipywidgets.VBox):
         self.map.observe(partial(link_maps, other_maps=[other_map]))
         other_map.observe(partial(link_maps, other_maps=[self.map]))
 
-        return MapGrid([self, other])
+        layout = ipywidgets.Layout(width="50%")
+
+        return MapGrid([self, other], layout=layout)
 
     def merge(self, layers, sliders):
         all_layers = list(self.map.layers) + list(layers)
