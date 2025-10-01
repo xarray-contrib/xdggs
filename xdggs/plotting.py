@@ -90,15 +90,15 @@ class MapWithSliders(ipywidgets.VBox):
         return MapGrid([self, other])
 
     def merge(self, layers, sliders):
-        for layer in layers:
-            self.map.add_layer(layer)
+        all_layers = list(self.map.layers) + list(layers)
+        new_map = Map(all_layers)
 
         slider_widgets = [self.sliders]
         if sliders:
             slider_widgets.append(sliders)
 
         return type(self)(
-            [self.map, ipywidgets.HBox(slider_widgets)], layout=self.layout
+            [new_map, ipywidgets.HBox(slider_widgets)], layout=self.layout
         )
 
     def __and__(self, other: MapWithSliders | Map | BaseLayer):
