@@ -70,7 +70,7 @@ class MapGrid(ipywidgets.HBox):
         if isinstance(other, type(self)):
             other_widgets = other.children
         else:
-            other_widgets = [other]
+            other_widgets = (other,)
         return type(self)(self.children + other_widgets)
 
 
