@@ -80,7 +80,7 @@ class MapWithSliders(ipywidgets.VBox):
 
     @property
     def sliders(self):
-        return self.children[1]
+        return self.children[1] if len(self.children) > 1 else []
 
     @property
     def map(self):
@@ -206,7 +206,7 @@ def explore(
 
     if not initial_indexers:
         # 1D data
-        return map_
+        return MapWithSliders([map_])
 
     sliders = ipywidgets.VBox(
         [
