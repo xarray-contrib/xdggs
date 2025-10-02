@@ -105,13 +105,17 @@ class MapWithSliders(ipywidgets.VBox):
         all_layers = list(self.map.layers) + list(layers)
         new_map = Map(all_layers)
 
-        slider_widgets = [self.sliders]
+        slider_widgets = []
+        if self.sliders:
+            slider_widgets.append(self.sliders)
         if sliders:
             slider_widgets.append(sliders)
 
-        return type(self)(
-            [new_map, ipywidgets.HBox(slider_widgets)], layout=self.layout
-        )
+        widgets = [new_map]
+        if slider_widgets:
+            widgets.append(ipywidgets.HBox(slider_widgets))
+
+        return type(self)(widgets, layout=self.layout)
 
     def __and__(self, other: MapWithSliders | Map | BaseLayer):
         if isinstance(other, MapWithSliders):
