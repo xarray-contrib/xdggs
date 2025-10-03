@@ -70,18 +70,35 @@ def extract_maps(obj: MapGrid | MapWithSliders | Map):
 
 
 class MapGrid(ipywidgets.GridBox):
-    def __init__(self, maps: MapWithSliders | Map, n_columns: int = 2):
+    def __init__(
+        self,
+        maps: MapWithSliders | Map = None,
+        n_columns: int = 2,
+        synchronize: bool = False,
+    ):
         self.n_columns = n_columns
+        self.synchronize = synchronize
 
         column_width = 100 // n_columns
         layout = ipywidgets.Layout(
             width="100%", grid_template_columns=f"repeat({n_columns}, {column_width}%)"
         )
 
+        if maps is None:
+            maps = []
+
+        if synchronize:
+            all_maps = [getattr(m, "map", m) for m in maps]
+            for map in all_maps:
+                other_maps = [m for m in all_maps if m is not map]
+                map.observe(partial(link_maps, other_maps=other_maps))
+
         super().__init__(maps, layout=layout)
 
     def add_map(self, map_: MapWithSliders | Map):
-        return type(self)(self.maps + (map_,), n_columns=self.n_columns)
+        return type(self)(
+            self.maps + (map_,), n_columns=self.n_columns, synchronize=self.synchronize
+        )
 
     @property
     def maps(self):
