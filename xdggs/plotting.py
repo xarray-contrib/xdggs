@@ -62,16 +62,46 @@ class MapContainer:
         )
 
 
-class MapGrid(ipywidgets.HBox):
-    def __init__(self, maps: MapWithSliders | Map):
-        super().__init__(maps, layout=ipywidgets.Layout(width="100%"))
+def extract_maps(obj: MapGrid | MapWithSliders | Map):
+    if isinstance(obj, Map):
+        return obj
+
+    return getattr(obj, "maps", (obj.map,))
+
+
+class MapGrid(ipywidgets.GridBox):
+    def __init__(self, maps: MapWithSliders | Map, n_columns: int = 2):
+        self.n_columns = n_columns
+
+        column_width = 100 // n_columns
+        layout = ipywidgets.Layout(
+            width="100%", grid_template_columns=f"repeat({n_columns}, {column_width}%)"
+        )
+
+        super().__init__(maps, layout=layout)
+
+    def add_map(self, map_: MapWithSliders | Map):
+        return type(self)(self.maps + (map_,), n_columns=self.n_columns)
+
+    @property
+    def maps(self):
+        return self.children
 
     def __or__(self, other: MapGrid | MapWithSliders | Map):
-        if isinstance(other, type(self)):
-            other_widgets = other.children
-        else:
-            other_widgets = (other,)
-        return type(self)(self.children + other_widgets)
+        other_maps = extract_maps(other)
+
+        return type(self)(
+            self.maps + other_maps,
+            n_columns=self.n_columns,
+        )
+
+    def __ror__(self, other: MapWithSliders | Map):
+        other_maps = extract_maps(other)
+
+        return type(self)(
+            self.maps + other_maps,
+            n_columns=self.n_columns,
+        )
 
 
 class MapWithSliders(ipywidgets.VBox):
@@ -87,19 +117,12 @@ class MapWithSliders(ipywidgets.VBox):
         return self.children[0]
 
     def __or__(self, other: MapWithSliders | Map):
-        other_map = other.map if isinstance(other, MapWithSliders) else other
+        [other_map] = extract_maps(other)
 
         self.map.observe(partial(link_maps, other_maps=[other_map]))
         other_map.observe(partial(link_maps, other_maps=[self.map]))
 
-        layout = ipywidgets.Layout(width="50%")
-
-        return MapGrid(
-            [
-                self.change_layout(layout),
-                other.change_layout(layout) if not isinstance(other, Map) else other,
-            ]
-        )
+        return MapGrid([self, other])
 
     def merge(self, layers, sliders):
         all_layers = list(self.map.layers) + list(layers)
