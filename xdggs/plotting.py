@@ -128,6 +128,10 @@ class MapWithSliders(ipywidgets.VBox):
     def map(self):
         return self.children[0]
 
+    @property
+    def layers(self):
+        return self.map.layers
+
     def __or__(self, other: MapWithSliders | Map):
         [other_map] = extract_maps(other)
 
@@ -153,15 +157,12 @@ class MapWithSliders(ipywidgets.VBox):
         return type(self)(widgets, layout=self.layout)
 
     def __and__(self, other: MapWithSliders | Map | BaseLayer):
-        if isinstance(other, MapWithSliders):
-            layers = other.map.layers
-            sliders = other.sliders
-        elif isinstance(other, Map):
-            layers = other.layers
-            sliders = []
-        else:
+        if isinstance(other, BaseLayer):
             layers = [other]
             sliders = []
+        else:
+            layers = other.layers
+            sliders = getattr(other, "sliders", [])
 
         return self.merge(layers, sliders)
 
