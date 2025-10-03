@@ -95,10 +95,11 @@ class MapGrid(ipywidgets.GridBox):
 
         super().__init__(maps, layout=layout)
 
+    def _replace_maps(self, maps):
+        return type(self)(maps, n_columns=self.n_columns, synchronize=self.synchronize)
+
     def add_map(self, map_: MapWithSliders | Map):
-        return type(self)(
-            self.maps + (map_,), n_columns=self.n_columns, synchronize=self.synchronize
-        )
+        return self._replace_maps(self.maps + (map_,))
 
     @property
     def maps(self):
@@ -107,18 +108,12 @@ class MapGrid(ipywidgets.GridBox):
     def __or__(self, other: MapGrid | MapWithSliders | Map):
         other_maps = extract_maps(other)
 
-        return type(self)(
-            self.maps + other_maps,
-            n_columns=self.n_columns,
-        )
+        return self._replace_maps(self.maps + other_maps)
 
     def __ror__(self, other: MapWithSliders | Map):
         other_maps = extract_maps(other)
 
-        return type(self)(
-            self.maps + other_maps,
-            n_columns=self.n_columns,
-        )
+        return self._replace_maps(self.maps + other_maps)
 
 
 class MapWithSliders(ipywidgets.VBox):
