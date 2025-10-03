@@ -7,14 +7,13 @@ from typing import TYPE_CHECKING, Any
 import ipywidgets
 import numpy as np
 import xarray as xr
-from lonboard import Map
+from lonboard import BaseLayer, Map
 from lonboard.models import ViewState
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
     import traitlets
-    from lonboard import BaseLayer
 
 
 def on_slider_change(change, container):
