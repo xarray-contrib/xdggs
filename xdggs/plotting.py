@@ -156,6 +156,9 @@ class MapWithSliders(ipywidgets.VBox):
 
         return type(self)(widgets, layout=self.layout)
 
+    def add_layer(self, layer: BaseLayer):
+        self.map.add_layer(layer)
+
     def __and__(self, other: MapWithSliders | Map | BaseLayer):
         if isinstance(other, BaseLayer):
             layers = [other]
