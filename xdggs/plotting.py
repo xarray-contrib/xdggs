@@ -140,7 +140,7 @@ class MapWithSliders(ipywidgets.VBox):
 
         return MapGrid([self, other])
 
-    def merge(self, layers, sliders):
+    def _merge(self, layers, sliders):
         all_layers = list(self.map.layers) + list(layers)
         new_map = Map(all_layers)
 
@@ -164,7 +164,7 @@ class MapWithSliders(ipywidgets.VBox):
             layers = other.layers
             sliders = getattr(other, "sliders", [])
 
-        return self.merge(layers, sliders)
+        return self._merge(layers, sliders)
 
 
 def create_arrow_table(polygons, arr, coords=None):
