@@ -248,7 +248,7 @@ def explore(
 
     if not initial_indexers:
         # 1D data
-        return MapWithSliders([map_])
+        return map_
 
     sliders = ipywidgets.VBox(
         [
