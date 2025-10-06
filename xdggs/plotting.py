@@ -120,8 +120,8 @@ class MapWithSliders(ipywidgets.VBox):
         return type(self)(self.children, layout=layout)
 
     @property
-    def sliders(self):
-        return self.children[1] if len(self.children) > 1 else []
+    def sliders(self) -> list:
+        return list(self.children[1:]) if len(self.children) > 1 else []
 
     @property
     def map(self):
