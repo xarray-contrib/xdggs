@@ -239,3 +239,29 @@ def test_explore(arr, expected_type):
     actual = arr.dggs.explore()
 
     assert isinstance(actual, expected_type)
+
+
+class TestMapWithSliders:
+    @pytest.mark.parametrize(
+        ["sliders", "expected"],
+        (
+            pytest.param([ipywidgets.VBox()], [ipywidgets.VBox()], id="sliders"),
+            pytest.param([], [], id="empty"),
+        ),
+    )
+    def test_sliders(self, sliders, expected) -> None:
+        map_ = plotting.MapWithSliders([lonboard.Map(layers=[]), *sliders])
+
+        assert map_.sliders == expected or isinstance(map_.sliders[0], ipywidgets.VBox)
+
+    def test_map(self):
+        base_map = lonboard.Map(layers=[])
+        wrapped_map = plotting.MapWithSliders([base_map, ipywidgets.HBox()])
+
+        assert wrapped_map.map is base_map
+
+    def test_layers(self):
+        base_map = lonboard.Map(layers=[])
+        wrapped_map = plotting.MapWithSliders([base_map, ipywidgets.HBox()])
+
+        assert wrapped_map.layers == base_map.layers

@@ -215,6 +215,8 @@ jupyterlab = "*"
 jupyter-resource-usage = "*"
 jupyterlab_code_formatter = "*"
 python-build = ">=1.3.0,<2"
+geopandas = ">=1.1.1,<2"
+pyinstrument = ">=5.1.1,<6"
 
 [tool.pixi.environments]
 nightly = { features = ["tests", "nightly"], no-default-feature = true }
