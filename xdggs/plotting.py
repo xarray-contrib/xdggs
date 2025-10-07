@@ -128,9 +128,9 @@ class MapWithSliders(ipywidgets.VBox):
 
         slider_widgets = []
         if self.sliders:
-            slider_widgets.append(self.sliders)
+            slider_widgets.extend(self.sliders)
         if sliders:
-            slider_widgets.append(sliders)
+            slider_widgets.extend(sliders)
 
         widgets = [new_map]
         if slider_widgets:
