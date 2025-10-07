@@ -1,19 +1,14 @@
 from __future__ import annotations
 
+import itertools
 from dataclasses import dataclass
 from functools import partial
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import ipywidgets
 import numpy as np
 import xarray as xr
 from lonboard import BaseLayer, Map
-from lonboard.models import ViewState
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
-
-    import traitlets
 
 
 def on_slider_change(change, container):
@@ -31,15 +26,6 @@ def on_slider_change(change, container):
 
     layer = container.map.layers[0]
     layer.get_fill_color = colors
-
-
-def link_maps(
-    event: traitlets.utils.bunch.Bunch,
-    other_maps: Sequence[Map] = (),
-) -> None:
-    if isinstance(event.get("new"), ViewState):
-        for lonboard_map in other_maps:
-            lonboard_map.view_state = event["new"]
 
 
 @dataclass
@@ -88,9 +74,8 @@ class MapGrid(ipywidgets.GridBox):
 
         if synchronize:
             all_maps = [getattr(m, "map", m) for m in maps]
-            for map in all_maps:
-                other_maps = [m for m in all_maps if m is not map]
-                map.observe(partial(link_maps, other_maps=other_maps))
+            for first, second in itertools.combinations(all_maps, r=2):
+                ipywidgets.jslink((first, "view_state"), (second, "view_state"))
 
         super().__init__(maps, layout=layout)
 
@@ -133,9 +118,6 @@ class MapWithSliders(ipywidgets.VBox):
 
     def __or__(self, other: MapWithSliders | Map):
         [other_map] = extract_maps(other)
-
-        self.map.observe(partial(link_maps, other_maps=[other_map]))
-        other_map.observe(partial(link_maps, other_maps=[self.map]))
 
         return MapGrid([self, other])
 
