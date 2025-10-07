@@ -120,7 +120,7 @@ class MapWithSliders(ipywidgets.VBox):
     def __or__(self, other: MapWithSliders | Map):
         [other_map] = extract_maps(other)
 
-        return MapGrid([self, other])
+        return MapGrid([self, other], synchronize=True)
 
     def _merge(self, layers, sliders):
         all_layers = list(self.map.layers) + list(layers)
