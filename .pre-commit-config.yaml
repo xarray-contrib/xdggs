@@ -34,7 +34,7 @@ repos:
     rev: v0.4.1
     hooks:
       - id: blackdoc
-        additional_dependencies: ["black==25.1.0"]
+        additional_dependencies: ["black==25.9.0"]
       - id: blackdoc-autoupdate-black
   - repo: https://github.com/citation-file-format/cffconvert
     rev: b6045d78aac9e02b039703b030588d54d53262ac
