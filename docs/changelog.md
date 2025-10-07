@@ -2,6 +2,8 @@
 
 ## 0.3.1 (_unreleased_)
 
+- support interactive facet plots and combining maps ({pull}`183`)
+
 ## 0.3.0 (2025-09-26)
 
 ### New features
