@@ -124,11 +124,11 @@ class MapWithSliders(ipywidgets.VBox):
         return list(self.children[1:]) if len(self.children) > 1 else []
 
     @property
-    def map(self):
+    def map(self) -> Map:
         return self.children[0]
 
     @property
-    def layers(self):
+    def layers(self) -> list[BaseLayer]:
         return self.map.layers
 
     def __or__(self, other: MapWithSliders | Map):
