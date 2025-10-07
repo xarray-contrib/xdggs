@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import itertools
 from dataclasses import dataclass
 from functools import partial
 from typing import Any
@@ -72,9 +71,11 @@ class MapGrid(ipywidgets.GridBox):
         if maps is None:
             maps = []
 
-        if synchronize:
+        if synchronize and maps:
             all_maps = [getattr(m, "map", m) for m in maps]
-            for first, second in itertools.combinations(all_maps, r=2):
+
+            first = all_maps[0]
+            for second in all_maps[1:]:
                 ipywidgets.jslink((first, "view_state"), (second, "view_state"))
 
         super().__init__(maps, layout=layout)
