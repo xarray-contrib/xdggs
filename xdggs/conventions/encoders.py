@@ -1,7 +1,7 @@
 import numpy as np
 import xarray as xr
 
-from xdggs.registry import register_encoder
+from xdggs.conventions.registry import register_encoder
 from xdggs.utils import GRID_REGISTRY, call_on_dataset
 
 

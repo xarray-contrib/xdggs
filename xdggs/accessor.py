@@ -30,7 +30,9 @@ class DGGSAccessor:
         self._name = name
         self._index = index
 
-    def decode(self, grid_info=None, *, name="cell_ids") -> xr.Dataset | xr.DataArray:
+    def decode(
+        self, grid_info=None, *, name="cell_ids", convention=None
+    ) -> xr.Dataset | xr.DataArray:
         """decode the DGGS cell ids
 
         Parameters
@@ -46,13 +48,21 @@ class DGGSAccessor:
         obj : xarray.DataArray or xarray.Dataset
             The object with a DGGS index on the cell id coordinate.
         """
-        var = self._obj[name]
-        if isinstance(grid_info, DGGSInfo):
-            grid_info = grid_info.to_dict()
-        if isinstance(grid_info, dict):
-            var.attrs = grid_info
+        if convention is None:
+            decoder = conventions.detect_decoder
+        elif callable(convention):
+            decoder = convention
+        else:
+            decoder = conventions.decoders.get(convention)
+            if decoder is None:
+                valid_names = conventions.decoders.keys()
+                raise ValueError(
+                    f"unknown convention: {convention}."
+                    f" Choose a known convention: {', '.join(valid_names)}"
+                )
 
-        return self._obj.drop_indexes(name, errors="ignore").set_xindex(name, DGGSIndex)
+        coords = decoder(self._obj, grid_info=grid_info, name=name)
+        return self._obj.assign_coords(coords)
 
     @property
     def index(self) -> DGGSIndex:
