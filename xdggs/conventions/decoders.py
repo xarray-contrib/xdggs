@@ -7,6 +7,9 @@ from xdggs.utils import GRID_REGISTRY, call_on_dataset
 
 @register_decoder("xdggs")
 def xdggs(obj, grid_info, name):
+    if name is None:
+        name = "cell_ids"
+
     try:
         var = obj[name]
     except IndexError:

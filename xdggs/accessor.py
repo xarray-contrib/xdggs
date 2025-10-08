@@ -31,7 +31,7 @@ class DGGSAccessor:
         self._index = index
 
     def decode(
-        self, grid_info=None, *, name="cell_ids", convention=None
+        self, grid_info=None, *, name=None, convention=None
     ) -> xr.Dataset | xr.DataArray:
         """decode the DGGS cell ids
 
