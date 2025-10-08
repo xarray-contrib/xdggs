@@ -67,6 +67,7 @@ def cf(obj):
         grid_name = infer_grid_name(ds.dggs.index)
         metadata = grid_info.to_dict() | {"grid_mapping_name": grid_name}
         metadata["refinement_level"] = metadata.pop("level")
+        metadata.pop("grid_name", None)
 
         crs = xr.Variable((), np.int8(0), metadata)
 
