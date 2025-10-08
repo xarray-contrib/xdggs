@@ -40,8 +40,22 @@ class DGGSAccessor:
         grid_info : dict or DGGSInfo, optional
             Override the grid parameters on the dataset. Useful to set attributes on
             the dataset.
-        name : str, default: "cell_ids"
-            The name of the coordinate containing the cell ids.
+        name : str, optional
+            The name of the coordinate containing the cell ids. The default name
+            depends on the convention.
+        convention : str, default: "xdggs"
+            The name of the metadata convention. Built-in conventions are:
+
+            - "xdggs": the existing xdggs convention. ``name`` points to the
+              coordinate containing cell ids, and which has all the grid
+              metadata. The ``name`` parameter defaults to ``"cell_ids"``.
+            - "cf": the upcoming CF convention standardization. While the
+              convention extension is specialized on ``healpix`` for now, the
+              decoder can work with other DGGS as well. For this, all metadata
+              lives on a variable with a ``grid_mapping_name`` attribute, and
+              the cell ids coordinate is indicated by the ``coordinates``
+              attribute on data variables / other coordinates (this can be
+              overridden by the ``name`` parameter).
 
         Returns
         -------
