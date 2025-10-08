@@ -53,9 +53,9 @@ class DGGSAccessor:
         elif callable(convention):
             decoder = convention
         else:
-            decoder = conventions.decoders.get(convention)
+            decoder = conventions._decoders.get(convention)
             if decoder is None:
-                valid_names = conventions.decoders.keys()
+                valid_names = conventions._decoders.keys()
                 raise ValueError(
                     f"unknown convention: {convention}."
                     f" Choose a known convention: {', '.join(valid_names)}"
@@ -262,13 +262,7 @@ class DGGSAccessor:
         obj : xr.DataArray or xr.Dataset
             The object converted to the given dimension.
         """
-        converters = {
-            "easygems": conventions.easygems,
-            "cf": conventions.cf,
-            "xdggs": conventions.xdggs,
-        }
-
-        converter = converters.get(convention)
+        converter = conventions._encoders.get(convention)
         if converter is None:
             raise ValueError(f"unknown convention: {convention}")
 

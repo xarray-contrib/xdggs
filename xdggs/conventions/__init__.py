@@ -1,5 +1,6 @@
 from xdggs.conventions import decoders, encoders  # noqa: F401
 from xdggs.conventions.registry import decoders as _decoders
+from xdggs.conventions.registry import encoders as _encoders  # noqa: F401
 from xdggs.conventions.registry import (
     register_decoder,
     register_encoder,
