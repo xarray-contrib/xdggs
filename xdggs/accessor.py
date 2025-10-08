@@ -31,7 +31,7 @@ class DGGSAccessor:
         self._index = index
 
     def decode(
-        self, grid_info=None, *, name=None, convention=None
+        self, grid_info=None, *, name=None, convention="xdggs"
     ) -> xr.Dataset | xr.DataArray:
         """decode the DGGS cell ids
 
@@ -48,9 +48,7 @@ class DGGSAccessor:
         obj : xarray.DataArray or xarray.Dataset
             The object with a DGGS index on the cell id coordinate.
         """
-        if convention is None:
-            decoder = conventions.detect_decoder
-        elif callable(convention):
+        if callable(convention):
             decoder = convention
         else:
             decoder = conventions._decoders.get(convention)
