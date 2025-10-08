@@ -1,7 +1,8 @@
 import numpy as np
 import xarray as xr
 
-from xdggs.utils import GRID_REGISTRY
+from xdggs.registry import register_encoder
+from xdggs.utils import GRID_REGISTRY, call_on_dataset
 
 
 def infer_grid_name(index):
@@ -12,23 +13,20 @@ def infer_grid_name(index):
     raise ValueError("unknown index")
 
 
-def call_on_dataset(func, obj, *args, kwargs=None):
-    if kwargs is None:
-        kwargs = {}
+@register_encoder("xdggs")
+def xdggs(obj):
+    def _convert(ds):
+        coord = ds.dggs._name
 
-    if isinstance(obj, xr.DataArray):
-        ds = obj._to_temp_dataset()
-    else:
-        ds = obj
+        grid_name = infer_grid_name(ds.dggs.index)
+        metadata = {"grid_name": grid_name} | ds.dggs.grid_info.to_dict()
 
-    result = func(ds, *args, **kwargs)
+        return ds.assign_coords({coord: lambda ds: ds[coord].assign_attrs(metadata)})
 
-    if isinstance(obj, xr.DataArray):
-        return xr.DataArray._from_temp_dataset(result, name=obj.name)
-    else:
-        return result
+    return call_on_dataset(_convert, obj)
 
 
+@register_encoder("easygems")
 def easygems(obj):
     orders = {"nested": "nest", "ring": "ring"}
 
@@ -59,6 +57,7 @@ def easygems(obj):
     return call_on_dataset(_convert, obj)
 
 
+@register_encoder("cf")
 def cf(obj):
     def _convert(ds):
         grid_info = ds.dggs.grid_info
@@ -84,17 +83,5 @@ def cf(obj):
         new[coord].attrs |= coord_attrs
 
         return new.assign_coords({"crs": crs})
-
-    return call_on_dataset(_convert, obj)
-
-
-def xdggs(obj):
-    def _convert(ds):
-        coord = ds.dggs._name
-
-        grid_name = infer_grid_name(ds.dggs.index)
-        metadata = {"grid_name": grid_name} | ds.dggs.grid_info.to_dict()
-
-        return ds.assign_coords({coord: lambda ds: ds[coord].assign_attrs(metadata)})
 
     return call_on_dataset(_convert, obj)
