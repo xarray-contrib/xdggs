@@ -24,7 +24,7 @@ def register_decoder(name):
 
 def register_encoder(name):
     def register(func):
-        if name in decoders:
+        if name in encoders:
             warnings.warn(
                 DecoderWarning(f"Overwriting existing convention encoder {name!r}.")
             )
