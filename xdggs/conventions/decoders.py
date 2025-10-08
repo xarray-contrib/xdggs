@@ -2,7 +2,7 @@ import xarray as xr
 
 from xdggs.conventions.registry import register_decoder
 from xdggs.grid import DGGSInfo
-from xdggs.utils import GRID_REGISTRY
+from xdggs.utils import GRID_REGISTRY, call_on_dataset
 
 
 @register_decoder("xdggs")
@@ -31,3 +31,44 @@ def xdggs(obj, grid_info, name):
     index = index_cls.from_variables({name: var}, options=grid_info)
 
     return xr.Coordinates({name: var.variable}, indexes={name: index})
+
+
+@register_decoder("cf")
+def cf(obj, grid_info, name):
+    vars_ = call_on_dataset(
+        lambda ds: ds.variables,
+        obj,
+    )
+    grid_mapping_vars = {
+        name: var for name, var in vars_.items() if "grid_mapping_name" in var.attrs
+    }
+    if len(grid_mapping_vars) != 1:
+        raise ValueError("needs exactly one grid mapping variable for now")
+    crs = next(iter(grid_mapping_vars.values()))
+
+    if name is None:
+        coords = list(
+            dict.fromkeys(
+                var.attrs["coordinates"]
+                for name, var in vars_.items()
+                if "coordinates" in var.attrs
+            )
+        )
+        name = coords[0]
+    var = vars_[name].copy(deep=False)
+    var.attrs.pop("standard_name", None)
+    var.attrs.pop("units", None)
+
+    translations = {"refinement_level": "level"}
+    grid_info = {
+        translations.get(name, name): value for name, value in crs.attrs.items()
+    }
+
+    grid_name = grid_info.pop("grid_mapping_name")
+    if grid_name not in GRID_REGISTRY:
+        raise ValueError(f"unknown grid name: {grid_name}")
+    index_cls = GRID_REGISTRY[grid_name]
+
+    index = index_cls.from_variables({name: var}, options=grid_info)
+
+    return xr.Coordinates({name: var}, indexes={name: index})
