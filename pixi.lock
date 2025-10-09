@@ -2388,6 +2388,8 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/linux-64/glog-0.7.1-hbabe93e_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/h11-0.16.0-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/h2-4.3.0-pyhcf101f3_0.conda
+        - conda: https://conda.anaconda.org/conda-forge/linux-64/h3-4.3.0-h3e4d06c_1.conda
+        - conda: https://conda.anaconda.org/conda-forge/linux-64/h3-py-4.3.0-py313h5d5ffb9_2.conda
         - conda: https://conda.anaconda.org/conda-forge/linux-64/h3ronpy-0.22.0-py313h920b4c0_1.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/h5netcdf-1.6.4-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/linux-64/h5py-3.14.0-nompi_py313h253c126_101.conda
@@ -2684,6 +2686,8 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/glog-0.7.1-heb240a5_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/h11-0.16.0-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/h2-4.3.0-pyhcf101f3_0.conda
+        - conda: https://conda.anaconda.org/conda-forge/osx-arm64/h3-4.3.0-hc039f4b_1.conda
+        - conda: https://conda.anaconda.org/conda-forge/osx-arm64/h3-py-4.3.0-py313hab38a8b_2.conda
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/h3ronpy-0.22.0-py313hdde674f_1.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/h5netcdf-1.6.4-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/h5py-3.14.0-nompi_py313ha10fd41_101.conda
@@ -2967,6 +2971,8 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/win-64/geos-3.13.1-h9ea8674_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/h11-0.16.0-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/h2-4.3.0-pyhcf101f3_0.conda
+        - conda: https://conda.anaconda.org/conda-forge/win-64/h3-4.3.0-h2854ae6_1.conda
+        - conda: https://conda.anaconda.org/conda-forge/win-64/h3-py-4.3.0-py313h927ade5_2.conda
         - conda: https://conda.anaconda.org/conda-forge/win-64/h3ronpy-0.22.0-py313hf3b5b86_1.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/h5netcdf-1.6.4-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/win-64/h5py-3.14.0-nompi_py313hf7f959b_101.conda
@@ -4039,16 +4045,16 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/linux-64/zlib-1.3.1-hb9d3cd8_2.conda
         - conda: https://conda.anaconda.org/conda-forge/linux-64/zstandard-0.25.0-py313h54dd161_0.conda
         - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.7-hb8e6e7a_2.conda
-        - pypi: git+https://github.com/astropy/astropy.git#0519229eb0f0a1ff3fdbe4c5a0565c33b101bd9f
-        - pypi: https://files.pythonhosted.org/packages/03/8c/a556b71e4603d6156814da968b7cefa9bd882e59dc691168584418f4de77/astropy_iers_data-0.2025.9.15.0.37.0-py3-none-any.whl
-        - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#54d3467b28a87cdfdb696aacbd225ae1db81def1
+        - pypi: git+https://github.com/astropy/astropy.git#0bc65a152cbc43f8e9f16ac7671f6b8e22fa755b
+        - pypi: https://files.pythonhosted.org/packages/c5/38/be921eaf8fc67333fd2c2657ea965103ccc4050c29a66d5fd5f3db881c0f/astropy_iers_data-0.2025.10.6.0.35.25-py3-none-any.whl
+        - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#1d34a649bfa7270562a5def7322abfdd0f6c9e4e
         - pypi: git+https://github.com/keewis/h3ronpy.git?subdirectory=h3ronpy&rev=version#98fa563245092e2578cc6f1f0d860a9f511475f1
-        - pypi: git+https://github.com/eopf-dggs/healpix-geo.git#7ad4a7652363b5f9b97e143434de4680f5dfd93f
-        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/3.0.0.dev0+2396.gcc40732889/pandas-3.0.0.dev0+2396.gcc40732889-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
+        - pypi: git+https://github.com/eopf-dggs/healpix-geo.git#2c79f767ec4b9fe9634574c0f7f5857fa12230c6
+        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/3.0.0.dev0+2520.g10102e611d/pandas-3.0.0.dev0+2520.g10102e611d-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
         - pypi: https://files.pythonhosted.org/packages/e5/e0/050018d855d26d3c0b4a7d1b2ed692be758ce276d8289e2a2b44ba1014a5/pyerfa-2.0.1.5-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
         - pypi: https://files.pythonhosted.org/packages/04/24/b7721e4845c2f162d26f50521b825fb061bc0a5afcf9a386840f23ea19fa/PyYAML-6.0.2-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
         - pypi: https://files.pythonhosted.org/packages/5c/23/c7abc0ca0a1526a0774eca151daeb8de62ec457e77262b66b359c3c7679e/tzdata-2025.2-py2.py3-none-any.whl
-        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/xarray/2025.9.1.dev19+g4394792ab/xarray-2025.9.1.dev19+g4394792ab-py3-none-any.whl
+        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/xarray/2025.9.1.dev47+gc703ce4ef/xarray-2025.9.1.dev47+gc703ce4ef-py3-none-any.whl
         - pypi: ./
       osx-arm64:
         - conda: https://conda.anaconda.org/conda-forge/noarch/anywidget-0.9.18-pyhd8ed1ab_0.conda
@@ -4248,16 +4254,16 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zlib-1.3.1-h8359307_2.conda
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstandard-0.25.0-py313h9734d34_0.conda
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.7-h6491c7d_2.conda
-        - pypi: git+https://github.com/astropy/astropy.git#0519229eb0f0a1ff3fdbe4c5a0565c33b101bd9f
-        - pypi: https://files.pythonhosted.org/packages/03/8c/a556b71e4603d6156814da968b7cefa9bd882e59dc691168584418f4de77/astropy_iers_data-0.2025.9.15.0.37.0-py3-none-any.whl
-        - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#54d3467b28a87cdfdb696aacbd225ae1db81def1
+        - pypi: git+https://github.com/astropy/astropy.git#0bc65a152cbc43f8e9f16ac7671f6b8e22fa755b
+        - pypi: https://files.pythonhosted.org/packages/c5/38/be921eaf8fc67333fd2c2657ea965103ccc4050c29a66d5fd5f3db881c0f/astropy_iers_data-0.2025.10.6.0.35.25-py3-none-any.whl
+        - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#1d34a649bfa7270562a5def7322abfdd0f6c9e4e
         - pypi: git+https://github.com/keewis/h3ronpy.git?subdirectory=h3ronpy&rev=version#98fa563245092e2578cc6f1f0d860a9f511475f1
-        - pypi: git+https://github.com/eopf-dggs/healpix-geo.git#7ad4a7652363b5f9b97e143434de4680f5dfd93f
-        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/3.0.0.dev0+2396.gcc40732889/pandas-3.0.0.dev0+2396.gcc40732889-cp313-cp313-macosx_11_0_arm64.whl
+        - pypi: git+https://github.com/eopf-dggs/healpix-geo.git#2c79f767ec4b9fe9634574c0f7f5857fa12230c6
+        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/3.0.0.dev0+2520.g10102e611d/pandas-3.0.0.dev0+2520.g10102e611d-cp313-cp313-macosx_11_0_arm64.whl
         - pypi: https://files.pythonhosted.org/packages/11/4a/31a363370478b63c6289a34743f2ba2d3ae1bd8223e004d18ab28fb92385/pyerfa-2.0.1.5-cp39-abi3-macosx_11_0_arm64.whl
         - pypi: https://files.pythonhosted.org/packages/45/9f/3b1c20a0b7a3200524eb0076cc027a970d320bd3a6592873c85c92a08731/PyYAML-6.0.2-cp313-cp313-macosx_11_0_arm64.whl
         - pypi: https://files.pythonhosted.org/packages/5c/23/c7abc0ca0a1526a0774eca151daeb8de62ec457e77262b66b359c3c7679e/tzdata-2025.2-py2.py3-none-any.whl
-        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/xarray/2025.9.1.dev19+g4394792ab/xarray-2025.9.1.dev19+g4394792ab-py3-none-any.whl
+        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/xarray/2025.9.1.dev47+gc703ce4ef/xarray-2025.9.1.dev47+gc703ce4ef-py3-none-any.whl
         - pypi: ./
       win-64:
         - conda: https://conda.anaconda.org/conda-forge/win-64/_openmp_mutex-4.5-2_gnu.conda
@@ -4449,16 +4455,16 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/win-64/zlib-1.3.1-h2466b09_2.conda
         - conda: https://conda.anaconda.org/conda-forge/win-64/zstandard-0.25.0-py313h5fd188c_0.conda
         - conda: https://conda.anaconda.org/conda-forge/win-64/zstd-1.5.7-hbeecb71_2.conda
-        - pypi: git+https://github.com/astropy/astropy.git#0519229eb0f0a1ff3fdbe4c5a0565c33b101bd9f
-        - pypi: https://files.pythonhosted.org/packages/03/8c/a556b71e4603d6156814da968b7cefa9bd882e59dc691168584418f4de77/astropy_iers_data-0.2025.9.15.0.37.0-py3-none-any.whl
-        - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#54d3467b28a87cdfdb696aacbd225ae1db81def1
+        - pypi: git+https://github.com/astropy/astropy.git#0bc65a152cbc43f8e9f16ac7671f6b8e22fa755b
+        - pypi: https://files.pythonhosted.org/packages/c5/38/be921eaf8fc67333fd2c2657ea965103ccc4050c29a66d5fd5f3db881c0f/astropy_iers_data-0.2025.10.6.0.35.25-py3-none-any.whl
+        - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#1d34a649bfa7270562a5def7322abfdd0f6c9e4e
         - pypi: git+https://github.com/keewis/h3ronpy.git?subdirectory=h3ronpy&rev=version#98fa563245092e2578cc6f1f0d860a9f511475f1
-        - pypi: git+https://github.com/eopf-dggs/healpix-geo.git#7ad4a7652363b5f9b97e143434de4680f5dfd93f
-        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/3.0.0.dev0+2396.gcc40732889/pandas-3.0.0.dev0+2396.gcc40732889-cp313-cp313-win_amd64.whl
+        - pypi: git+https://github.com/eopf-dggs/healpix-geo.git#2c79f767ec4b9fe9634574c0f7f5857fa12230c6
+        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/3.0.0.dev0+2520.g10102e611d/pandas-3.0.0.dev0+2520.g10102e611d-cp313-cp313-win_amd64.whl
         - pypi: https://files.pythonhosted.org/packages/b4/11/97233cf23ad5411ac6f13b1d6ee3888f90ace4f974d9bf9db887aa428912/pyerfa-2.0.1.5-cp39-abi3-win_amd64.whl
         - pypi: https://files.pythonhosted.org/packages/fa/de/02b54f42487e3d3c6efb3f89428677074ca7bf43aae402517bc7cca949f3/PyYAML-6.0.2-cp313-cp313-win_amd64.whl
         - pypi: https://files.pythonhosted.org/packages/5c/23/c7abc0ca0a1526a0774eca151daeb8de62ec457e77262b66b359c3c7679e/tzdata-2025.2-py2.py3-none-any.whl
-        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/xarray/2025.9.1.dev19+g4394792ab/xarray-2025.9.1.dev19+g4394792ab-py3-none-any.whl
+        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/xarray/2025.9.1.dev47+gc703ce4ef/xarray-2025.9.1.dev47+gc703ce4ef-py3-none-any.whl
         - pypi: ./
 packages:
   - conda: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
@@ -5099,35 +5105,35 @@ packages:
       - pkg:pypi/arrow?source=hash-mapping
     size: 99951
     timestamp: 1733584345583
-  - pypi: git+https://github.com/astropy/astropy.git#0519229eb0f0a1ff3fdbe4c5a0565c33b101bd9f
+  - pypi: git+https://github.com/astropy/astropy.git#0bc65a152cbc43f8e9f16ac7671f6b8e22fa755b
     name: astropy
-    version: 7.2.dev538+g0519229eb
+    version: 7.2.dev635+g0bc65a152
     requires_dist:
       - numpy>=1.24
       - pyerfa>=2.0.1.1
-      - astropy-iers-data>=0.2025.9.1.0.42.11
+      - astropy-iers-data>=0.2025.9.29.0.35.48
       - pyyaml>=6.0.0
       - packaging>=22.0.0
       - scipy>=1.9.2 ; extra == 'recommended'
       - matplotlib>=3.8.0 ; extra == 'recommended'
+      - narwhals>=1.42.0 ; extra == 'recommended'
       - ipython>=8.0.0 ; extra == 'ipython'
       - astropy[ipython] ; extra == 'jupyter'
       - ipywidgets>=7.7.3 ; extra == 'jupyter'
       - ipykernel>=6.16.0 ; extra == 'jupyter'
       - ipydatagrid>=1.1.13 ; extra == 'jupyter'
       - jupyter-core>=4.11.2 ; extra == 'jupyter'
-      - pandas>=1.5.0 ; extra == 'jupyter'
+      - pandas>=2.0.0 ; extra == 'jupyter'
       - astropy[recommended] ; extra == 'all'
       - astropy[ipython] ; extra == 'all'
       - astropy[jupyter] ; extra == 'all'
       - certifi>=2022.6.15.1 ; extra == 'all'
-      - dask[array]>=2022.5.1 ; extra == 'all'
+      - dask[dataframe]>=2024.8.0 ; extra == 'all'
       - h5py>=3.9.0 ; extra == 'all'
-      - pyarrow>=10.0.1 ; extra == 'all'
+      - pyarrow>=14.0.2 ; extra == 'all'
       - beautifulsoup4>=4.9.3 ; extra == 'all'
       - html5lib>=1.1 ; extra == 'all'
       - bleach>=3.2.1 ; extra == 'all'
-      - pandas>=2.0 ; extra == 'all'
       - sortedcontainers>=1.5.7 ; extra == 'all'
       - pytz>=2016.10 ; extra == 'all'
       - jplephem>=2.15 ; extra == 'all'
@@ -5153,7 +5159,8 @@ packages:
       - sgp4>=2.3 ; extra == 'test-all'
       - array-api-strict>=1.0 ; extra == 'test-all'
       - array-api-strict<2.4 ; python_full_version < '3.12' and extra == 'test-all'
-      - pandas-stubs>=2.0 ; extra == 'typing'
+      - pandas-stubs>=2.0.0 ; extra == 'typing'
+      - narwhals>=1.42.0 ; extra == 'typing'
       - astropy[recommended] ; extra == 'docs'
       - sphinx>=8.2.0 ; extra == 'docs'
       - sphinx-astropy[confv2]>=1.9.1 ; extra == 'docs'
@@ -5372,10 +5379,10 @@ packages:
       - pkg:pypi/astropy?source=hash-mapping
     size: 9464202
     timestamp: 1757120315355
-  - pypi: https://files.pythonhosted.org/packages/03/8c/a556b71e4603d6156814da968b7cefa9bd882e59dc691168584418f4de77/astropy_iers_data-0.2025.9.15.0.37.0-py3-none-any.whl
+  - pypi: https://files.pythonhosted.org/packages/c5/38/be921eaf8fc67333fd2c2657ea965103ccc4050c29a66d5fd5f3db881c0f/astropy_iers_data-0.2025.10.6.0.35.25-py3-none-any.whl
     name: astropy-iers-data
-    version: 0.2025.9.15.0.37.0
-    sha256: 4ea19813150f2d6dfb0257c5e96d14ae9eac6e5a80af27ec79e3aaef8aadfa93
+    version: 0.2025.10.6.0.35.25
+    sha256: b6f572ee3ae4e02e4ae377229b533ed89d6f8eb027ae31e380cbc8096735ba49
     requires_dist:
       - pytest ; extra == 'docs'
       - hypothesis ; extra == 'test'
@@ -6671,7 +6678,7 @@ packages:
       - pkg:pypi/cached-property?source=hash-mapping
     size: 11065
     timestamp: 1615209567874
-  - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#54d3467b28a87cdfdb696aacbd225ae1db81def1
+  - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#1d34a649bfa7270562a5def7322abfdd0f6c9e4e
     name: cdshealpix
     version: 0.7.1
     requires_dist:
@@ -8125,6 +8132,98 @@ packages:
       - pkg:pypi/h2?source=compressed-mapping
     size: 95967
     timestamp: 1756364871835
+  - conda: https://conda.anaconda.org/conda-forge/linux-64/h3-4.3.0-h3e4d06c_1.conda
+    sha256: b9f46e0f9a24c321b065bc0d2563604a1b0fb7e02a06105e264411f74010a54e
+    md5: 7a9b1ee49ab4ac8ee2a0bda9e9f666d5
+    depends:
+      - libstdcxx >=13
+      - libgcc >=13
+      - __glibc >=2.17,<3.0.a0
+    license: Apache-2.0
+    license_family: APACHE
+    purls: []
+    size: 132463
+    timestamp: 1751353376725
+  - conda: https://conda.anaconda.org/conda-forge/osx-arm64/h3-4.3.0-hc039f4b_1.conda
+    sha256: 088306a565263030bb5c281a6c39a75a98c3db3a846ecbe2697a17d9119d688f
+    md5: cf54e9f5b7d0abd3060b10b2123be427
+    depends:
+      - libcxx >=18
+      - __osx >=11.0
+    license: Apache-2.0
+    license_family: APACHE
+    purls: []
+    size: 129453
+    timestamp: 1751353401084
+  - conda: https://conda.anaconda.org/conda-forge/win-64/h3-4.3.0-h2854ae6_1.conda
+    sha256: 3f1d375d6dcd95cb9cf34cc7aa638c63f7fbcc23362c1aa80e7a0a1c578dff45
+    md5: 3fd116e60190e3940f3dcae5a21a9fd0
+    depends:
+      - vc >=14.3,<15
+      - vc14_runtime >=14.44.35208
+      - ucrt >=10.0.20348.0
+      - vc >=14.3,<15
+      - vc14_runtime >=14.44.35208
+      - ucrt >=10.0.20348.0
+    license: Apache-2.0
+    license_family: APACHE
+    purls: []
+    size: 125555
+    timestamp: 1751353416300
+  - conda: https://conda.anaconda.org/conda-forge/linux-64/h3-py-4.3.0-py313h5d5ffb9_2.conda
+    sha256: 872fc4bea50c561302cfdf2186199818744dec1111c451d432d6765a8f599c68
+    md5: e82220be2170a7c6cabec5d84a980ed3
+    depends:
+      - python
+      - numpy
+      - h3 ==4.3.0
+      - __glibc >=2.17,<3.0.a0
+      - libstdcxx >=14
+      - libgcc >=14
+      - python_abi 3.13.* *_cp313
+    license: Apache-2.0
+    license_family: APACHE
+    purls:
+      - pkg:pypi/h3?source=hash-mapping
+    size: 369574
+    timestamp: 1756762902201
+  - conda: https://conda.anaconda.org/conda-forge/osx-arm64/h3-py-4.3.0-py313hab38a8b_2.conda
+    sha256: 43bc37ba2a97d62a8793a6489894b5d0f6b3424aed8775a99d09824459241867
+    md5: 9df00ebbf3438029049698ff234b5c13
+    depends:
+      - python
+      - numpy
+      - h3 ==4.3.0
+      - libcxx >=19
+      - __osx >=11.0
+      - python 3.13.* *_cp313
+      - python_abi 3.13.* *_cp313
+    license: Apache-2.0
+    license_family: APACHE
+    purls:
+      - pkg:pypi/h3?source=hash-mapping
+    size: 292854
+    timestamp: 1756762925790
+  - conda: https://conda.anaconda.org/conda-forge/win-64/h3-py-4.3.0-py313h927ade5_2.conda
+    sha256: 99ce3204be895392d16d634bfc82c7b7a7256c61f5e33a10c44b1d641f63ce48
+    md5: f840d9c02f75adaed96f89ac922916d1
+    depends:
+      - python
+      - numpy
+      - h3 ==4.3.0
+      - vc >=14.3,<15
+      - vc14_runtime >=14.44.35208
+      - ucrt >=10.0.20348.0
+      - vc >=14.3,<15
+      - vc14_runtime >=14.44.35208
+      - ucrt >=10.0.20348.0
+      - python_abi 3.13.* *_cp313
+    license: Apache-2.0
+    license_family: APACHE
+    purls:
+      - pkg:pypi/h3?source=hash-mapping
+    size: 303912
+    timestamp: 1756762936753
   - pypi: git+https://github.com/keewis/h3ronpy.git?subdirectory=h3ronpy&rev=version#98fa563245092e2578cc6f1f0d860a9f511475f1
     name: h3ronpy
     version: 0.22.0
@@ -8590,7 +8689,7 @@ packages:
     purls: []
     size: 2031491
     timestamp: 1753357255237
-  - pypi: git+https://github.com/eopf-dggs/healpix-geo.git#7ad4a7652363b5f9b97e143434de4680f5dfd93f
+  - pypi: git+https://github.com/eopf-dggs/healpix-geo.git#2c79f767ec4b9fe9634574c0f7f5857fa12230c6
     name: healpix-geo
     version: 0.0.7
     requires_dist:
@@ -13294,16 +13393,16 @@ packages:
       - pkg:pypi/packaging?source=hash-mapping
     size: 62477
     timestamp: 1745345660407
-  - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/3.0.0.dev0+2396.gcc40732889/pandas-3.0.0.dev0+2396.gcc40732889-cp313-cp313-macosx_11_0_arm64.whl
+  - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/3.0.0.dev0+2520.g10102e611d/pandas-3.0.0.dev0+2520.g10102e611d-cp313-cp313-macosx_11_0_arm64.whl
     name: pandas
-    version: 3.0.0.dev0+2396.gcc40732889
+    version: 3.0.0.dev0+2520.g10102e611d
     requires_dist:
       - numpy>=1.26.0
       - python-dateutil>=2.8.2
       - tzdata>=2023.3
       - hypothesis>=6.116.0 ; extra == 'test'
-      - pytest>=7.3.2 ; extra == 'test'
-      - pytest-xdist>=3.4.0 ; extra == 'test'
+      - pytest>=8.3.4 ; extra == 'test'
+      - pytest-xdist>=3.6.1 ; extra == 'test'
       - pyarrow>=13.0.0 ; extra == 'pyarrow'
       - bottleneck>=1.4.2 ; extra == 'performance'
       - numba>=0.60.0 ; extra == 'performance'
@@ -13365,8 +13464,8 @@ packages:
       - pymysql>=1.1.1 ; extra == 'all'
       - pyqt5>=5.15.9 ; extra == 'all'
       - pyreadstat>=1.2.8 ; extra == 'all'
-      - pytest>=7.3.2 ; extra == 'all'
-      - pytest-xdist>=3.4.0 ; extra == 'all'
+      - pytest>=8.3.4 ; extra == 'all'
+      - pytest-xdist>=3.6.1 ; extra == 'all'
       - python-calamine>=0.3.0 ; extra == 'all'
       - pytz>=2024.2 ; extra == 'all'
       - pyxlsb>=1.0.10 ; extra == 'all'
@@ -13381,16 +13480,16 @@ packages:
       - xlsxwriter>=3.2.0 ; extra == 'all'
       - zstandard>=0.23.0 ; extra == 'all'
     requires_python: ">=3.11"
-  - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/3.0.0.dev0+2396.gcc40732889/pandas-3.0.0.dev0+2396.gcc40732889-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
+  - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/3.0.0.dev0+2520.g10102e611d/pandas-3.0.0.dev0+2520.g10102e611d-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
     name: pandas
-    version: 3.0.0.dev0+2396.gcc40732889
+    version: 3.0.0.dev0+2520.g10102e611d
     requires_dist:
       - numpy>=1.26.0
       - python-dateutil>=2.8.2
       - tzdata>=2023.3
       - hypothesis>=6.116.0 ; extra == 'test'
-      - pytest>=7.3.2 ; extra == 'test'
-      - pytest-xdist>=3.4.0 ; extra == 'test'
+      - pytest>=8.3.4 ; extra == 'test'
+      - pytest-xdist>=3.6.1 ; extra == 'test'
       - pyarrow>=13.0.0 ; extra == 'pyarrow'
       - bottleneck>=1.4.2 ; extra == 'performance'
       - numba>=0.60.0 ; extra == 'performance'
@@ -13452,8 +13551,8 @@ packages:
       - pymysql>=1.1.1 ; extra == 'all'
       - pyqt5>=5.15.9 ; extra == 'all'
       - pyreadstat>=1.2.8 ; extra == 'all'
-      - pytest>=7.3.2 ; extra == 'all'
-      - pytest-xdist>=3.4.0 ; extra == 'all'
+      - pytest>=8.3.4 ; extra == 'all'
+      - pytest-xdist>=3.6.1 ; extra == 'all'
       - python-calamine>=0.3.0 ; extra == 'all'
       - pytz>=2024.2 ; extra == 'all'
       - pyxlsb>=1.0.10 ; extra == 'all'
@@ -13468,16 +13567,16 @@ packages:
       - xlsxwriter>=3.2.0 ; extra == 'all'
       - zstandard>=0.23.0 ; extra == 'all'
     requires_python: ">=3.11"
-  - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/3.0.0.dev0+2396.gcc40732889/pandas-3.0.0.dev0+2396.gcc40732889-cp313-cp313-win_amd64.whl
+  - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/pandas/3.0.0.dev0+2520.g10102e611d/pandas-3.0.0.dev0+2520.g10102e611d-cp313-cp313-win_amd64.whl
     name: pandas
-    version: 3.0.0.dev0+2396.gcc40732889
+    version: 3.0.0.dev0+2520.g10102e611d
     requires_dist:
       - numpy>=1.26.0
       - python-dateutil>=2.8.2
       - tzdata>=2023.3
       - hypothesis>=6.116.0 ; extra == 'test'
-      - pytest>=7.3.2 ; extra == 'test'
-      - pytest-xdist>=3.4.0 ; extra == 'test'
+      - pytest>=8.3.4 ; extra == 'test'
+      - pytest-xdist>=3.6.1 ; extra == 'test'
       - pyarrow>=13.0.0 ; extra == 'pyarrow'
       - bottleneck>=1.4.2 ; extra == 'performance'
       - numba>=0.60.0 ; extra == 'performance'
@@ -13539,8 +13638,8 @@ packages:
       - pymysql>=1.1.1 ; extra == 'all'
       - pyqt5>=5.15.9 ; extra == 'all'
       - pyreadstat>=1.2.8 ; extra == 'all'
-      - pytest>=7.3.2 ; extra == 'all'
-      - pytest-xdist>=3.4.0 ; extra == 'all'
+      - pytest>=8.3.4 ; extra == 'all'
+      - pytest-xdist>=3.6.1 ; extra == 'all'
       - python-calamine>=0.3.0 ; extra == 'all'
       - pytz>=2024.2 ; extra == 'all'
       - pyxlsb>=1.0.10 ; extra == 'all'
@@ -17562,9 +17661,9 @@ packages:
       - pkg:pypi/wrapt?source=hash-mapping
     size: 63385
     timestamp: 1756851987645
-  - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/xarray/2025.9.1.dev19+g4394792ab/xarray-2025.9.1.dev19+g4394792ab-py3-none-any.whl
+  - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/xarray/2025.9.1.dev47+gc703ce4ef/xarray-2025.9.1.dev47+gc703ce4ef-py3-none-any.whl
     name: xarray
-    version: 2025.9.1.dev19+g4394792ab
+    version: 2025.9.1.dev47+gc703ce4ef
     requires_dist:
       - numpy>=1.26
       - packaging>=24.1
@@ -17572,10 +17671,9 @@ packages:
       - scipy>=1.13 ; extra == 'accel'
       - bottleneck ; extra == 'accel'
       - numbagg>=0.8 ; extra == 'accel'
-      - numba>=0.59 ; extra == 'accel'
+      - numba>=0.62 ; extra == 'accel'
       - flox>=0.9 ; extra == 'accel'
       - opt-einsum ; extra == 'accel'
-      - numpy<2.3 ; extra == 'accel'
       - xarray[accel,etc,io,parallel,viz] ; extra == 'complete'
       - netcdf4>=1.6.0 ; extra == 'io'
       - h5netcdf ; extra == 'io'
@@ -17646,8 +17744,8 @@ packages:
     timestamp: 1756981236899
   - pypi: ./
     name: xdggs
-    version: 0.2.3.dev0+g6e574369a.d20250915
-    sha256: 25ee4943bca97abde42e762b8dc1ff5ab22160b173c644dd9dcdbc85eaede470
+    version: 0.2.3.dev15+g45c7927db.d20251009
+    sha256: 3468e2264737d22c8b940aebdb85ce9d909ba407e3c6870f3f1fd323539294db
     requires_dist:
       - arro3-core>=0.4.0
       - cdshealpix
