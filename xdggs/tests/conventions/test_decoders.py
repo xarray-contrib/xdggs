@@ -32,14 +32,19 @@ def generate_h3_cells(level):
     return change_resolution(base_cells, level)
 
 
-def create_coordinate(grid_name, dim, level, **options):
+def generate_cell_ids(grid_name, level):
     generators = {
         "healpix": lambda level: np.arange(12 * 4**level),
         "h3": generate_h3_cells,
     }
 
-    cell_ids = generators[grid_name](level)
+    return generators[grid_name](level)
+
+
+def create_coordinate(grid_name, dim, level, **options):
+    cell_ids = generate_cell_ids(grid_name, level)
     grid_info = {"grid_name": grid_name, "level": level, **options}
+
     return xr.Variable(dim, cell_ids, grid_info)
 
 
