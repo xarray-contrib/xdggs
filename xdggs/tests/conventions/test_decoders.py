@@ -107,3 +107,75 @@ def test_xdggs(obj_type, coord_name, coord, grid_info, name):
     )
     actual = decoders.xdggs(obj, grid_info, name, index_options={})
     xr.testing.assert_identical(actual.to_dataset(), expected.to_dataset())
+
+
+@pytest.mark.parametrize("obj_type", ["DataArray", "Dataset"])
+@pytest.mark.parametrize(
+    ["coord_name", "dim", "metadata", "grid_info", "name"],
+    (
+        pytest.param(
+            "cell_ids",
+            "cells",
+            {
+                "grid_mapping_name": "healpix",
+                "refinement_level": 1,
+                "indexing_scheme": "nested",
+            },
+            None,
+            None,
+            id="healpix-all_defaults",
+        ),
+        pytest.param(
+            "cell_ids",
+            "cells",
+            {"grid_mapping_name": "h3", "refinement_level": 2},
+            None,
+            None,
+            id="h3-all_defaults",
+        ),
+        pytest.param(
+            "zone_ids",
+            "zones",
+            {
+                "grid_mapping_name": "healpix",
+                "refinement_level": 1,
+                "indexing_scheme": "nested",
+            },
+            None,
+            "zone_ids",
+            id="healpix-override_name",
+        ),
+        pytest.param(
+            "cell_ids",
+            "cells",
+            {"grid_mapping_name": "h3", "refinement_level": 2},
+            {"grid_name": "h3", "level": 2},
+            None,
+            id="h3-override_grid_info",
+        ),
+    ),
+)
+def test_cf(obj_type, coord_name, dim, metadata, grid_info, name):
+    cell_ids = generate_cell_ids("healpix", level=metadata["refinement_level"])
+    coord = xr.Variable(
+        dim,
+        cell_ids,
+        {"standard_name": f"{metadata['grid_mapping_name']}_index", "units": 1},
+    )
+    crs = xr.Variable((), np.array(0, dtype="uint8"), metadata)
+
+    if obj_type == "Dataset":
+        obj = xr.Dataset(coords={coord_name: coord, "crs": crs})
+    else:
+        obj = xr.DataArray(
+            np.zeros_like(coord.data),
+            coords={coord_name: coord, "crs": crs},
+            dims=coord.dims,
+        )
+
+    expected = xr.Coordinates(
+        {coord_name: coord},
+        indexes={coord_name: create_index(coord_name, coord, grid_info=metadata)},
+    )
+    actual = decoders.cf(obj, grid_info, name, index_options={})
+    xr.testing.assert_identical(actual.to_dataset(), expected.to_dataset())
