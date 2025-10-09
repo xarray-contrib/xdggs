@@ -48,15 +48,17 @@ def create_coordinate(grid_name, dim, level, **options):
     return xr.Variable(dim, cell_ids, grid_info)
 
 
-def create_index(name, coord, options):
+def create_index(name, coord, options=None):
     translations = {"refinement_level": "level", "grid_mapping_name": "grid_name"}
 
-    if not options:
-        options = coord.attrs
+    if options is None:
+        options = {}
 
-    grid_info = {translations.get(name, name): value for name, value in options.items()}
+    grid_info = {
+        translations.get(name, name): value for name, value in coord.attrs.items()
+    }
 
-    return xdggs.HealpixIndex.from_variables({name: coord}, options=grid_info)
+    return xdggs.HealpixIndex.from_variables({name: coord}, options=grid_info | options)
 
 
 @pytest.mark.parametrize("obj_type", ["DataArray", "Dataset"])
@@ -175,7 +177,7 @@ def test_cf(obj_type, coord_name, dim, metadata, grid_info, name):
 
     expected = xr.Coordinates(
         {coord_name: coord},
-        indexes={coord_name: create_index(coord_name, coord, grid_info=metadata)},
+        indexes={coord_name: create_index(coord_name, coord, options=metadata)},
     )
     actual = decoders.cf(obj, grid_info, name, index_options={})
     xr.testing.assert_identical(actual.to_dataset(), expected.to_dataset())
