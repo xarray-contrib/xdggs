@@ -39,7 +39,7 @@ def create_coordinate(grid_name, dim, level, **options):
     }
 
     cell_ids = generators[grid_name](level)
-    grid_info = {"grid_name": grid_name, "refinement_level": level, **options}
+    grid_info = {"grid_name": grid_name, "level": level, **options}
     return xr.Variable(dim, cell_ids, grid_info)
 
 
