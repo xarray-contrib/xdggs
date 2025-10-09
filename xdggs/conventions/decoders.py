@@ -31,7 +31,9 @@ def xdggs(obj, grid_info, name):
         raise ValueError(f"unknown grid name: {grid_name}")
     index_cls = GRID_REGISTRY[grid_name]
 
-    index = index_cls.from_variables({name: var}, options=grid_info)
+    var_ = var.copy(deep=True)
+    var_.attrs = grid_info
+    index = index_cls.from_variables({name: var_}, options={})
 
     return xr.Coordinates({name: var.variable}, indexes={name: index})
 
