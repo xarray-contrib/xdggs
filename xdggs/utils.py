@@ -32,7 +32,7 @@ def call_on_dataset(func, obj, *args, kwargs=None):
 
     result = func(ds, *args, **kwargs)
 
-    if isinstance(obj, xr.DataArray):
+    if isinstance(obj, xr.DataArray) and isinstance(result, xr.Dataset):
         return xr.DataArray._from_temp_dataset(result, name=obj.name)
     else:
         return result
