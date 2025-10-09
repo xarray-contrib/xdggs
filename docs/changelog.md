@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.1 (_unreleased_)
+
+- support interactive facet plots and combining maps ({pull}`183`)
+
+## 0.3.0 (2025-09-26)
+
+### New features
+
+- support for alignment between indexes with the same grid parameters ({pull}`166`)
+- allow choosing a moc-based index for healpix ({pull}`153`)
+
 ## 0.2.2 (2025-09-15)
 
 ### New features

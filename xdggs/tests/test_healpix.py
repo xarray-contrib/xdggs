@@ -12,7 +12,13 @@ from hypothesis import given
 from xarray.core.indexes import PandasIndex
 
 from xdggs import healpix
-from xdggs.tests import assert_exceptions_equal, geoarrow_to_shapely
+from xdggs.tests import (
+    assert_exceptions_equal,
+    da,
+    geoarrow_to_shapely,
+    raise_if_dask_computes,
+    requires_dask,
+)
 
 
 # namespace class
@@ -502,9 +508,9 @@ class TestHealpixIndex:
 
         assert index._grid == grid
         assert index._dim == dim
-        assert index._pd_index.dim == dim
+        assert index._index.dim == dim
 
-        np.testing.assert_equal(index._pd_index.index.values, cell_ids)
+        np.testing.assert_equal(index._index.index.values, cell_ids)
 
     @given(strategies.grids())
     def test_grid(self, grid):
@@ -528,7 +534,20 @@ def test_from_variables(variable_name, variable, options) -> None:
     assert index._grid.indexing_scheme == expected_scheme
 
     assert (index._dim,) == variable.dims
-    np.testing.assert_equal(index._pd_index.index.values, variable.data)
+    np.testing.assert_equal(index._index.index.values, variable.data)
+
+
+def test_from_variables_moc() -> None:
+    level = 2
+    grid_info = {"grid_name": "healpix", "level": level, "indexing_scheme": "nested"}
+    variables = {"cell_ids": xr.Variable("cells", np.arange(12 * 4**level), grid_info)}
+
+    index = healpix.HealpixIndex.from_variables(
+        variables, options={"index_kind": "moc"}
+    )
+
+    assert isinstance(index._index, healpix.HealpixMocIndex)
+    assert index.grid_info.to_dict() == grid_info
 
 
 @pytest.mark.parametrize(["old_variable", "new_variable"], variable_combinations)
@@ -548,7 +567,7 @@ def test_replace(old_variable, new_variable) -> None:
     new_index = index._replace(new_pandas_index)
 
     assert new_index._dim == index._dim
-    assert new_index._pd_index == new_pandas_index
+    assert new_index._index == new_pandas_index
     assert index._grid == grid
 
 
@@ -563,3 +582,405 @@ def test_repr_inline(level, max_width) -> None:
     assert f"level={level}" in actual
     # ignore max_width for now
     # assert len(actual) <= max_width
+
+
+class TestHealpixMocIndex:
+    @pytest.mark.parametrize(
+        ["level", "cell_ids", "max_computes"],
+        (
+            pytest.param(
+                2, np.arange(12 * 4**2, dtype="uint64"), 1, id="numpy-2-full_domain"
+            ),
+            pytest.param(
+                2,
+                np.arange(3 * 4**2, 5 * 4**2, dtype="uint64"),
+                1,
+                id="numpy-2-region",
+            ),
+            pytest.param(
+                10,
+                da.arange(12 * 4**10, chunks=(4**6,), dtype="uint64"),
+                0,
+                marks=requires_dask,
+                id="dask-10-full_domain",
+            ),
+            pytest.param(
+                15,
+                da.arange(12 * 4**15, chunks=(4**10,), dtype="uint64"),
+                0,
+                marks=requires_dask,
+                id="dask-15-full_domain",
+            ),
+            pytest.param(
+                10,
+                da.arange(3 * 4**10, 5 * 4**10, chunks=(4**6,), dtype="uint64"),
+                1,
+                marks=requires_dask,
+                id="dask-10-region",
+            ),
+        ),
+    )
+    def test_from_array(self, level, cell_ids, max_computes):
+        grid_info = healpix.HealpixInfo(level=level, indexing_scheme="nested")
+
+        with raise_if_dask_computes(max_computes=max_computes):
+            index = healpix.HealpixMocIndex.from_array(
+                cell_ids, dim="cells", name="cell_ids", grid_info=grid_info
+            )
+
+        assert isinstance(index, healpix.HealpixMocIndex)
+        chunks = index.chunksizes["cells"]
+        assert chunks is None or isinstance(chunks[0], int)
+        assert index.size == cell_ids.size
+        assert index.nbytes == 16
+
+    def test_from_array_unsupported_indexing_scheme(self):
+        level = 1
+        cell_ids = np.arange(12 * 4**level, dtype="uint64")
+        grid_info = healpix.HealpixInfo(level=level, indexing_scheme="ring")
+
+        with pytest.raises(ValueError, match=".*only supports the 'nested' scheme"):
+            healpix.HealpixMocIndex.from_array(
+                cell_ids, dim="cells", name="cell_ids", grid_info=grid_info
+            )
+
+    @pytest.mark.parametrize("dask", [False, pytest.param(True, marks=requires_dask)])
+    @pytest.mark.parametrize(
+        ["level", "cell_ids"],
+        (
+            (
+                1,
+                np.array(
+                    [0, 1, 2, 3, 4, 5, 6, 7, 8, 22, 23, 24, 25, 43, 45, 46, 47],
+                    dtype="uint64",
+                ),
+            ),
+            (4, np.arange(12 * 4**4, dtype="uint64")),
+        ),
+    )
+    def test_from_variables(self, level, cell_ids, dask):
+        grid_info_mapping = {
+            "grid_name": "healpix",
+            "level": level,
+            "indexing_scheme": "nested",
+        }
+        variables = {"cell_ids": xr.Variable("cells", cell_ids, grid_info_mapping)}
+        if dask:
+            variables["cell_ids"] = variables["cell_ids"].chunk(4**level)
+
+        actual = healpix.HealpixMocIndex.from_variables(variables, options={})
+
+        assert isinstance(actual, healpix.HealpixMocIndex)
+        assert actual.size == cell_ids.size
+        np.testing.assert_equal(actual._index.cell_ids(), cell_ids)
+
+    @pytest.mark.parametrize(
+        "indexer",
+        (
+            slice(None),
+            slice(None, 4**1),
+            slice(2 * 4**1, 7 * 4**1),
+            slice(7, 25),
+            np.array([-4, -3, -2], dtype="int64"),
+            np.array([12, 13, 14, 15, 16], dtype="uint64"),
+            np.array([1, 2, 3, 4, 5], dtype="uint32"),
+        ),
+    )
+    @pytest.mark.parametrize(
+        "chunks",
+        [
+            pytest.param(None, id="none"),
+            pytest.param((12, 12, 12, 12), marks=requires_dask, id="equally_sized"),
+        ],
+    )
+    def test_isel(self, indexer, chunks):
+        from healpix_geo.nested import RangeMOCIndex
+
+        grid_info = healpix.HealpixInfo(level=1, indexing_scheme="nested")
+        cell_ids = np.arange(12 * 4**grid_info.level, dtype="uint64")
+        if chunks is None:
+            input_chunks = None
+            expected_chunks = None
+        else:
+            import dask.array as da
+
+            cell_ids_ = da.arange(
+                12 * 4**grid_info.level, dtype="uint64", chunks=chunks
+            )
+            input_chunks = cell_ids_.chunks[0]
+            expected_chunks = cell_ids_[indexer].chunks[0]
+
+        index = healpix.HealpixMocIndex(
+            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids),
+            dim="cells",
+            name="cell_ids",
+            grid_info=grid_info,
+            chunksizes={"cells": input_chunks},
+        )
+
+        actual = index.isel({"cells": indexer})
+        expected = healpix.HealpixMocIndex(
+            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids[indexer]),
+            dim="cells",
+            name="cell_ids",
+            grid_info=grid_info,
+            chunksizes={"cells": expected_chunks},
+        )
+
+        assert isinstance(actual, healpix.HealpixMocIndex)
+        assert actual.nbytes == expected.nbytes
+        assert actual.chunksizes == expected.chunksizes
+        np.testing.assert_equal(actual._index.cell_ids(), expected._index.cell_ids())
+
+    @pytest.mark.parametrize(
+        "chunks",
+        [
+            pytest.param((12, 12, 12, 12), marks=requires_dask),
+            pytest.param((18, 10, 10, 10), marks=requires_dask),
+            pytest.param((8, 12, 14, 14), marks=requires_dask),
+            None,
+        ],
+    )
+    def test_create_variables(self, chunks):
+        from healpix_geo.nested import RangeMOCIndex
+
+        grid_info = healpix.HealpixInfo(level=1, indexing_scheme="nested")
+        cell_ids = np.arange(12 * 4**grid_info.level, dtype="uint64")
+        indexer = slice(3 * 4**grid_info.level, 7 * 4**grid_info.level)
+        index = healpix.HealpixMocIndex(
+            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids[indexer]),
+            dim="cells",
+            name="cell_ids",
+            grid_info=grid_info,
+            chunksizes={"cells": chunks},
+        )
+
+        if chunks is not None:
+            variables = {
+                "cell_ids": xr.Variable("cells", cell_ids, grid_info.to_dict()).chunk(
+                    {"cells": chunks}
+                )
+            }
+        else:
+            variables = {
+                "cell_ids": xr.Variable("cells", cell_ids, grid_info.to_dict())
+            }
+
+        actual = index.create_variables(variables)
+        expected = {"cell_ids": variables["cell_ids"].isel(cells=indexer)}
+
+        assert actual.keys() == expected.keys()
+        xr.testing.assert_equal(actual["cell_ids"], expected["cell_ids"])
+
+    def test_create_variables_new(self):
+        from healpix_geo.nested import RangeMOCIndex
+
+        grid_info = healpix.HealpixInfo(level=1, indexing_scheme="nested")
+        cell_ids = np.arange(12 * 4**grid_info.level, dtype="uint64")
+        indexer = slice(3 * 4**grid_info.level, 7 * 4**grid_info.level)
+        index = healpix.HealpixMocIndex(
+            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids[indexer]),
+            dim="cells",
+            name="cell_ids",
+            grid_info=grid_info,
+            chunksizes={"cells": None},
+        )
+        actual = index.create_variables({})
+        expected = {"cell_ids": xr.Variable("cells", cell_ids[indexer])}
+
+        assert actual.keys() == expected.keys()
+        xr.testing.assert_equal(actual["cell_ids"], expected["cell_ids"])
+
+    @pytest.mark.parametrize(
+        "indexer",
+        (
+            slice(None),
+            slice(None, 4**1),
+            slice(2 * 4**1, 7 * 4**1),
+            slice(7, 25),
+            np.array([12, 13, 14, 15, 16], dtype="uint64"),
+            np.array([1, 2, 3, 4, 5], dtype="uint32"),
+        ),
+    )
+    @pytest.mark.parametrize(
+        "chunks",
+        [
+            pytest.param(None, id="none"),
+            pytest.param((12, 12, 12, 12), marks=requires_dask, id="equally_sized"),
+        ],
+    )
+    def test_sel(self, indexer, chunks):
+        from healpix_geo.nested import RangeMOCIndex
+
+        grid_info = healpix.HealpixInfo(level=1, indexing_scheme="nested")
+        cell_ids = np.arange(12 * 4**grid_info.level, dtype="uint64")
+
+        if isinstance(indexer, slice):
+            start, stop, step = indexer.indices(cell_ids.size)
+            if stop < cell_ids.size:
+                stop += 1
+
+            expected_indexer = slice(start, stop, step)
+        else:
+            expected_indexer = indexer
+
+        if chunks is None:
+            input_chunks = None
+            expected_chunks = None
+        else:
+            import dask.array as da
+
+            cell_ids_ = da.arange(
+                12 * 4**grid_info.level, dtype="uint64", chunks=chunks
+            )
+            input_chunks = cell_ids_.chunks[0]
+            expected_chunks = cell_ids_[expected_indexer].chunks[0]
+
+        index = healpix.HealpixMocIndex(
+            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids),
+            dim="cells",
+            name="cell_ids",
+            grid_info=grid_info,
+            chunksizes={"cells": input_chunks},
+        )
+
+        result = index.sel({"cell_ids": indexer})
+        actual = result.indexes["cell_ids"]
+        actual_indexer = result.dim_indexers["cells"]
+
+        expected = healpix.HealpixMocIndex(
+            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids[expected_indexer]),
+            dim="cells",
+            name="cell_ids",
+            grid_info=grid_info,
+            chunksizes={"cells": expected_chunks},
+        )
+
+        if isinstance(actual_indexer, slice):
+            assert actual_indexer == expected_indexer
+        else:
+            np.testing.assert_equal(actual_indexer, expected_indexer)
+
+        assert isinstance(actual, healpix.HealpixMocIndex)
+        assert actual.nbytes == expected.nbytes
+        assert actual.chunksizes == expected.chunksizes
+        np.testing.assert_equal(actual._index.cell_ids(), expected._index.cell_ids())
+
+    def test_sel_error(self):
+        from healpix_geo.nested import RangeMOCIndex
+
+        grid_info = healpix.HealpixInfo(level=1, indexing_scheme="nested")
+        cell_ids = np.arange(12 * 4**grid_info.level, dtype="uint64")
+
+        index = healpix.HealpixMocIndex(
+            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids),
+            dim="cells",
+            name="cell_ids",
+            grid_info=grid_info,
+            chunksizes={"cells": None},
+        )
+
+        indexer = np.array([-4, 2, 1], dtype="int64")
+
+        with pytest.raises(ValueError, match="Cell ids can't be negative"):
+            index.sel({"cell_ids": indexer})
+
+
+def test_join():
+    data1 = np.array([0, 5, 7, 9], dtype="uint64")
+    data2 = np.array([0, 7])
+
+    dim = "cells"
+    grid_info = healpix.HealpixInfo(level=2)
+
+    index1 = healpix.HealpixIndex(data1, dim=dim, grid_info=grid_info)
+    index2 = healpix.HealpixIndex(data2, dim=dim, grid_info=grid_info)
+
+    actual = index1.join(index2, how="inner")
+    expected = healpix.HealpixIndex(data2, dim=dim, grid_info=grid_info)
+
+    assert actual._grid == expected._grid
+    assert actual._dim == expected._dim
+    assert np.all(actual._index.index == expected._index.index)
+
+
+def test_join_error():
+    data1 = np.array([0, 7], dtype="uint64")
+    data2 = np.array([5, 7, 9], dtype="uint64")
+
+    dim = "cells"
+
+    grid_info1 = healpix.HealpixInfo(level=1)
+    grid_info2 = healpix.HealpixInfo(level=6)
+
+    index1 = healpix.HealpixIndex(data1, dim=dim, grid_info=grid_info1)
+    index2 = healpix.HealpixIndex(data2, dim=dim, grid_info=grid_info2)
+
+    with pytest.raises(ValueError, match="different grid parameters"):
+        index1.join(index2, how="inner")
+
+
+def test_reindex_like():
+    grid = healpix.HealpixInfo(level=2)
+    index1 = healpix.HealpixIndex(
+        cell_ids=np.array([0, 7]),
+        dim="cells",
+        grid_info=grid,
+    )
+    index2 = healpix.HealpixIndex(
+        cell_ids=np.array([0, 5, 7, 9]),
+        dim="cells",
+        grid_info=grid,
+    )
+
+    actual = index1.reindex_like(index2)
+
+    expected = {"cells": np.array([0, -1, 1, -1])}
+
+    np.testing.assert_equal(actual["cells"], expected["cells"])
+
+
+def test_reindex_like_error():
+    data1 = np.array([0, 7], dtype="uint64")
+    data2 = np.array([0, 5, 7], dtype="uint64")
+
+    dim = "cells"
+
+    grid_info1 = healpix.HealpixInfo(level=1)
+    grid_info2 = healpix.HealpixInfo(level=6)
+
+    index1 = healpix.HealpixIndex(data1, dim=dim, grid_info=grid_info1)
+    index2 = healpix.HealpixIndex(data2, dim=dim, grid_info=grid_info2)
+
+    with pytest.raises(ValueError, match="different grid parameters"):
+        index1.reindex_like(index2)
+
+
+@pytest.mark.parametrize(
+    "variant", ("identical", "all-different", "dim", "grid-info", "values")
+)
+def test_equals(variant):
+    values = [np.array([0, 7], dtype="uint64"), np.array([0, 5, 7], dtype="uint64")]
+    dims = ["cells", "zones"]
+    grid_info = [healpix.HealpixInfo(level=1), healpix.HealpixInfo(level=6)]
+
+    dim1 = dims[0]
+    values1 = values[0]
+    grid_info1 = grid_info[0]
+
+    variants = {
+        "identical": (dims[0], values[0], grid_info[0]),
+        "all-different": (dims[1], values[1], grid_info[1]),
+        "dim": (dims[1], values[0], grid_info[0]),
+        "grid-info": (dims[0], values[0], grid_info[1]),
+        "values": (dims[0], values[1], grid_info[0]),
+    }
+    expected_results = {"identical": True}
+
+    expected = expected_results.get(variant, False)
+    dim2, values2, grid_info2 = variants[variant]
+
+    index1 = healpix.HealpixIndex(values1, dim=dim1, grid_info=grid_info1)
+    index2 = healpix.HealpixIndex(values2, dim=dim2, grid_info=grid_info2)
+
+    assert index1.equals(index2) == expected

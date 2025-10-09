@@ -31,7 +31,13 @@ class DGGSAccessor:
         self._index = index
 
     def decode(
-        self, grid_info=None, *, name=None, convention="xdggs"
+        self,
+        grid_info=None,
+        *,
+        name="cell_ids",
+        convention="xdggs",
+        index_options=None,
+        **index_kwargs,
     ) -> xr.Dataset | xr.DataArray:
         """decode the DGGS cell ids
 
@@ -56,6 +62,8 @@ class DGGSAccessor:
               the cell ids coordinate is indicated by the ``coordinates``
               attribute on data variables / other coordinates (this can be
               overridden by the ``name`` parameter).
+        index_options, **index_kwargs : dict, optional
+            Additional options to forward to the index.
 
         Returns
         -------
@@ -73,7 +81,12 @@ class DGGSAccessor:
                     f" Choose a known convention: {', '.join(valid_names)}"
                 )
 
-        coords = decoder(self._obj, grid_info=grid_info, name=name)
+        if index_options is None:
+            index_options = {}
+
+        coords = decoder(
+            self._obj, grid_info=grid_info, name=name, index_options=index_options
+        )
         return self._obj.assign_coords(coords)
 
     @property
