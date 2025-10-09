@@ -103,5 +103,5 @@ def test_xdggs(obj_type, coord_name, coord, grid_info, name):
         {coord_name: coord},
         indexes={coord_name: create_index(coord_name, coord, grid_info)},
     )
-    actual = decoders.xdggs(obj, grid_info, name)
+    actual = decoders.xdggs(obj, grid_info, name, index_options={})
     xr.testing.assert_identical(actual.to_dataset(), expected.to_dataset())
