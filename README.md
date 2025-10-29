@@ -3,6 +3,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/xdggs.svg)](https://pypi.org/project/xdggs)
 [![codestyle](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 [![conda-forge](https://img.shields.io/conda/vn/conda-forge/xdggs)](https://github.com/conda-forge/xdggs-feedstock)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17209838.svg)](https://doi.org/10.5281/zenodo.17209838)
 
 ---
 
@@ -71,6 +72,60 @@ We welcome contributions to `xdggs`! Please follow these steps to get involved:
 ## License
 
 `xdggs` is licensed under the Apache License. See [LICENSE](https://github.com/xarray-contrib/xdggs/blob/main/LICENSE) for more details.
+
+## Cite this project
+
+### Software (versioned)
+
+If you use the **xdggs** code, please cite the archived software release:
+
+> Magin, J., Bovy, B., Kmoch, A., Abernathey, R., Coca-Castro, A., Strobl, P., Fouilloux, A., Loos, D., Chan, W. T., Delouis, J.-M., & Odaka, T. (2025). _xdggs (v0.3.0)_. Zenodo. https://doi.org/10.5281/zenodo.17209838
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17209838.svg)](https://doi.org/10.5281/zenodo.17209838)
+
+<details>
+<summary>BibTeX (software)</summary>
+
+```bibtex
+@software{xdggs_0_3_0_2025,
+  title     = {xdggs (v0.3.0)},
+  author    = {Magin, Justus and Bovy, Benoît and Kmoch, Alexander and
+               Abernathey, Ryan and Coca-Castro, Alejandro and Strobl, Peter and
+               Fouilloux, Anne and Loos, Daniel and Chan, Wai Tik and
+               Delouis, Jean-Marc and Odaka, Tina},
+  year      = {2025},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.17209838},
+  url       = {https://doi.org/10.5281/zenodo.17209838}
+}
+```
+
+</details>
+
+### Presentation (context / overview)
+
+If you refer to the SciPy talk/slides that introduce xdggs:
+
+> Magin, J., Kmoch, A., Bovy, B., Delouis, J.-M., Fouilloux, A., & Odaka, T. (2025). _Using Discrete Global Grid Systems in the Pangeo ecosystem._ SciPy 2025. https://doi.org/10.5281/zenodo.17297883
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17297883.svg)](https://doi.org/10.5281/zenodo.17297883)
+
+<details>
+<summary>BibTeX</summary>
+
+```bibtex
+@misc{magin_kmoch_bovy_delouis_fouilloux_odaka_2025_xdggs_scipy,
+  title        = {Using Discrete Global Grid Systems in the Pangeo ecosystem},
+  author       = {Magin, Justus and Kmoch, Alexander and Bovy, Benoît and Delouis, Jean-Marc and Fouilloux, Anne and Odaka, Tina},
+  year         = {2025},
+  doi          = {10.5281/zenodo.17297883},
+  howpublished = {SciPy 2025 Conference Presentation},
+  url          = {https://doi.org/10.5281/zenodo.17297883}
+}
+
+```
+
+</details>
 
 ## Acknowledgments
 
