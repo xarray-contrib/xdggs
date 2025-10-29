@@ -76,9 +76,10 @@ We welcome contributions to `xdggs`! Please follow these steps to get involved:
 ## Cite this project
 
 ### Software (versioned)
+
 If you use the **xdggs** code, please cite the archived software release:
 
-> Magin, J., Bovy, B., Kmoch, A., Abernathey, R., Coca-Castro, A., Strobl, P., Fouilloux, A., Loos, D., Chan, W. T., Delouis, J.-M., & Odaka, T. (2025). *xdggs (v0.3.0)*. Zenodo. https://doi.org/10.5281/zenodo.17209838
+> Magin, J., Bovy, B., Kmoch, A., Abernathey, R., Coca-Castro, A., Strobl, P., Fouilloux, A., Loos, D., Chan, W. T., Delouis, J.-M., & Odaka, T. (2025). _xdggs (v0.3.0)_. Zenodo. https://doi.org/10.5281/zenodo.17209838
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17209838.svg)](https://doi.org/10.5281/zenodo.17209838)
 
@@ -98,16 +99,16 @@ If you use the **xdggs** code, please cite the archived software release:
   url       = {https://doi.org/10.5281/zenodo.17209838}
 }
 ```
+
 </details>
 
 ### Presentation (context / overview)
 
 If you refer to the SciPy talk/slides that introduce xdggs:
 
-> Magin, J., Kmoch, A., Bovy, B., Delouis, J.-M., Fouilloux, A., & Odaka, T. (2025). *Using Discrete Global Grid Systems in the Pangeo ecosystem.* SciPy 2025. https://doi.org/10.5281/zenodo.17297883
+> Magin, J., Kmoch, A., Bovy, B., Delouis, J.-M., Fouilloux, A., & Odaka, T. (2025). _Using Discrete Global Grid Systems in the Pangeo ecosystem._ SciPy 2025. https://doi.org/10.5281/zenodo.17297883
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17297883.svg)](https://doi.org/10.5281/zenodo.17297883)
-
 
 <details>
 <summary>BibTeX</summary>
@@ -123,6 +124,7 @@ If you refer to the SciPy talk/slides that introduce xdggs:
 }
 
 ```
+
 </details>
 
 ## Acknowledgments
