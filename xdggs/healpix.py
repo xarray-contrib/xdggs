@@ -118,6 +118,9 @@ class HealpixInfo(DGGSInfo):
     indexing_scheme: Literal["nested", "ring"] = "nested"
     """int : The indexing scheme of the grid"""
 
+    ellipsoid: str = "sphere"
+    """str : The name of the ellipsoid"""
+
     valid_parameters: ClassVar[dict[str, Any]] = {
         "level": range(0, 29 + 1),
         "indexing_scheme": ["nested", "ring"],
