@@ -1,57 +1,71 @@
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 
 
 @dataclass
 class Ellipsoid:
     """In-memory representation of an ellipsoid.
 
+    Ellipsoid parameters are taken as strings to reduce numerical errors as much
+    as possible.
+
     Parameters
     ----------
-    name : str | None
-        The name of the ellipsoid. Pass ``None`` if the ellipsoid is not named.
-    semimajor_axis : float
-        The semimajor axis of the ellipsoid.
-    inverse_flattening : float
+    semimajor_axis : str
+        The semimajor axis of the ellipsoid, in meters.
+    inverse_flattening : str
         The inverse flattening parameter of the ellipsoid.
+    name : str, optional
+        The name of the ellipsoid. Pass ``None`` if the ellipsoid is not named.
     """
 
-    name: str | None
-    """The name of the ellipsoid, if any."""
-
-    semimajor_axis: float
+    semimajor_axis: str = field(keyword_only=True)
     """The semimajor axis of the ellipsoid."""
-    inverse_flattening: float
+    inverse_flattening: str = field(keyword_only=True)
     """The inverse flattening parameter of the ellipsoid"""
+
+    name: str | None = field(default=None, keyword_only=True)
+    """The name of the ellipsoid, if any."""
 
     @classmethod
     def from_dict(cls, mapping):
         return cls(**mapping)
 
     def to_dict(self):
-        return asdict(self)
+        mapping = asdict(self)
+        if self.name is None:
+            del mapping["name"]
+
+        return mapping
 
 
 @dataclass
 class Sphere:
     """In-memory representation of a sphere.
 
+    Sphere parameters are taken as strings to reduce numerical errors as much as
+    possible.
+
     Parameters
     ----------
-    name : str | None
+    radius : str
+        The radius of the sphere, in meters.
+    name : str, optional
         The name of the sphere. Pass ``None`` if the sphere is not named.
-    radius : float
-        The radius of the sphere.
     """
 
-    name: str | None
-    """The name of the sphere, if any."""
+    radius: str = field(keyword_only=True)
+    """The radius of the sphere, in meters."""
 
-    radius: float
-    """The radius of the sphere."""
+    name: str | None = field(default=None, keyword_only=True)
+    """The name of the sphere, if any."""
 
     @classmethod
     def from_dict(cls, mapping):
         return cls(**mapping)
 
     def to_dict(self):
-        return asdict(self)
+        mapping = asdict(self)
+        if self.name is None:
+            del mapping["name"]
+
+        return mapping
