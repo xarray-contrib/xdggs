@@ -4,6 +4,7 @@ import xarray as xr
 
 import xdggs
 from xdggs.conventions import decoders
+from xdggs.tests import assert_indexes_equal
 
 
 def clear_attrs(var):
@@ -70,13 +71,14 @@ def create_index(name, coord, grid_info):
 
 @pytest.mark.parametrize("obj_type", ["DataArray", "Dataset"])
 @pytest.mark.parametrize(
-    ["coord_name", "coord", "grid_info", "name"],
+    ["coord_name", "coord", "grid_info", "name", "expected_grid_info"],
     (
         pytest.param(
             "cell_ids",
             create_coordinate("healpix", "cells", 0, indexing_scheme="ring"),
             None,
             None,
+            {"grid_name": "healpix", "level": 0, "indexing_scheme": "ring"},
             id="healpix-all_defaults",
         ),
         pytest.param(
@@ -84,6 +86,7 @@ def create_index(name, coord, grid_info):
             create_coordinate("h3", "cells", 0),
             None,
             None,
+            {"grid_name": "h3", "level": 0},
             id="h3-all_defaults",
         ),
         pytest.param(
@@ -91,6 +94,7 @@ def create_index(name, coord, grid_info):
             create_coordinate("healpix", "zones", 0, indexing_scheme="nested"),
             None,
             "zone_ids",
+            {"grid_name": "healpix", "level": 0, "indexing_scheme": "nested"},
             id="healpix-override_name",
         ),
         pytest.param(
@@ -98,11 +102,12 @@ def create_index(name, coord, grid_info):
             clear_attrs(create_coordinate("h3", "cells", 2)),
             {"grid_name": "h3", "level": 2},
             None,
+            {"grid_name": "h3", "level": 2},
             id="h3-override_grid_info",
         ),
     ),
 )
-def test_xdggs(obj_type, coord_name, coord, grid_info, name):
+def test_xdggs(obj_type, coord_name, coord, grid_info, name, expected_grid_info):
     if obj_type == "Dataset":
         obj = xr.Dataset(coords={coord_name: coord})
     else:
@@ -112,15 +117,16 @@ def test_xdggs(obj_type, coord_name, coord, grid_info, name):
 
     expected = xr.Coordinates(
         {coord_name: coord},
-        indexes={coord_name: create_index(coord_name, coord, grid_info)},
+        indexes={coord_name: create_index(coord_name, coord, expected_grid_info)},
     )
     actual = decoders.xdggs(obj, grid_info, name, index_options={})
     xr.testing.assert_identical(actual.to_dataset(), expected.to_dataset())
+    assert_indexes_equal(actual.xindexes, expected.xindexes)
 
 
 @pytest.mark.parametrize("obj_type", ["DataArray", "Dataset"])
 @pytest.mark.parametrize(
-    ["coord_name", "dim", "metadata", "grid_info", "name"],
+    ["coord_name", "dim", "metadata", "grid_info", "name", "expected_grid_info"],
     (
         pytest.param(
             "cell_ids",
@@ -132,6 +138,7 @@ def test_xdggs(obj_type, coord_name, coord, grid_info, name):
             },
             None,
             None,
+            {"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"},
             id="healpix-all_defaults",
         ),
         pytest.param(
@@ -140,6 +147,7 @@ def test_xdggs(obj_type, coord_name, coord, grid_info, name):
             {"grid_mapping_name": "h3", "refinement_level": 2},
             None,
             None,
+            {"grid_name": "h3", "level": 2},
             id="h3-all_defaults",
         ),
         pytest.param(
@@ -152,6 +160,7 @@ def test_xdggs(obj_type, coord_name, coord, grid_info, name):
             },
             None,
             "zone_ids",
+            {"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"},
             id="healpix-override_name",
         ),
         pytest.param(
@@ -160,11 +169,12 @@ def test_xdggs(obj_type, coord_name, coord, grid_info, name):
             {"grid_mapping_name": "h3", "refinement_level": 2},
             {"grid_name": "h3", "level": 2},
             None,
+            {"grid_name": "h3", "level": 2},
             id="h3-override_grid_info",
         ),
     ),
 )
-def test_cf(obj_type, coord_name, dim, metadata, grid_info, name):
+def test_cf(obj_type, coord_name, dim, metadata, grid_info, name, expected_grid_info):
     cell_ids = generate_cell_ids("healpix", level=metadata["refinement_level"])
     coord = xr.Variable(
         dim,
@@ -183,8 +193,11 @@ def test_cf(obj_type, coord_name, dim, metadata, grid_info, name):
         )
 
     expected = xr.Coordinates(
-        {coord_name: coord},
-        indexes={coord_name: create_index(coord_name, coord, options=metadata)},
+        {coord_name: (dim, cell_ids, expected_grid_info)},
+        indexes={
+            coord_name: create_index(coord_name, drop_attrs(coord), expected_grid_info)
+        },
     )
     actual = decoders.cf(obj, grid_info, name, index_options={})
     xr.testing.assert_identical(actual.to_dataset(), expected.to_dataset())
+    assert_indexes_equal(actual, expected)
