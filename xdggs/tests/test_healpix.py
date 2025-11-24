@@ -64,6 +64,7 @@ class strategies:
             "order": cls.levels,
             "indexing_scheme": cls.indexing_schemes,
             "nest": st.booleans(),
+            "ellipsoid": cls.ellipsoids,
         }
 
         names = {
@@ -159,6 +160,16 @@ variables = [
             "grid_name": "healpix",
             "level": 3,
             "indexing_scheme": "nested",
+        },
+    ),
+    xr.Variable(
+        "cells",
+        np.array([3]),
+        {
+            "grid_name": "healpix",
+            "level": 0,
+            "indexing_scheme": "nested",
+            "ellipsoid": "WGS84",
         },
     ),
 ]
