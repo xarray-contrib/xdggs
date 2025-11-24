@@ -52,14 +52,21 @@ def cf(obj, grid_info, name, index_options):
     crs = next(iter(grid_mapping_vars.values()))
 
     if name is None:
-        coords = list(
-            dict.fromkeys(
-                var.attrs["coordinates"]
-                for name, var in vars_.items()
-                if "coordinates" in var.attrs
-            )
+        standard_name = f"{crs.attrs['grid_mapping_name']}_index"
+        coords = call_on_dataset(
+            lambda ds: (
+                ds.drop_vars(list(grid_mapping_vars))
+                .filter_by_attrs(standard_name=standard_name)
+                .variables
+            ),
+            obj,
         )
-        name = coords[0]
+        coord_names = list(coords)
+        if not coord_names:
+            raise ValueError(
+                "Cannot find the cell index variable. Please specify it explicitly."
+            )
+        name = coord_names[0]
 
     translations = {"refinement_level": "level"}
     grid_info = {
