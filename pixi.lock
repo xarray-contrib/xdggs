@@ -2578,7 +2578,9 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/linux-64/debugpy-1.8.16-py313h5d5ffb9_1.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/decorator-5.2.1-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/defusedxml-0.7.1-pyhd8ed1ab_0.tar.bz2
+        - conda: https://conda.anaconda.org/conda-forge/noarch/deprecated-1.3.1-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/distributed-2025.7.0-pyhe01879c_0.conda
+        - conda: https://conda.anaconda.org/conda-forge/noarch/donfig-0.8.1.post1-pyhd8ed1ab_1.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.0-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/execnet-2.1.1-pyhd8ed1ab_1.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/executing-2.2.1-pyhd8ed1ab_0.conda
@@ -2597,6 +2599,7 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/linux-64/gflags-2.2.2-h5888daf_1005.conda
         - conda: https://conda.anaconda.org/conda-forge/linux-64/giflib-5.2.2-hd590300_0.conda
         - conda: https://conda.anaconda.org/conda-forge/linux-64/glog-0.7.1-hbabe93e_0.conda
+        - conda: https://conda.anaconda.org/conda-forge/linux-64/google-crc32c-1.7.1-py313h74173ec_1.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/h11-0.16.0-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/h2-4.3.0-pyhcf101f3_0.conda
         - conda: https://conda.anaconda.org/conda-forge/linux-64/h3ronpy-0.22.0-py313h920b4c0_1.conda
@@ -2741,6 +2744,7 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/noarch/networkx-3.5-pyhe01879c_0.conda
         - conda: https://conda.anaconda.org/conda-forge/linux-64/nlohmann_json-3.12.0-h3f2d84a_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/notebook-shim-0.2.4-pyhd8ed1ab_1.conda
+        - conda: https://conda.anaconda.org/conda-forge/linux-64/numcodecs-0.16.1-py313h08cd8bf_2.conda
         - conda: https://conda.anaconda.org/conda-forge/linux-64/numpy-2.3.3-py313hf6604e3_0.conda
         - conda: https://conda.anaconda.org/conda-forge/linux-64/openjpeg-2.5.3-h55fea9a_1.conda
         - conda: https://conda.anaconda.org/conda-forge/linux-64/openssl-3.5.2-h26f9b46_0.conda
@@ -2844,6 +2848,7 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/linux-64/xorg-libxdmcp-1.1.5-hb9d3cd8_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/xyzservices-2025.4.0-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/linux-64/yaml-0.2.5-h280c20c_3.conda
+        - conda: https://conda.anaconda.org/conda-forge/noarch/zarr-3.1.5-pyhcf101f3_0.conda
         - conda: https://conda.anaconda.org/conda-forge/linux-64/zeromq-4.3.5-h387f397_9.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/zict-3.0.0-pyhd8ed1ab_1.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-3.23.0-pyhd8ed1ab_0.conda
@@ -2920,7 +2925,9 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/debugpy-1.8.16-py313hab38a8b_1.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/decorator-5.2.1-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/defusedxml-0.7.1-pyhd8ed1ab_0.tar.bz2
+        - conda: https://conda.anaconda.org/conda-forge/noarch/deprecated-1.3.1-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/distributed-2025.7.0-pyhe01879c_0.conda
+        - conda: https://conda.anaconda.org/conda-forge/noarch/donfig-0.8.1.post1-pyhd8ed1ab_1.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.0-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/execnet-2.1.1-pyhd8ed1ab_1.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/executing-2.2.1-pyhd8ed1ab_0.conda
@@ -2939,6 +2946,7 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/gflags-2.2.2-hf9b8971_1005.conda
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/giflib-5.2.2-h93a5062_0.conda
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/glog-0.7.1-heb240a5_0.conda
+        - conda: https://conda.anaconda.org/conda-forge/osx-arm64/google-crc32c-1.7.1-py313h7962f2b_1.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/h11-0.16.0-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/h2-4.3.0-pyhcf101f3_0.conda
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/h3ronpy-0.22.0-py313hdde674f_1.conda
@@ -3074,6 +3082,7 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/noarch/networkx-3.5-pyhe01879c_0.conda
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/nlohmann_json-3.12.0-ha1acc90_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/notebook-shim-0.2.4-pyhd8ed1ab_1.conda
+        - conda: https://conda.anaconda.org/conda-forge/osx-arm64/numcodecs-0.16.1-py313h7d16b84_2.conda
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/numpy-2.3.3-py313h9771d21_0.conda
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/openjpeg-2.5.3-h889cd5d_1.conda
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/openssl-3.5.2-he92f556_0.conda
@@ -3178,6 +3187,7 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/xorg-libxdmcp-1.1.5-hd74edd7_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/xyzservices-2025.4.0-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/yaml-0.2.5-h925e9cb_3.conda
+        - conda: https://conda.anaconda.org/conda-forge/noarch/zarr-3.1.5-pyhcf101f3_0.conda
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zeromq-4.3.5-h888dc83_9.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/zict-3.0.0-pyhd8ed1ab_1.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-3.23.0-pyhd8ed1ab_0.conda
@@ -3249,7 +3259,9 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/win-64/debugpy-1.8.16-py313h927ade5_1.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/decorator-5.2.1-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/defusedxml-0.7.1-pyhd8ed1ab_0.tar.bz2
+        - conda: https://conda.anaconda.org/conda-forge/noarch/deprecated-1.3.1-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/distributed-2025.7.0-pyhe01879c_0.conda
+        - conda: https://conda.anaconda.org/conda-forge/noarch/donfig-0.8.1.post1-pyhd8ed1ab_1.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.0-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/execnet-2.1.1-pyhd8ed1ab_1.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/executing-2.2.1-pyhd8ed1ab_0.conda
@@ -3265,6 +3277,7 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/noarch/geopandas-1.1.1-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/geopandas-base-1.1.1-pyha770c72_0.conda
         - conda: https://conda.anaconda.org/conda-forge/win-64/geos-3.13.1-h9ea8674_0.conda
+        - conda: https://conda.anaconda.org/conda-forge/win-64/google-crc32c-1.7.1-py313h5327936_1.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/h11-0.16.0-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/h2-4.3.0-pyhcf101f3_0.conda
         - conda: https://conda.anaconda.org/conda-forge/win-64/h3ronpy-0.22.0-py313hf3b5b86_1.conda
@@ -3394,6 +3407,7 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/win-64/netcdf4-1.7.2-nompi_py313hbe59507_104.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/networkx-3.5-pyhe01879c_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/notebook-shim-0.2.4-pyhd8ed1ab_1.conda
+        - conda: https://conda.anaconda.org/conda-forge/win-64/numcodecs-0.16.1-py313hc90dcd4_2.conda
         - conda: https://conda.anaconda.org/conda-forge/win-64/numpy-2.3.3-py313hce7ae62_0.conda
         - conda: https://conda.anaconda.org/conda-forge/win-64/openjpeg-2.5.3-h24db6dd_1.conda
         - conda: https://conda.anaconda.org/conda-forge/win-64/openssl-3.5.2-h725018a_0.conda
@@ -3502,6 +3516,7 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/win-64/xorg-libxdmcp-1.1.5-h0e40799_0.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/xyzservices-2025.4.0-pyhd8ed1ab_0.conda
         - conda: https://conda.anaconda.org/conda-forge/win-64/yaml-0.2.5-h6a83c73_3.conda
+        - conda: https://conda.anaconda.org/conda-forge/noarch/zarr-3.1.5-pyhcf101f3_0.conda
         - conda: https://conda.anaconda.org/conda-forge/win-64/zeromq-4.3.5-h5bddc39_9.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/zict-3.0.0-pyhd8ed1ab_1.conda
         - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-3.23.0-pyhd8ed1ab_0.conda
@@ -4396,13 +4411,13 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/linux-64/zlib-1.3.1-hb9d3cd8_2.conda
         - conda: https://conda.anaconda.org/conda-forge/linux-64/zstandard-0.25.0-py313h54dd161_0.conda
         - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.7-hb8e6e7a_2.conda
-        - pypi: git+https://github.com/astropy/astropy.git#c9fe89a65ea9cb75eb00a40dc5bd4895f40af54b
-        - pypi: https://files.pythonhosted.org/packages/19/3a/1fd856a497a4add1b9b782061b5a804ed35a66e395a43a08f877eb32b193/astropy_iers_data-0.2025.9.29.0.35.48-py3-none-any.whl
-        - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#54d3467b28a87cdfdb696aacbd225ae1db81def1
+        - pypi: git+https://github.com/astropy/astropy.git#5d0876b88128a5d34811b303a51c75b927daab17
+        - pypi: https://files.pythonhosted.org/packages/6a/cf/b80563290409eb01febdf0715b7f8be03172c153a7a3859807936e2f7bbd/astropy_iers_data-0.2025.11.24.0.39.11-py3-none-any.whl
+        - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#38ed572d433e41eda102632d05ddd8276d70fd47
         - pypi: git+https://github.com/keewis/h3ronpy.git?subdirectory=h3ronpy&rev=version#98fa563245092e2578cc6f1f0d860a9f511475f1
-        - pypi: git+https://github.com/eopf-dggs/healpix-geo.git#2c79f767ec4b9fe9634574c0f7f5857fa12230c6
+        - pypi: git+https://github.com/eopf-dggs/healpix-geo.git#c7b776403c98395346f9224a2f51a000379af600
         - pypi: https://files.pythonhosted.org/packages/e5/e0/050018d855d26d3c0b4a7d1b2ed692be758ce276d8289e2a2b44ba1014a5/pyerfa-2.0.1.5-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
-        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/xarray/2025.9.1.dev47+gc703ce4ef/xarray-2025.9.1.dev47+gc703ce4ef-py3-none-any.whl
+        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/xarray/2025.11.1.dev4+ga8efe17e0/xarray-2025.11.1.dev4+ga8efe17e0-py3-none-any.whl
         - pypi: ./
       osx-arm64:
         - conda: https://conda.anaconda.org/conda-forge/noarch/anywidget-0.9.18-pyhd8ed1ab_0.conda
@@ -4629,13 +4644,13 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zlib-1.3.1-h8359307_2.conda
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstandard-0.25.0-py313h9734d34_0.conda
         - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.7-h6491c7d_2.conda
-        - pypi: git+https://github.com/astropy/astropy.git#c9fe89a65ea9cb75eb00a40dc5bd4895f40af54b
-        - pypi: https://files.pythonhosted.org/packages/19/3a/1fd856a497a4add1b9b782061b5a804ed35a66e395a43a08f877eb32b193/astropy_iers_data-0.2025.9.29.0.35.48-py3-none-any.whl
-        - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#54d3467b28a87cdfdb696aacbd225ae1db81def1
+        - pypi: git+https://github.com/astropy/astropy.git#5d0876b88128a5d34811b303a51c75b927daab17
+        - pypi: https://files.pythonhosted.org/packages/6a/cf/b80563290409eb01febdf0715b7f8be03172c153a7a3859807936e2f7bbd/astropy_iers_data-0.2025.11.24.0.39.11-py3-none-any.whl
+        - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#38ed572d433e41eda102632d05ddd8276d70fd47
         - pypi: git+https://github.com/keewis/h3ronpy.git?subdirectory=h3ronpy&rev=version#98fa563245092e2578cc6f1f0d860a9f511475f1
-        - pypi: git+https://github.com/eopf-dggs/healpix-geo.git#2c79f767ec4b9fe9634574c0f7f5857fa12230c6
+        - pypi: git+https://github.com/eopf-dggs/healpix-geo.git#c7b776403c98395346f9224a2f51a000379af600
         - pypi: https://files.pythonhosted.org/packages/11/4a/31a363370478b63c6289a34743f2ba2d3ae1bd8223e004d18ab28fb92385/pyerfa-2.0.1.5-cp39-abi3-macosx_11_0_arm64.whl
-        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/xarray/2025.9.1.dev47+gc703ce4ef/xarray-2025.9.1.dev47+gc703ce4ef-py3-none-any.whl
+        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/xarray/2025.11.1.dev4+ga8efe17e0/xarray-2025.11.1.dev4+ga8efe17e0-py3-none-any.whl
         - pypi: ./
       win-64:
         - conda: https://conda.anaconda.org/conda-forge/win-64/_openmp_mutex-4.5-2_gnu.conda
@@ -4854,13 +4869,13 @@ environments:
         - conda: https://conda.anaconda.org/conda-forge/win-64/zlib-1.3.1-h2466b09_2.conda
         - conda: https://conda.anaconda.org/conda-forge/win-64/zstandard-0.25.0-py313h5fd188c_0.conda
         - conda: https://conda.anaconda.org/conda-forge/win-64/zstd-1.5.7-hbeecb71_2.conda
-        - pypi: git+https://github.com/astropy/astropy.git#c9fe89a65ea9cb75eb00a40dc5bd4895f40af54b
-        - pypi: https://files.pythonhosted.org/packages/19/3a/1fd856a497a4add1b9b782061b5a804ed35a66e395a43a08f877eb32b193/astropy_iers_data-0.2025.9.29.0.35.48-py3-none-any.whl
-        - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#54d3467b28a87cdfdb696aacbd225ae1db81def1
+        - pypi: git+https://github.com/astropy/astropy.git#5d0876b88128a5d34811b303a51c75b927daab17
+        - pypi: https://files.pythonhosted.org/packages/6a/cf/b80563290409eb01febdf0715b7f8be03172c153a7a3859807936e2f7bbd/astropy_iers_data-0.2025.11.24.0.39.11-py3-none-any.whl
+        - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#38ed572d433e41eda102632d05ddd8276d70fd47
         - pypi: git+https://github.com/keewis/h3ronpy.git?subdirectory=h3ronpy&rev=version#98fa563245092e2578cc6f1f0d860a9f511475f1
-        - pypi: git+https://github.com/eopf-dggs/healpix-geo.git#2c79f767ec4b9fe9634574c0f7f5857fa12230c6
+        - pypi: git+https://github.com/eopf-dggs/healpix-geo.git#c7b776403c98395346f9224a2f51a000379af600
         - pypi: https://files.pythonhosted.org/packages/b4/11/97233cf23ad5411ac6f13b1d6ee3888f90ace4f974d9bf9db887aa428912/pyerfa-2.0.1.5-cp39-abi3-win_amd64.whl
-        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/xarray/2025.9.1.dev47+gc703ce4ef/xarray-2025.9.1.dev47+gc703ce4ef-py3-none-any.whl
+        - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/xarray/2025.11.1.dev4+ga8efe17e0/xarray-2025.11.1.dev4+ga8efe17e0-py3-none-any.whl
         - pypi: ./
 packages:
   - conda: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
@@ -5501,16 +5516,16 @@ packages:
       - pkg:pypi/arrow?source=hash-mapping
     size: 99951
     timestamp: 1733584345583
-  - pypi: git+https://github.com/astropy/astropy.git#c9fe89a65ea9cb75eb00a40dc5bd4895f40af54b
+  - pypi: git+https://github.com/astropy/astropy.git#5d0876b88128a5d34811b303a51c75b927daab17
     name: astropy
-    version: 7.2.dev617+gc9fe89a65
+    version: 8.0.0.dev119+g5d0876b88
     requires_dist:
-      - numpy>=1.24
+      - numpy>=1.25
       - pyerfa>=2.0.1.1
-      - astropy-iers-data>=0.2025.9.29.0.35.48
+      - astropy-iers-data>=0.2025.10.27.0.39.10
       - pyyaml>=6.0.0
       - packaging>=22.0.0
-      - scipy>=1.9.2 ; extra == 'recommended'
+      - scipy>=1.10 ; extra == 'recommended'
       - matplotlib>=3.8.0 ; extra == 'recommended'
       - narwhals>=1.42.0 ; extra == 'recommended'
       - ipython>=8.0.0 ; extra == 'ipython'
@@ -5519,7 +5534,7 @@ packages:
       - ipykernel>=6.16.0 ; extra == 'jupyter'
       - ipydatagrid>=1.1.13 ; extra == 'jupyter'
       - jupyter-core>=4.11.2 ; extra == 'jupyter'
-      - pandas>=2.0.0 ; extra == 'jupyter'
+      - pandas>=2.0.2 ; extra == 'jupyter'
       - astropy[recommended] ; extra == 'all'
       - astropy[ipython] ; extra == 'all'
       - astropy[jupyter] ; extra == 'all'
@@ -5530,39 +5545,38 @@ packages:
       - beautifulsoup4>=4.9.3 ; extra == 'all'
       - html5lib>=1.1 ; extra == 'all'
       - bleach>=3.2.1 ; extra == 'all'
-      - sortedcontainers>=1.5.7 ; extra == 'all'
+      - sortedcontainers>=2.1.0 ; extra == 'all'
       - pytz>=2016.10 ; extra == 'all'
-      - jplephem>=2.15 ; extra == 'all'
+      - jplephem>=2.17.0 ; extra == 'all'
       - mpmath>=1.2.1 ; extra == 'all'
-      - asdf>=2.8.3 ; extra == 'all'
       - asdf-astropy>=0.3 ; extra == 'all'
       - bottleneck>=1.3.3 ; extra == 'all'
       - fsspec[http]>=2023.4.0 ; extra == 'all'
       - s3fs>=2023.4.0 ; extra == 'all'
       - uncompresspy>=0.4.0 ; extra == 'all'
-      - coverage>=6.4.4 ; extra == 'test'
-      - pre-commit>=2.9.3 ; extra == 'test'
-      - pytest>=8.0.0 ; extra == 'test'
+      - coverage>=7.2.0 ; extra == 'test'
+      - hypothesis>=6.84.0 ; extra == 'test'
+      - pytest>=8.0.1 ; extra == 'test'
       - pytest-doctestplus>=1.4.0 ; extra == 'test'
       - pytest-astropy-header>=0.2.1 ; extra == 'test'
-      - pytest-astropy>=0.10.0 ; extra == 'test'
-      - pytest-xdist>=2.5.0 ; extra == 'test'
+      - pytest-astropy>=0.11.0 ; extra == 'test'
+      - pytest-xdist>=3.6.0 ; extra == 'test'
       - threadpoolctl>=3.0.0 ; extra == 'test'
       - astropy[all] ; extra == 'test-all'
       - astropy[test] ; extra == 'test-all'
-      - objgraph>=1.6.0 ; extra == 'test-all'
-      - skyfield>=1.20 ; extra == 'test-all'
+      - objgraph>=3.1.2 ; extra == 'test-all'
+      - skyfield>=1.42.0 ; extra == 'test-all'
       - sgp4>=2.3 ; extra == 'test-all'
       - array-api-strict>=1.0 ; extra == 'test-all'
       - array-api-strict<2.4 ; python_full_version < '3.12' and extra == 'test-all'
-      - pandas-stubs>=2.0.0 ; extra == 'typing'
+      - pandas-stubs>=2.0.2 ; extra == 'typing'
       - narwhals>=1.42.0 ; extra == 'typing'
       - astropy[recommended] ; extra == 'docs'
       - sphinx>=8.2.0 ; extra == 'docs'
       - sphinx-astropy[confv2]>=1.9.1 ; extra == 'docs'
       - pytest>=8.0.0 ; extra == 'docs'
       - sphinx-changelog>=1.2.0 ; extra == 'docs'
-      - sphinx-design ; extra == 'docs'
+      - sphinx-design>=0.6.1 ; extra == 'docs'
       - jinja2>=3.1.3 ; extra == 'docs'
       - sphinxcontrib-globalsubs>=0.1.1 ; extra == 'docs'
       - matplotlib>=3.9.1 ; extra == 'docs'
@@ -5570,7 +5584,7 @@ packages:
       - astropy[test] ; extra == 'dev'
       - astropy[docs] ; extra == 'dev'
       - astropy[typing] ; extra == 'dev'
-      - tox ; extra == 'dev-all'
+      - tox>=4.22.0 ; extra == 'dev-all'
       - astropy[dev] ; extra == 'dev-all'
       - astropy[test-all] ; extra == 'dev-all'
     requires_python: ">=3.11"
@@ -5775,10 +5789,10 @@ packages:
       - pkg:pypi/astropy?source=hash-mapping
     size: 9464202
     timestamp: 1757120315355
-  - pypi: https://files.pythonhosted.org/packages/19/3a/1fd856a497a4add1b9b782061b5a804ed35a66e395a43a08f877eb32b193/astropy_iers_data-0.2025.9.29.0.35.48-py3-none-any.whl
+  - pypi: https://files.pythonhosted.org/packages/6a/cf/b80563290409eb01febdf0715b7f8be03172c153a7a3859807936e2f7bbd/astropy_iers_data-0.2025.11.24.0.39.11-py3-none-any.whl
     name: astropy-iers-data
-    version: 0.2025.9.29.0.35.48
-    sha256: c6988670a03a66fefe9266164194c8e5d74513efd13af47efe2829b7be4b5159
+    version: 0.2025.11.24.0.39.11
+    sha256: 219a9fa61ba454e7413b5e3165ecfa9affed8433549df2ca1bb11cb3f590cc2f
     requires_dist:
       - pytest ; extra == 'docs'
       - hypothesis ; extra == 'test'
@@ -7107,9 +7121,9 @@ packages:
       - pkg:pypi/cached-property?source=hash-mapping
     size: 11065
     timestamp: 1615209567874
-  - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#54d3467b28a87cdfdb696aacbd225ae1db81def1
+  - pypi: git+https://github.com/cds-astro/cds-healpix-python.git#38ed572d433e41eda102632d05ddd8276d70fd47
     name: cdshealpix
-    version: 0.7.1
+    version: 0.7.2
     requires_dist:
       - astropy<5.3 ; python_full_version == '3.8.*'
       - astropy ; python_full_version >= '3.9'
@@ -8182,6 +8196,18 @@ packages:
       - pkg:pypi/defusedxml?source=hash-mapping
     size: 24062
     timestamp: 1615232388757
+  - conda: https://conda.anaconda.org/conda-forge/noarch/deprecated-1.3.1-pyhd8ed1ab_0.conda
+    sha256: c994a70449d548dd388768090c71c1da81e1e128a281547ab9022908d46878c5
+    md5: bf74a83f7a0f2a21b5d709997402cac4
+    depends:
+      - python >=3.10
+      - wrapt <2,>=1.10
+    license: MIT
+    license_family: MIT
+    purls:
+      - pkg:pypi/deprecated?source=compressed-mapping
+    size: 15815
+    timestamp: 1761813872696
   - conda: https://conda.anaconda.org/conda-forge/noarch/distributed-2025.7.0-pyhe01879c_0.conda
     sha256: d8c43144fe7dd9d8496491a6bf60996ceb0bbe291e234542e586dba979967df8
     md5: b94b2b0dc755b7f1fd5d1984e46d932c
@@ -8222,6 +8248,18 @@ packages:
       - pkg:pypi/docutils?source=hash-mapping
     size: 402700
     timestamp: 1733217860944
+  - conda: https://conda.anaconda.org/conda-forge/noarch/donfig-0.8.1.post1-pyhd8ed1ab_1.conda
+    sha256: d58e97d418f71703e822c422af5b9c431e3621a0ecdc8b0334c1ca33e076dfe7
+    md5: c56a7fa5597ad78b62e1f5d21f7f8b8f
+    depends:
+      - python >=3.9
+      - pyyaml
+    license: MIT
+    license_family: MIT
+    purls:
+      - pkg:pypi/donfig?source=hash-mapping
+    size: 22491
+    timestamp: 1734368817583
   - conda: https://conda.anaconda.org/conda-forge/noarch/exceptiongroup-1.3.0-pyhd8ed1ab_0.conda
     sha256: ce61f4f99401a4bd455b89909153b40b9c823276aefcbb06f2044618696009ca
     md5: 72e42d28960d875c7654614f8b50939a
@@ -8830,6 +8868,52 @@ packages:
     purls: []
     size: 112215
     timestamp: 1718284365403
+  - conda: https://conda.anaconda.org/conda-forge/linux-64/google-crc32c-1.7.1-py313h74173ec_1.conda
+    sha256: 81ca7fb5c0756e3a5934fe18b44b90be475a03329bcd715334455aec340e34c0
+    md5: 8580f244242b4d6a8c1933d8d0475b9c
+    depends:
+      - __glibc >=2.17,<3.0.a0
+      - libcrc32c >=1.1.2,<1.2.0a0
+      - libgcc >=14
+      - python >=3.13,<3.14.0a0
+      - python_abi 3.13.* *_cp313
+    license: Apache-2.0
+    license_family: Apache
+    purls:
+      - pkg:pypi/google-crc32c?source=hash-mapping
+    size: 24798
+    timestamp: 1755850411927
+  - conda: https://conda.anaconda.org/conda-forge/osx-arm64/google-crc32c-1.7.1-py313h7962f2b_1.conda
+    sha256: 789ddc2a6f49064f5212457180f2f5100ad270e931d07a55f63913f7a828d690
+    md5: c0cd6024b9de7ff1f7d995b40bf9d5c5
+    depends:
+      - __osx >=11.0
+      - libcrc32c >=1.1.2,<1.2.0a0
+      - python >=3.13,<3.14.0a0
+      - python >=3.13,<3.14.0a0 *_cp313
+      - python_abi 3.13.* *_cp313
+    license: Apache-2.0
+    license_family: Apache
+    purls:
+      - pkg:pypi/google-crc32c?source=hash-mapping
+    size: 24516
+    timestamp: 1755850529391
+  - conda: https://conda.anaconda.org/conda-forge/win-64/google-crc32c-1.7.1-py313h5327936_1.conda
+    sha256: 5d1a3322ab5949c63326bbb779feaf47f95902849a9687da094e8de490250e22
+    md5: 35b1131e4ea5eb0f27664eeb68c9a29b
+    depends:
+      - libcrc32c >=1.1.2,<1.2.0a0
+      - python >=3.13,<3.14.0a0
+      - python_abi 3.13.* *_cp313
+      - ucrt >=10.0.20348.0
+      - vc >=14.3,<15
+      - vc14_runtime >=14.44.35208
+    license: Apache-2.0
+    license_family: Apache
+    purls:
+      - pkg:pypi/google-crc32c?source=hash-mapping
+    size: 27799
+    timestamp: 1755850484807
   - conda: https://conda.anaconda.org/conda-forge/linux-64/greenlet-3.2.4-py313h7033f15_1.conda
     sha256: 1e8721a277c137fd4df8083b4fdd3b2f163156efebf03d0fee3d8b6c978e56c0
     md5: 54e4dec31235bbc794d091af9afcd845
@@ -9366,9 +9450,9 @@ packages:
     purls: []
     size: 2031491
     timestamp: 1753357255237
-  - pypi: git+https://github.com/eopf-dggs/healpix-geo.git#2c79f767ec4b9fe9634574c0f7f5857fa12230c6
+  - pypi: git+https://github.com/eopf-dggs/healpix-geo.git#c7b776403c98395346f9224a2f51a000379af600
     name: healpix-geo
-    version: 0.0.7
+    version: 0.0.8
     requires_dist:
       - numpy
       - shapely>=2 ; extra == 'geometries'
@@ -14742,6 +14826,66 @@ packages:
       - pkg:pypi/notebook-shim?source=hash-mapping
     size: 16817
     timestamp: 1733408419340
+  - conda: https://conda.anaconda.org/conda-forge/linux-64/numcodecs-0.16.1-py313h08cd8bf_2.conda
+    sha256: 5ff756ee38c4e7d13230703f7f8ee017df6217aa783b841a1642845804573e01
+    md5: 9b0bbd18cd7c0ac846810433191e7078
+    depends:
+      - __glibc >=2.17,<3.0.a0
+      - deprecated
+      - libgcc >=14
+      - libstdcxx >=14
+      - msgpack-python
+      - numpy >=1.23,<3
+      - numpy >=1.24
+      - python >=3.13,<3.14.0a0
+      - python_abi 3.13.* *_cp313
+      - typing_extensions
+    license: MIT
+    license_family: MIT
+    purls:
+      - pkg:pypi/numcodecs?source=hash-mapping
+    size: 818047
+    timestamp: 1759814333161
+  - conda: https://conda.anaconda.org/conda-forge/osx-arm64/numcodecs-0.16.1-py313h7d16b84_2.conda
+    sha256: 98160ec78d22967e3716feb2b8833432b252c7778673451bae2df57362cf85cf
+    md5: 60ec3544c9060deadd664a5691b46bbd
+    depends:
+      - __osx >=11.0
+      - deprecated
+      - libcxx >=19
+      - msgpack-python
+      - numpy >=1.23,<3
+      - numpy >=1.24
+      - python >=3.13,<3.14.0a0
+      - python >=3.13,<3.14.0a0 *_cp313
+      - python_abi 3.13.* *_cp313
+      - typing_extensions
+    license: MIT
+    license_family: MIT
+    purls:
+      - pkg:pypi/numcodecs?source=hash-mapping
+    size: 664139
+    timestamp: 1759814677527
+  - conda: https://conda.anaconda.org/conda-forge/win-64/numcodecs-0.16.1-py313hc90dcd4_2.conda
+    sha256: d6f7fe60fa90a19f4fb464a6f9347583c519e7749bd7f008d03dcae5a432dd53
+    md5: 90567ede3e975ffaf8c5fd85441ea756
+    depends:
+      - deprecated
+      - msgpack-python
+      - numpy >=1.23,<3
+      - numpy >=1.24
+      - python >=3.13,<3.14.0a0
+      - python_abi 3.13.* *_cp313
+      - typing_extensions
+      - ucrt >=10.0.20348.0
+      - vc >=14.3,<15
+      - vc14_runtime >=14.44.35208
+    license: MIT
+    license_family: MIT
+    purls:
+      - pkg:pypi/numcodecs?source=hash-mapping
+    size: 514951
+    timestamp: 1759814346546
   - conda: https://conda.anaconda.org/conda-forge/linux-64/numpy-2.3.3-py311h2e04523_0.conda
     sha256: 264528d6e73d5c902a0463d9d138607018d994b86e209df4a51945886233989d
     md5: 3b0d0a2241770397d3146fdcab3b49f8
@@ -19586,9 +19730,9 @@ packages:
       - pkg:pypi/wrapt?source=hash-mapping
     size: 63385
     timestamp: 1756851987645
-  - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/xarray/2025.9.1.dev47+gc703ce4ef/xarray-2025.9.1.dev47+gc703ce4ef-py3-none-any.whl
+  - pypi: https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/xarray/2025.11.1.dev4+ga8efe17e0/xarray-2025.11.1.dev4+ga8efe17e0-py3-none-any.whl
     name: xarray
-    version: 2025.9.1.dev47+gc703ce4ef
+    version: 2025.11.1.dev4+ga8efe17e0
     requires_dist:
       - numpy>=1.26
       - packaging>=24.1
@@ -19611,7 +19755,7 @@ packages:
       - sparse>=0.15 ; extra == 'etc'
       - dask[complete] ; extra == 'parallel'
       - cartopy>=0.23 ; extra == 'viz'
-      - matplotlib ; extra == 'viz'
+      - matplotlib>=3.8 ; extra == 'viz'
       - nc-time-axis ; extra == 'viz'
       - seaborn ; extra == 'viz'
       - pandas-stubs ; extra == 'types'
@@ -19669,8 +19813,8 @@ packages:
     timestamp: 1756981236899
   - pypi: ./
     name: xdggs
-    version: 0.3.1.dev16+g6c17806eb
-    sha256: 823b456707887d8bd73200e36509f5e5e3d25ffb2f67a4a73e9f25b6ad73c831
+    version: 0.4.1.dev11+gde9735f92.d20251124
+    sha256: 5f0e0d0b6133e8be0e28406bc7490131163bdf7e5cf627d2559b71d261560ef4
     requires_dist:
       - arro3-core>=0.4.0
       - cdshealpix
@@ -19835,6 +19979,26 @@ packages:
     purls: []
     size: 63944
     timestamp: 1753484092156
+  - conda: https://conda.anaconda.org/conda-forge/noarch/zarr-3.1.5-pyhcf101f3_0.conda
+    sha256: c36bec7d02d2f227409fcc4cf586cf3a658af068b58374de7f8f2d0b5c1c84f9
+    md5: c1844a94b2be61bb03bbb71574a0abfc
+    depends:
+      - python >=3.11
+      - packaging >=22.0
+      - numpy >=1.26
+      - numcodecs >=0.14
+      - typing_extensions >=4.9
+      - donfig >=0.8
+      - google-crc32c >=1.5
+      - python
+    constrains:
+      - fsspec >=2023.10.0
+      - obstore >=0.5.1
+    license: MIT
+    purls:
+      - pkg:pypi/zarr?source=hash-mapping
+    size: 305998
+    timestamp: 1763742695201
   - conda: https://conda.anaconda.org/conda-forge/linux-64/zeromq-4.3.5-h387f397_9.conda
     sha256: 47cfe31255b91b4a6fa0e9dbaf26baa60ac97e033402dbc8b90ba5fee5ffe184
     md5: 8035e5b54c08429354d5d64027041cad
