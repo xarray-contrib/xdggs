@@ -48,17 +48,24 @@ def create_coordinate(grid_name, dim, level, **options):
     return xr.Variable(dim, cell_ids, grid_info)
 
 
-def create_index(name, coord, options=None):
-    translations = {"refinement_level": "level", "grid_mapping_name": "grid_name"}
+def drop_attrs(var):
+    new = var.copy(deep=False)
+    new.attrs = {}
 
-    if options is None:
-        options = {}
+    return new
 
-    grid_info = {
-        translations.get(name, name): value for name, value in coord.attrs.items()
+
+def create_index(name, coord, grid_info):
+    coord_ = coord.copy(deep=False)
+    coord_.attrs = grid_info
+
+    creation_funcs = {
+        "h3": xdggs.H3Index.from_variables,
+        "healpix": xdggs.HealpixIndex.from_variables,
     }
+    func = creation_funcs[grid_info["grid_name"]]
 
-    return xdggs.HealpixIndex.from_variables({name: coord}, options=grid_info | options)
+    return func({name: coord_}, options={})
 
 
 @pytest.mark.parametrize("obj_type", ["DataArray", "Dataset"])
