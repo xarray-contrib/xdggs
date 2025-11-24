@@ -10,6 +10,7 @@ import xarray as xr
 from healpix_geo.nested import RangeMOCIndex
 from xarray.core.indexes import IndexSelResult, PandasIndex
 
+from xdggs.ellipsoid import Ellipsoid, Sphere, parse_ellipsoid
 from xdggs.grid import DGGSInfo, translate_parameters
 from xdggs.index import DGGSIndex
 from xdggs.itertools import identity
@@ -110,6 +111,9 @@ class HealpixInfo(DGGSInfo):
         .. warning::
             Note that ``"unique"`` is currently not supported as the underlying library
             (:doc:`cdshealpix <cdshealpix-python:index>`) does not support it.
+    ellipsoid : str or Ellipsoid or Sphere, default: "sphere"
+        The base ellipsoid. If a string, must be the name of one of the ellipsoids supported by the
+        `geodesy crate <https://github.com/busstoptaktik/geodesy/blob/f9090b8c91f401892a93979f100fa4d987eb0836/src/ellipsoid/constants.rs#L6-L54>`_.
     """
 
     level: int
@@ -118,8 +122,8 @@ class HealpixInfo(DGGSInfo):
     indexing_scheme: Literal["nested", "ring"] = "nested"
     """int : The indexing scheme of the grid"""
 
-    ellipsoid: str = "sphere"
-    """str : The name of the ellipsoid"""
+    ellipsoid: str | Sphere | Ellipsoid = "sphere"
+    """str : The ellipsoid"""
 
     valid_parameters: ClassVar[dict[str, Any]] = {
         "level": range(0, 29 + 1),
@@ -175,12 +179,19 @@ class HealpixInfo(DGGSInfo):
 
             return potential_level
 
+        def translate_ellipsoid(value):
+            if isinstance(value, str):
+                return value
+
+            return parse_ellipsoid(value)
+
         translations = {
             "nside": ("level", translate_nside),
             "order": ("level", identity),
             "resolution": ("level", identity),
             "depth": ("level", identity),
             "nest": ("indexing_scheme", lambda nest: "nested" if nest else "ring"),
+            "ellipsoid": ("ellipsoid", translate_ellipsoid),
         }
 
         params = translate_parameters(mapping, translations)

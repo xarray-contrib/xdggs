@@ -1,4 +1,5 @@
 import itertools
+import string
 
 import hypothesis.extra.numpy as npst
 import hypothesis.strategies as st
@@ -11,7 +12,7 @@ import xarray.testing.strategies as xrst
 from hypothesis import given
 from xarray.core.indexes import PandasIndex
 
-from xdggs import healpix
+from xdggs import ellipsoid, healpix
 from xdggs.tests import (
     assert_exceptions_equal,
     da,
@@ -28,6 +29,28 @@ class strategies:
     # TODO: add back `"unique"` once that is supported
     indexing_schemes = st.sampled_from(["nested", "ring"])
     invalid_indexing_schemes = st.text().filter(lambda x: x not in ["nested", "ring"])
+
+    axis_sizes = st.floats(
+        min_value=0,
+        allow_nan=False,
+        allow_infinity=False,
+        allow_subnormal=False,
+        exclude_min=True,
+    )
+    names = st.none() | st.text(
+        alphabet=st.sampled_from(string.ascii_letters + string.digits),
+        min_size=1,
+    )
+    ellipsoids = st.one_of(
+        st.sampled_from(["WGS84", "airy", "bessel", "sphere", "unitsphere"]),
+        st.builds(ellipsoid.Sphere, radius=axis_sizes, name=names),
+        st.builds(
+            ellipsoid.Ellipsoid,
+            semimajor_axis=axis_sizes,
+            inverse_flattening=axis_sizes,
+            name=names,
+        ),
+    )
 
     dims = xrst.names()
 
@@ -158,12 +181,15 @@ class TestHealpixInfo:
                 indexing_scheme=indexing_scheme,
             )
 
-    @given(strategies.levels, strategies.indexing_schemes)
-    def test_init(self, level, indexing_scheme):
-        grid = healpix.HealpixInfo(level=level, indexing_scheme=indexing_scheme)
+    @given(strategies.levels, strategies.indexing_schemes, strategies.ellipsoids)
+    def test_init(self, level, indexing_scheme, ellipsoid):
+        grid = healpix.HealpixInfo(
+            level=level, indexing_scheme=indexing_scheme, ellipsoid=ellipsoid
+        )
 
         assert grid.level == level
         assert grid.indexing_scheme == indexing_scheme
+        assert grid.ellipsoid == ellipsoid
 
     @given(strategies.levels)
     def test_nside(self, level):
