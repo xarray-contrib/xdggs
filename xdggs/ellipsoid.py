@@ -1,4 +1,5 @@
 from dataclasses import asdict, dataclass, field
+from typing import Any
 
 
 @dataclass
@@ -69,3 +70,12 @@ class Sphere:
             del mapping["name"]
 
         return mapping
+
+
+def parse_ellipsoid(mapping: dict[str, Any]) -> Sphere | Ellipsoid:
+    if "semimajor_axis" in mapping:
+        return Ellipsoid.from_dict(mapping)
+    elif "radius" in mapping:
+        return Sphere.from_dict(mapping)
+    else:
+        raise ValueError(f"unknown ellipsoid definition: {mapping}")
