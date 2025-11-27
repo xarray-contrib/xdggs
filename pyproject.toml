@@ -137,7 +137,7 @@ pyproj = ">=3.3"
 matplotlib-base = ">=3.10.5"
 arro3-core = ">=0.4.0"
 pooch = ">=1.8.2"
-healpix-geo = ">=0.0.6"
+healpix-geo = ">=0.0.8"
 
 [tool.pixi.feature.tests.dependencies]
 pytest = "*"
