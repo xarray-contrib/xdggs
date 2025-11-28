@@ -42,7 +42,7 @@ class Ellipsoid:
         if self.name is not None:
             return self.name
 
-        return self.to_dict()
+        return self
 
 
 @dataclass
@@ -81,7 +81,7 @@ class Sphere:
         if self.name is not None:
             return self.name
 
-        return self.to_dict()
+        return self
 
 
 def parse_ellipsoid(mapping: dict[str, Any]) -> Sphere | Ellipsoid:
