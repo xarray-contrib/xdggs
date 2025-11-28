@@ -109,7 +109,7 @@ class HealpixInfo(DGGSInfo):
         .. warning::
             Note that ``"unique"`` is currently not supported as the underlying library
             (:doc:`cdshealpix <cdshealpix-python:index>`) does not support it.
-    ellipsoid : ellipsoid-like, default: "sphere"
+    ellipsoid : ellipsoid-like, optional
         The reference ellipsoid. If not passed, a sphere is assumed.
     """
 
@@ -119,7 +119,7 @@ class HealpixInfo(DGGSInfo):
     indexing_scheme: Literal["nested", "ring"] = "nested"
     """int : The indexing scheme of the grid"""
 
-    ellipsoid: str | Sphere | Ellipsoid = "sphere"
+    ellipsoid: str | Sphere | Ellipsoid | None = None
     """str : The ellipsoid"""
 
     valid_parameters: ClassVar[dict[str, Any]] = {
