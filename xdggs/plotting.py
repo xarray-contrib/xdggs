@@ -62,11 +62,16 @@ class Map(LonboardMap):
 
         return MapGrid([self, other])
 
-    def __and__(self, map):
-        if isinstance(map, (MapWithSliders, MapGrid)):
+    def __and__(self, other):
+        if isinstance(other, (MapWithSliders, MapGrid)):
             return NotImplemented
 
-        layers = list(self.layers) + list(map.layers)
+        if isinstance(other, BaseLayer):
+            other_layers = [other]
+        else:
+            other_layers = list(other.layers)
+
+        layers = list(self.layers) + list(other_layers)
 
         return type(self)(layers)
 
