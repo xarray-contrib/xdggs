@@ -57,6 +57,9 @@ def extract_maps(obj: MapGrid | MapWithSliders | Map | LonboardMap):
 
 class Map(LonboardMap):
     def __or__(self, other: Map | MapWithSliders):
+        if isinstance(other, MapGrid):
+            return NotImplemented
+
         return MapGrid([self, other])
 
     def __and__(self, map):
@@ -114,6 +117,9 @@ class MapWithSliders(ipywidgets.VBox):
         self.map.add_layer(layer)
 
     def __and__(self, other: MapWithSliders | Map | BaseLayer):
+        if isinstance(other, MapGrid):
+            return NotImplemented
+
         if isinstance(other, BaseLayer):
             layers = [other]
             sliders = []
