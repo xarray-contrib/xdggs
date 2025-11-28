@@ -311,6 +311,18 @@ class TestHealpixInfo:
                     ]
                 ),
             ),
+            (
+                {"level": 2, "indexing_scheme": "nested", "ellipsoid": "WGS84"},
+                np.array([79]),
+                np.array(
+                    [
+                        [0.0, 19.55202227],
+                        [11.25, 30.11125172],
+                        [0.0, 41.93785391],
+                        [-11.25, 30.11125172],
+                    ]
+                ),
+            ),
         ),
     )
     @pytest.mark.parametrize("backend", ["shapely", "geoarrow"])
