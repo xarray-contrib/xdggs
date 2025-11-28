@@ -74,11 +74,13 @@ class strategies:
     def grids(
         levels=levels,
         indexing_schemes=indexing_schemes,
+        ellipsoids=ellipsoids("in_memory_only"),
     ):
         return st.builds(
             healpix.HealpixInfo,
             level=levels,
             indexing_scheme=indexing_schemes,
+            ellipsoid=ellipsoids,
         )
 
     @classmethod
@@ -87,6 +89,7 @@ class strategies:
         levels=levels,
         indexing_schemes=indexing_schemes,
         dtypes=None,
+        ellipsoids=ellipsoids("in_memory_only"),
     ):
         cell_levels = st.shared(levels, key="common-levels")
         grid_levels = st.shared(levels, key="common-levels")
@@ -96,6 +99,7 @@ class strategies:
         grids_ = cls.grids(
             levels=grid_levels,
             indexing_schemes=indexing_schemes,
+            ellipsoids=ellipsoids,
         )
 
         return cell_ids_, grids_
