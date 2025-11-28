@@ -11,17 +11,17 @@ class Ellipsoid:
 
     Parameters
     ----------
-    semimajor_axis : str
+    semimajor_axis : float
         The semimajor axis of the ellipsoid, in meters.
-    inverse_flattening : str
+    inverse_flattening : float
         The inverse flattening parameter of the ellipsoid.
     name : str, optional
         The name of the ellipsoid. Pass ``None`` if the ellipsoid is not named.
     """
 
-    semimajor_axis: str = field(kw_only=True)
+    semimajor_axis: float = field(kw_only=True)
     """The semimajor axis of the ellipsoid."""
-    inverse_flattening: str = field(kw_only=True)
+    inverse_flattening: float = field(kw_only=True)
     """The inverse flattening parameter of the ellipsoid"""
 
     name: str | None = field(default=None, kw_only=True)
@@ -48,13 +48,13 @@ class Sphere:
 
     Parameters
     ----------
-    radius : str
+    radius : float
         The radius of the sphere, in meters.
     name : str, optional
         The name of the sphere. Pass ``None`` if the sphere is not named.
     """
 
-    radius: str = field(kw_only=True)
+    radius: float = field(kw_only=True)
     """The radius of the sphere, in meters."""
 
     name: str | None = field(default=None, kw_only=True)
