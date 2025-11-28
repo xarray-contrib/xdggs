@@ -88,6 +88,8 @@ napoleon_type_aliases = {
     "scalar": ":term:`scalar`",
     "array": ":term:`array`",
     "hashable": ":term:`hashable <name>`",
+    # geographic
+    "ellipsoid-like": ":term:`ellipsoid-like <healpix-geo:ellipsoid-like>`",
 }
 
 # -- Options for HTML output -------------------------------------------------

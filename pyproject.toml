@@ -137,7 +137,7 @@ pyproj = ">=3.3"
 matplotlib-base = ">=3.10.5"
 arro3-core = ">=0.4.0"
 pooch = ">=1.8.2"
-healpix-geo = ">=0.0.6"
+healpix-geo = ">=0.0.8"
 
 [tool.pixi.feature.tests.dependencies]
 pytest = "*"
@@ -217,6 +217,7 @@ jupyterlab_code_formatter = "*"
 python-build = ">=1.3.0,<2"
 geopandas = ">=1.1.1,<2"
 pyinstrument = ">=5.1.1,<6"
+zarr = ">=3.1.5,<4"
 
 [tool.pixi.environments]
 nightly = { features = ["tests", "nightly"], no-default-feature = true }

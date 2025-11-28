@@ -2,6 +2,7 @@ import operator
 from dataclasses import dataclass
 from typing import Any, Self, TypeVar
 
+from xdggs.ellipsoid import Ellipsoid, Sphere, parse_ellipsoid
 from xdggs.itertools import groupby, identity
 
 T = TypeVar("T")
@@ -19,16 +20,26 @@ class DGGSInfo:
         grows exponentially with increasing level values, ranging from 5-100 cells at
         level 0 to millions or billions of cells at level 10+ (the exact numbers depends
         on the specific grid).
+    ellipsoid : str or Sphere or Ellipsoid, default: "sphere"
+        The base ellipsoid of the DGGS. If a string, this is the standard name of the ellipsoid or sphere.
     """
 
     level: int
+    ellipsoid: str | Sphere | Ellipsoid = "sphere"
 
     @classmethod
     def from_dict(cls: type[T], mapping: dict[str, Any]) -> T:
-        return cls(**mapping)
+        kwargs = dict(mapping)
+        if "ellipsoid" in kwargs:
+            kwargs["ellipsoid"] = parse_ellipsoid(kwargs["ellipsoid"])
+        return cls(**kwargs)
 
     def to_dict(self: Self) -> dict[str, Any]:
-        return {"level": self.level}
+        ell = self.ellipsoid
+        return {
+            "level": self.level,
+            "ellipsoid": ell if isinstance(ell, str) else ell.to_dict(),
+        }
 
     def cell_ids2geographic(self, cell_ids):
         raise NotImplementedError()
