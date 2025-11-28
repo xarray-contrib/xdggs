@@ -120,7 +120,7 @@ class HealpixInfo(DGGSInfo):
     """int : The indexing scheme of the grid"""
 
     ellipsoid: str | Sphere | Ellipsoid | None = None
-    """str : The ellipsoid"""
+    """ellipsoid-like : The ellipsoid"""
 
     valid_parameters: ClassVar[dict[str, Any]] = {
         "level": range(0, 29 + 1),
@@ -185,7 +185,7 @@ class HealpixInfo(DGGSInfo):
             return potential_level
 
         def translate_ellipsoid(value):
-            if isinstance(value, str):
+            if isinstance(value, (str, Sphere, Ellipsoid)):
                 return value
 
             return parse_ellipsoid(value)
@@ -213,7 +213,11 @@ class HealpixInfo(DGGSInfo):
         """
         optional_values = {}
         if self.ellipsoid is not None:
-            optional_values["ellipsoid"] = self._format_ellipsoid()
+            optional_values["ellipsoid"] = (
+                self.ellipsoid
+                if isinstance(self.ellipsoid, str)
+                else self.ellipsoid.to_dict()
+            )
 
         return {
             "grid_name": "healpix",

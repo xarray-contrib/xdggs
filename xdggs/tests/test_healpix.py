@@ -42,7 +42,7 @@ class strategies:
             "order": cls.levels,
             "indexing_scheme": cls.indexing_schemes,
             "nest": st.booleans(),
-            "ellipsoid": ellipsoids,
+            "ellipsoid": ellipsoids("serialized_only"),
         }
 
         names = {
@@ -170,7 +170,9 @@ class TestHealpixInfo:
                 indexing_scheme=indexing_scheme,
             )
 
-    @given(strategies.levels, strategies.indexing_schemes, ellipsoids)
+    @given(
+        strategies.levels, strategies.indexing_schemes, ellipsoids("serialized_only")
+    )
     def test_init(self, level, indexing_scheme, ellipsoid):
         grid = healpix.HealpixInfo(
             level=level, indexing_scheme=indexing_scheme, ellipsoid=ellipsoid
@@ -204,23 +206,38 @@ class TestHealpixInfo:
     def test_from_dict(self, mapping) -> None:
         healpix.HealpixInfo.from_dict(mapping)
 
-    @given(strategies.levels, strategies.indexing_schemes)
-    def test_to_dict(self, level, indexing_scheme) -> None:
-        grid = healpix.HealpixInfo(level=level, indexing_scheme=indexing_scheme)
+    @given(strategies.levels, strategies.indexing_schemes, ellipsoids("in_memory_only"))
+    def test_to_dict(self, level, indexing_scheme, ellipsoid) -> None:
+        grid = healpix.HealpixInfo(
+            level=level, indexing_scheme=indexing_scheme, ellipsoid=ellipsoid
+        )
         actual = grid.to_dict()
 
-        assert set(actual) == {"grid_name", "level", "indexing_scheme"}
+        expected_names = {"grid_name", "level", "indexing_scheme"}
+        if ellipsoid is not None:
+            expected_names.add("ellipsoid")
+
+        assert set(actual) == expected_names
         assert actual["grid_name"] == "healpix"
         assert actual["level"] == level
         assert actual["indexing_scheme"] == indexing_scheme
+        if ellipsoid is not None:
+            expected_ellipsoid = (
+                ellipsoid if isinstance(ellipsoid, str) else ellipsoid.to_dict()
+            )
+            assert actual["ellipsoid"] == expected_ellipsoid
 
-    @given(strategies.levels, strategies.indexing_schemes)
-    def test_roundtrip(self, level, indexing_scheme):
+    @given(
+        strategies.levels, strategies.indexing_schemes, ellipsoids("serialized_only")
+    )
+    def test_roundtrip(self, level, indexing_scheme, ellipsoid):
         mapping = {
             "grid_name": "healpix",
             "level": level,
             "indexing_scheme": indexing_scheme,
         }
+        if ellipsoid is not None:
+            mapping["ellipsoid"] = ellipsoid
 
         grid = healpix.HealpixInfo.from_dict(mapping)
         roundtripped = grid.to_dict()

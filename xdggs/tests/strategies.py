@@ -24,10 +24,16 @@ _ellipsoids = st.builds(
 )
 _spheres = st.builds(ellipsoid.Sphere, radius=axis_sizes, name=names)
 
-ellipsoids = st.one_of(
-    st.sampled_from(["WGS84", "airy", "bessel", "sphere", "unitsphere"]),
-    _ellipsoids,
-    _spheres,
-    _ellipsoids.map(lambda x: x.to_dict()),
-    _spheres.map(lambda x: x.to_dict()),
-)
+
+def ellipsoids(variant="all"):
+    named = st.sampled_from(["WGS84", "airy", "bessel", "sphere", "unitsphere"])
+    serialized = _ellipsoids.map(lambda x: x.to_dict()) | _spheres.map(
+        lambda x: x.to_dict()
+    )
+    in_memory = _ellipsoids | _spheres
+
+    variants = {
+        "serialized_only": named | serialized,
+        "in_memory_only": named | in_memory,
+    }
+    return variants.get(variant, named | serialized | in_memory)
