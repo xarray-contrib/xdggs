@@ -210,11 +210,15 @@ class HealpixInfo(DGGSInfo):
         mapping : dict of str to any
             The normalized grid parameters.
         """
+        optional_values = {}
+        if self.ellipsoid is not None:
+            optional_values["ellipsoid"] = self._format_ellipsoid()
+
         return {
             "grid_name": "healpix",
             "level": self.level,
             "indexing_scheme": self.indexing_scheme,
-        }
+        } | optional_values
 
     def cell_ids2geographic(self, cell_ids):
         """
