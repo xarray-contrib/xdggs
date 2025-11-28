@@ -155,15 +155,10 @@ class HealpixInfo(DGGSInfo):
             return self.indexing_scheme == "nested"
 
     def _format_ellipsoid(self) -> str:
-        ell = self.ellipsoid
-        if isinstance(ell, Sphere):
-            raise ValueError(
-                "Custom spheres are currently not supported by `healpix-geo`"
-            )
-        elif isinstance(ell, Ellipsoid):
-            return f"{ell.semimajor_axis} {ell.inverse_flattening}"
-        else:
-            return ell
+        if isinstance(self.ellipsoid, str):
+            return self.ellipsoid
+
+        return self.ellipsoid._serialize()
 
     @classmethod
     def from_dict(cls: type[T], mapping: dict[str, Any]) -> T:
