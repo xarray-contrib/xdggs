@@ -154,7 +154,9 @@ class HealpixInfo(DGGSInfo):
             return self.indexing_scheme == "nested"
 
     def _format_ellipsoid(self) -> str:
-        if isinstance(self.ellipsoid, str):
+        if self.ellipsoid is None:
+            return "sphere"
+        elif isinstance(self.ellipsoid, str):
             return self.ellipsoid
 
         return self.ellipsoid._serialize()
