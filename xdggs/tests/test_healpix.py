@@ -361,29 +361,53 @@ class TestHealpixInfo:
         np.testing.assert_equal(roundtripped, cell_ids)
 
     @pytest.mark.parametrize(
-        ["cell_ids", "level", "indexing_scheme", "expected"],
+        ["cell_ids", "level", "indexing_scheme", "ellipsoid", "expected"],
         (
             pytest.param(
                 np.array([3]),
                 1,
                 "ring",
+                None,
                 (np.array([315.0]), np.array([66.44353569089877])),
             ),
             pytest.param(
                 np.array([5, 11, 21]),
                 3,
                 "nested",
+                None,
                 (
                     np.array([61.875, 33.75, 84.375]),
                     np.array([19.47122063, 24.62431835, 41.8103149]),
                 ),
             ),
+            pytest.param(
+                np.array([3]),
+                1,
+                "ring",
+                "bessel",
+                (
+                    np.array([315.0]),
+                    np.array([66.53709311]),
+                ),
+            ),
+            pytest.param(
+                np.array([5, 11, 21]),
+                3,
+                "nested",
+                "WGS84",
+                (
+                    np.array([61.875, 33.75, 84.375]),
+                    np.array([19.55202227, 24.72167338, 41.93785391]),
+                ),
+            ),
         ),
     )
     def test_cell_ids2geographic(
-        self, cell_ids, level, indexing_scheme, expected
+        self, cell_ids, level, indexing_scheme, ellipsoid, expected
     ) -> None:
-        grid = healpix.HealpixInfo(level=level, indexing_scheme=indexing_scheme)
+        grid = healpix.HealpixInfo(
+            level=level, indexing_scheme=indexing_scheme, ellipsoid=ellipsoid
+        )
 
         actual_lon, actual_lat = grid.cell_ids2geographic(cell_ids)
 
@@ -391,12 +415,13 @@ class TestHealpixInfo:
         np.testing.assert_allclose(actual_lat, expected[1])
 
     @pytest.mark.parametrize(
-        ["cell_centers", "level", "indexing_scheme", "expected"],
+        ["cell_centers", "level", "indexing_scheme", "ellipsoid", "expected"],
         (
             pytest.param(
                 np.array([[315.0, 66.44353569089877]]),
                 1,
                 "ring",
+                None,
                 np.array([3]),
             ),
             pytest.param(
@@ -405,14 +430,33 @@ class TestHealpixInfo:
                 ),
                 3,
                 "nested",
+                None,
+                np.array([5, 11, 21]),
+            ),
+            pytest.param(
+                np.array([[315.0, 66.53709311]]),
+                1,
+                "ring",
+                "bessel",
+                np.array([3]),
+            ),
+            pytest.param(
+                np.array(
+                    [[61.875, 19.55202227], [33.75, 24.72167338], [84.375, 41.93785391]]
+                ),
+                3,
+                "nested",
+                "WGS84",
                 np.array([5, 11, 21]),
             ),
         ),
     )
     def test_geographic2cell_ids(
-        self, cell_centers, level, indexing_scheme, expected
+        self, cell_centers, level, indexing_scheme, ellipsoid, expected
     ) -> None:
-        grid = healpix.HealpixInfo(level=level, indexing_scheme=indexing_scheme)
+        grid = healpix.HealpixInfo(
+            level=level, indexing_scheme=indexing_scheme, ellipsoid=ellipsoid
+        )
 
         actual = grid.geographic2cell_ids(
             lon=cell_centers[:, 0], lat=cell_centers[:, 1]
