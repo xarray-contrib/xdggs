@@ -109,9 +109,8 @@ class HealpixInfo(DGGSInfo):
         .. warning::
             Note that ``"unique"`` is currently not supported as the underlying library
             (:doc:`cdshealpix <cdshealpix-python:index>`) does not support it.
-    ellipsoid : str or Ellipsoid or Sphere, default: "sphere"
-        The base ellipsoid. If a string, must be the name of one of the ellipsoids supported by the
-        `geodesy crate <https://github.com/busstoptaktik/geodesy/blob/f9090b8c91f401892a93979f100fa4d987eb0836/src/ellipsoid/constants.rs#L6-L54>`_.
+    ellipsoid : ellipsoid-like, default: "sphere"
+        The reference ellipsoid. If not passed, a sphere is assumed.
     """
 
     level: int
