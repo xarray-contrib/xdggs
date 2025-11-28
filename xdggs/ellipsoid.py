@@ -89,5 +89,5 @@ def parse_ellipsoid(mapping: dict[str, Any]) -> Sphere | Ellipsoid:
         return Ellipsoid.from_dict(mapping)
     elif "radius" in mapping:
         return Sphere.from_dict(mapping)
-    else:
+    else:  # pragma: no cover
         raise ValueError(f"unknown ellipsoid definition: {mapping}")
