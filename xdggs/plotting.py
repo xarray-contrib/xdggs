@@ -11,6 +11,8 @@ import xarray as xr
 from lonboard import BaseLayer, Map
 from matplotlib import widgets
 
+from xdggs.h3 import H3Info
+
 if TYPE_CHECKING:
     from lonboard import Map as LonboardMap
     from matplotlib.colors import CenteredNorm, Colormap, Normalize
@@ -498,8 +500,7 @@ def explore(
     **map_kwargs,
 ):
     import lonboard
-    from lonboard import SolidPolygonLayer
-    from matplotlib import colormaps
+    from lonboard import H3HexagonLayer, SolidPolygonLayer
 
     # guaranteed to be 1D
     cell_id_coord = obj.dggs.coord
@@ -545,12 +546,18 @@ def explore(
 
     fill_colors = colorizer.colorize(initial_arr.variable)
     table = create_arrow_table(polygons, initial_arr, coords=coords)
-    layer = SolidPolygonLayer(table=table, filled=True, get_fill_color=fill_colors)
+
+    # Use the H3 Layer for H3 grid
+    if isinstance(grid_info, H3Info):
+        layer = H3HexagonLayer(table=table, get_hexagon=table["cell_ids"], filled=True, get_fill_color=fill_colors)
+    else:
+        layer = SolidPolygonLayer(table=table, filled=True, get_fill_color=fill_colors)
 
     map_ = lonboard.Map(layer, **map_kwargs)
 
     if not initial_indexers and (isinstance(arr, xr.DataArray) or len(arr.data_vars) == 1):
         # 1D data, special case, no sliders / selectors - no interactivity needed
+        # This also results in a missing colorbar, since only the raw map is returned
         return map_
 
     container = MapContainer(
