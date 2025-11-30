@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import threading
 from dataclasses import dataclass
 from functools import partial
 from io import BytesIO
@@ -9,7 +10,6 @@ import ipywidgets
 import numpy as np
 import xarray as xr
 from lonboard import BaseLayer, Map
-from matplotlib import widgets
 
 from xdggs.h3 import H3Info
 
@@ -205,13 +205,136 @@ def create_slider_widget(arr, dim):
     return slider
 
 
+class SliderPlayer:
+    """Manages play/pause functionality for a single slider."""
+
+    def __init__(self, slider: ipywidgets.Widget, interval: float = 0.5):
+        """
+        Initialize a slider player.
+
+        Parameters
+        ----------
+        slider : ipywidgets.Widget
+            The slider widget to control (IntSlider, FloatSlider, or SelectionSlider)
+        interval : float
+            Time in seconds between steps when playing
+        """
+        self.slider = slider
+        self.interval = interval
+        self.is_playing = False
+        self._thread = None
+        self._stop_event = threading.Event()
+
+        # Create play/pause button
+        self.play_button = ipywidgets.Button(
+            description="▶",
+            layout=ipywidgets.Layout(width="40px"),
+            tooltip="Play/Pause",
+        )
+        self.play_button.on_click(self._toggle_play)
+
+    def _toggle_play(self, button):
+        """Toggle between play and pause states."""
+        if self.is_playing:
+            self.pause()
+        else:
+            self.play()
+
+    def play(self):
+        """Start playing through slider values."""
+        if self.is_playing:
+            return
+
+        self.is_playing = True
+        self.play_button.description = "⏸"
+        self.play_button.tooltip = "Pause"
+        self._stop_event.clear()
+
+        # Start the animation thread
+        self._thread = threading.Thread(target=self._animate, daemon=True)
+        self._thread.start()
+
+    def pause(self):
+        """Pause the animation."""
+        if not self.is_playing:
+            return
+
+        self.is_playing = False
+        self.play_button.description = "▶"
+        self.play_button.tooltip = "Play"
+        self._stop_event.set()
+
+        # Wait for thread to finish
+        if self._thread is not None:
+            self._thread.join(timeout=1.0)
+            self._thread = None
+
+    def _animate(self):
+        """Animation loop that runs in a separate thread."""
+        while not self._stop_event.is_set():
+            # Get current value and determine next value
+            if isinstance(self.slider, ipywidgets.IntSlider):
+                current = self.slider.value
+                if current >= self.slider.max:
+                    self.slider.value = self.slider.min
+                else:
+                    self.slider.value = current + self.slider.step
+            elif isinstance(self.slider, ipywidgets.FloatSlider):
+                current = self.slider.value
+                if current >= self.slider.max:
+                    self.slider.value = self.slider.min
+                else:
+                    self.slider.value = min(current + self.slider.step, self.slider.max)
+            elif isinstance(self.slider, ipywidgets.SelectionSlider):
+                current_index = self.slider.index
+                if current_index >= len(self.slider.options) - 1:
+                    self.slider.index = 0
+                else:
+                    self.slider.index = current_index + 1
+
+            # Wait for the specified interval
+            self._stop_event.wait(self.interval)
+
+    def widget(self):
+        """Return a widget with the slider and play button."""
+        return ipywidgets.HBox(
+            [self.play_button, self.slider],
+            layout=ipywidgets.Layout(align_items="center"),
+        )
+
+
+def create_slider_with_player(arr, dim, interval: float = 0.5):
+    """
+    Create a slider widget with play/pause controls.
+
+    Parameters
+    ----------
+    arr : xr.DataArray
+        The data array containing the dimension
+    dim : str
+        The dimension name
+    interval : float
+        Time in seconds between steps when playing
+
+    Returns
+    -------
+    SliderPlayer
+        A slider player instance with play/pause controls
+    """
+    slider = create_slider_widget(arr, dim)
+    return SliderPlayer(slider, interval=interval)
+
+
 class MapContainer:
     """Container for the map, any control widgets and the data object."""
 
-    def __init__(self, map_: LonboardMap, obj: xr.DataArray | xr.Dataset, colorizer_kwargs: dict):
+    def __init__(
+        self, map_: LonboardMap, obj: xr.DataArray | xr.Dataset, colorizer_kwargs: dict, play_interval: float = 0.5
+    ):
         self.map = map_
         self.obj = obj
         self.colorizer_kwargs = colorizer_kwargs
+        self.play_interval = play_interval
 
         cell_id_coord = self.obj.dggs.coord
         [cell_dim] = cell_id_coord.dims
@@ -232,6 +355,7 @@ class MapContainer:
         assert hasattr(self, "data_label")
         assert hasattr(self, "colorizer")
         assert hasattr(self, "dimension_sliders")
+        assert hasattr(self, "slider_players")
         assert hasattr(self, "dimension_indexers")
         assert hasattr(self, "dimension_selectors")
         assert hasattr(self, "control_box")
@@ -255,6 +379,11 @@ class MapContainer:
         return arr
 
     def create_sliders(self, change):
+        # Pause any existing players before recreating sliders
+        if hasattr(self, "slider_players"):
+            for player in self.slider_players.values():
+                player.pause()
+
         arr = self._get_arr()
 
         # Update the label information
@@ -269,10 +398,15 @@ class MapContainer:
         self.colorizer = self._get_colorizer(arr)
 
         # Update sliders based on the new variable's dimensions
-        # ? This can also be empty!
-        self.dimension_sliders = {
-            dim: create_slider_widget(arr, dim) for dim in arr.dims if dim != self.cell_dim and arr.sizes[dim] > 1
+        # Create slider players for dimensions with more than one value
+        self.slider_players = {
+            dim: create_slider_with_player(arr, dim, interval=self.play_interval)
+            for dim in arr.dims
+            if dim != self.cell_dim and arr.sizes[dim] > 1
         }
+
+        # Store reference to the actual sliders for easier access
+        self.dimension_sliders = {dim: player.slider for dim, player in self.slider_players.items()}
 
         # Reset indexers and selectors
         self.dimension_indexers = {
@@ -316,10 +450,10 @@ class MapContainer:
         control_widgets = []
         if self.dvar_selector is not None:
             control_widgets.append(self.dvar_selector)
-        if len(self.dimension_sliders):
-            control_widgets.append(
-                ipywidgets.VBox(list(self.dimension_sliders.values()), layout={"padding": "0 10px", "margin": "0 10px"})
-            )
+        if len(self.slider_players):
+            # Create widgets with play buttons for each slider
+            slider_widgets = [player.widget() for player in self.slider_players.values()]
+            control_widgets.append(ipywidgets.VBox(slider_widgets, layout={"padding": "0 10px", "margin": "0 10px"}))
 
         fig, _ax = self.colorizer.get_cmap_preview(self.data_label)
         buf = BytesIO()
@@ -358,7 +492,12 @@ class MapContainer:
         else:
             # Empty the existing box and refill
             self.control_box.children = box_children
-        # TODO: Add a Play widget for animating through the sliders
+
+    def stop_all_players(self):
+        """Stop all slider players."""
+        if hasattr(self, "slider_players"):
+            for player in self.slider_players.values():
+                player.pause()
 
     def render(self):
         return MapWithControls([self.map, self.control_box], layout=ipywidgets.Layout(width="100%", overflow="hidden"))
@@ -448,11 +587,11 @@ class MapWithControls(ipywidgets.VBox):
         if sliders:
             slider_widgets.extend(sliders)
 
-        widgets = [new_map]
+        widget_list = [new_map]
         if slider_widgets:
-            widgets.append(ipywidgets.HBox(slider_widgets))
+            widget_list.append(ipywidgets.HBox(slider_widgets))
 
-        return type(self)(widgets, layout=self.layout)
+        return type(self)(widget_list, layout=self.layout)
 
     def add_layer(self, layer: BaseLayer):
         self.map.add_layer(layer)
@@ -497,6 +636,7 @@ def explore(
     vmin: float | dict[str, float] | None = None,
     vmax: float | dict[str, float] | None = None,
     robust: bool = False,
+    play_interval: float = 0.5,
     **map_kwargs,
 ):
     import lonboard
@@ -571,6 +711,7 @@ def explore(
             "vmax": vmax,
             "robust": robust,
         },
+        play_interval=play_interval,
     )
 
     return container.render()
