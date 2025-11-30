@@ -364,7 +364,7 @@ class MapContainer:
 
 def extract_maps(obj: MapGrid | MapWithControls | Map):
     if isinstance(obj, Map):
-        return obj
+        return (obj,)
 
     return getattr(obj, "maps", (obj.map,))
 
