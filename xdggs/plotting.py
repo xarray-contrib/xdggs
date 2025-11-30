@@ -2,51 +2,331 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from functools import partial
-from typing import Any
+from io import BytesIO
+from typing import TYPE_CHECKING
 
 import ipywidgets
 import numpy as np
 import xarray as xr
 from lonboard import BaseLayer, Map
+from matplotlib import widgets
 
-
-def on_slider_change(change, container):
-    owner = change["owner"]
-    dim = owner.description
-
-    indexers = {
-        slider.description: slider.value
-        for slider in container.dimension_sliders.children
-        if slider.description != dim
-    } | {dim: change["new"]}
-    new_slice = container.obj.isel(indexers)
-
-    colors = colorize(new_slice.variable, **container.colorize_kwargs)
-
-    layer = container.map.layers[0]
-    layer.get_fill_color = colors
+if TYPE_CHECKING:
+    from lonboard import Map as LonboardMap
+    from matplotlib.colors import CenteredNorm, Colormap, Normalize
 
 
 @dataclass
-class MapContainer:
-    """container for the map, any control widgets and the data object"""
+class Colorizer:
+    colormap: Colormap
+    normalizer: CenteredNorm | Normalize
+    alpha: float | None = None
 
-    dimension_sliders: ipywidgets.VBox
-    map: Map
-    obj: xr.DataArray
+    @staticmethod
+    def _get_normalizer(
+        data,
+        center: float | None = None,
+        vmin: float | None = None,
+        vmax: float | None = None,
+        robust: bool = False,
+    ) -> CenteredNorm | Normalize:
+        from matplotlib.colors import CenteredNorm, Normalize
 
-    colorize_kwargs: dict[str, Any]
+        # Logic: If one or both of vmin and vmax are set, use them.
+        # If one is not set, compute it from the data depending on robust flag.
+        # If neither is set, try to use center if provided.
+        # If center is not provided, use min and max of data, depending on robust flag.
+        # Robust flag means using the 2nd and 98th percentiles instead of min and max.
+        if vmin is not None or vmax is not None:
+            if vmin is None:
+                if robust:
+                    vmin = np.nanpercentile(data, 2)
+                else:
+                    vmin = np.nanmin(data)
+            if vmax is None:
+                if robust:
+                    vmax = np.nanpercentile(data, 98)
+                else:
+                    vmax = np.nanmax(data)
+            normalizer = Normalize(vmin=vmin, vmax=vmax)
+        elif center is not None:
+            halfrange = np.abs(data - center).max(skipna=True)
+            normalizer = CenteredNorm(vcenter=center, halfrange=halfrange)
+        else:
+            if robust:
+                vmin = np.nanpercentile(data, 2)
+                vmax = np.nanpercentile(data, 98)
+            else:
+                vmin = np.nanmin(data)
+                vmax = np.nanmax(data)
+            normalizer = Normalize(vmin=vmin, vmax=vmax)
 
-    def render(self):
-        # add any additional control widgets here
-        control_box = ipywidgets.HBox([self.dimension_sliders])
+        return normalizer
 
-        return MapWithSliders(
-            [self.map, control_box], layout=ipywidgets.Layout(width="100%")
+    @classmethod
+    def for_dataset(
+        cls,
+        var_name: str,
+        data: xr.DataArray,
+        cmap: str | Colormap | dict[str, str | Colormap] = "viridis",
+        alpha: float | None = None,
+        center: float | dict[str, float] | None = None,
+        vmin: float | dict[str, float] | None = None,
+        vmax: float | dict[str, float] | None = None,
+        robust: bool = False,
+    ):
+        from matplotlib import colormaps
+
+        if isinstance(cmap, dict):
+            current_cmap = cmap.get(var_name, "viridis")
+        else:
+            current_cmap = cmap
+        if isinstance(center, dict):
+            current_center = center.get(var_name, None)
+        else:
+            current_center = center
+        if isinstance(vmin, dict):
+            current_vmin = vmin.get(var_name, None)
+        else:
+            current_vmin = vmin
+        if isinstance(vmax, dict):
+            current_vmax = vmax.get(var_name, None)
+        else:
+            current_vmax = vmax
+
+        colormap = colormaps[current_cmap] if isinstance(current_cmap, str) else current_cmap
+
+        normalizer = cls._get_normalizer(
+            data,
+            center=current_center,
+            vmin=current_vmin,
+            vmax=current_vmax,
+            robust=robust,
+        )
+
+        return cls(
+            colormap=colormap,
+            normalizer=normalizer,
+            alpha=alpha,
+        )
+
+    @classmethod
+    def for_dataarray(
+        cls,
+        data: xr.DataArray,
+        cmap: str | Colormap = "viridis",
+        alpha: float | None = None,
+        center: float | None = None,
+        vmin: float | None = None,
+        vmax: float | None = None,
+        robust: bool = False,
+    ):
+        from matplotlib import colormaps
+
+        colormap = colormaps[cmap] if isinstance(cmap, str) else cmap
+
+        normalizer = cls._get_normalizer(
+            data,
+            center=center,
+            vmin=vmin,
+            vmax=vmax,
+            robust=robust,
+        )
+
+        return cls(
+            colormap=colormap,
+            normalizer=normalizer,
+            alpha=alpha,
+        )
+
+    def get_cmap_preview(self, label: str):
+        import matplotlib.pyplot as plt
+
+        sm = plt.cm.ScalarMappable(cmap=self.colormap, norm=self.normalizer)
+        fig, ax = plt.subplots(figsize=(6, 1))
+        fig.colorbar(sm, cax=ax, orientation="horizontal", label=label)
+        return fig, ax
+
+    def colorize(self, data):
+        from lonboard.colormap import apply_continuous_cmap
+
+        normalized_data = self.normalizer(data)
+
+        return apply_continuous_cmap(
+            normalized_data,
+            self.colormap,
+            alpha=self.alpha,
         )
 
 
-def extract_maps(obj: MapGrid | MapWithSliders | Map):
+def create_slider_widget(arr, dim):
+    # If the dimension has coordinates, use them as labels
+    # Otherwise, use integer indices
+    if dim in arr.coords:
+        # Use a Float Slider for numeric coordinates
+        # Use a Select Slider for non-numeric coordinates, e.g. time or strings
+        coord_values = arr.coords[dim].data
+        if np.issubdtype(coord_values.dtype, np.number):
+            slider = ipywidgets.FloatSlider(
+                min=float(coord_values.min()),
+                max=float(coord_values.max()),
+                step=float(np.diff(np.unique(coord_values)).min()),
+                description=dim,
+                continuous_update=False,
+            )
+        else:
+            slider = ipywidgets.SelectionSlider(
+                options=list(coord_values),
+                description=dim,
+                continuous_update=False,
+            )
+    else:
+        slider = ipywidgets.IntSlider(
+            min=0,
+            max=arr.sizes[dim] - 1,
+            description=dim,
+            continuous_update=False,
+        )
+
+    return slider
+
+
+class MapContainer:
+    """Container for the map, any control widgets and the data object."""
+
+    def __init__(self, map_: LonboardMap, obj: xr.DataArray | xr.Dataset, colorizer_kwargs: dict):
+        self.map = map_
+        self.obj = obj
+        self.colorizer_kwargs = colorizer_kwargs
+
+        cell_id_coord = self.obj.dggs.coord
+        [cell_dim] = cell_id_coord.dims
+        self.cell_dim = cell_dim
+
+        self.dvar_selector = None
+        if isinstance(obj, xr.Dataset):
+            self.dvar_selector = ipywidgets.Dropdown(
+                options=list(obj.data_vars),
+                description="Variable",
+                continuous_update=False,
+            )
+            self.dvar_selector.observe(self.create_sliders, names="value")
+
+        # This creates self.colorizer, self.dimension_sliders, self.dimension_indexers, self.dimension_selectors
+        self.create_sliders(None)
+        # Quick check so that future changes to the code will fail if these attributes are missing
+        assert hasattr(self, "data_label")
+        assert hasattr(self, "colorizer")
+        assert hasattr(self, "dimension_sliders")
+        assert hasattr(self, "dimension_indexers")
+        assert hasattr(self, "dimension_selectors")
+        assert hasattr(self, "control_box")
+
+    def _get_colorizer(self, data: xr.DataArray):
+        if isinstance(self.obj, xr.Dataset):
+            assert self.dvar_selector is not None
+            selected_var = self.dvar_selector.value
+            colorizer = Colorizer.for_dataset(selected_var, data, **self.colorizer_kwargs)
+        else:
+            colorizer = Colorizer.for_dataarray(data, **self.colorizer_kwargs)
+        return colorizer
+
+    def _get_arr(self):
+        if isinstance(self.obj, xr.Dataset):
+            assert self.dvar_selector is not None
+            selected_var = self.dvar_selector.value
+            arr = self.obj[selected_var]
+        else:
+            arr = self.obj
+        return arr
+
+    def create_sliders(self, change):
+        arr = self._get_arr()
+
+        # Update the label information
+        if "long_name" in arr.attrs:
+            self.data_label = arr.attrs["long_name"]
+        else:
+            self.data_label = arr.name or "data"
+        if "units" in arr.attrs:
+            self.data_label += f" ({arr.attrs['units']})"
+
+        # Update the colorizer
+        self.colorizer = self._get_colorizer(arr)
+
+        # Update sliders based on the new variable's dimensions
+        # ? This can also be empty!
+        self.dimension_sliders = {
+            dim: create_slider_widget(arr, dim) for dim in arr.dims if dim != self.cell_dim and arr.sizes[dim] > 1
+        }
+
+        # Reset indexers and selectors
+        self.dimension_indexers = {
+            dim: 0 for dim, slider in self.dimension_sliders.items() if isinstance(slider, ipywidgets.IntSlider)
+        }
+        self.dimension_selectors = {
+            dim: slider.value
+            for dim, slider in self.dimension_sliders.items()
+            if not isinstance(slider, ipywidgets.IntSlider)
+        }
+
+        # Reconnect slider change events
+        for slider in self.dimension_sliders.values():
+            slider.observe(partial(self.recolorize), names="value")
+
+        self.recolorize(arr=arr)
+        self.create_control_box()
+
+    def recolorize(self, change=None, arr=None):
+        if arr is None:
+            arr = self._get_arr()
+
+        if change is not None:
+            dim = change["owner"].description
+            if dim in self.dimension_indexers:
+                self.dimension_indexers[dim] = change["new"]
+            else:
+                self.dimension_selectors[dim] = change["new"]
+        if not self.dimension_indexers and not self.dimension_selectors:
+            # No indexing needed
+            new_slice = arr
+        else:
+            new_slice = arr.isel(self.dimension_indexers).sel(self.dimension_selectors)
+        colors = self.colorizer.colorize(new_slice.variable)
+        layer = self.map.layers[0]
+        layer.get_fill_color = colors
+
+    def create_control_box(self):  #
+        import matplotlib.pyplot as plt
+
+        control_widgets = []
+        if self.dvar_selector is not None:
+            control_widgets.append(self.dvar_selector)
+        if len(self.dimension_sliders):
+            control_widgets.append(ipywidgets.VBox(list(self.dimension_sliders.values())))
+
+        fig, _ax = self.colorizer.get_cmap_preview(self.data_label)
+        buf = BytesIO()
+        fig.savefig(buf, format="png", bbox_inches="tight")
+        buf.seek(0)
+        colorbar_widget = ipywidgets.Image(value=buf.read(), format="png", width=300)
+        buf.close()
+        plt.close(fig)
+        control_widgets.append(colorbar_widget)
+
+        if not hasattr(self, "control_box"):
+            # First time creation
+            self.control_box = ipywidgets.HBox(control_widgets)
+        else:
+            # Empty the existing box and refill
+            self.control_box.children = control_widgets
+        # TODO: Add a Play widget for animating through the sliders
+
+    def render(self):
+        return MapWithControls([self.map, self.control_box], layout=ipywidgets.Layout(width="100%"))
+
+
+def extract_maps(obj: MapGrid | MapWithControls | Map):
     if isinstance(obj, Map):
         return obj
 
@@ -56,7 +336,7 @@ def extract_maps(obj: MapGrid | MapWithSliders | Map):
 class MapGrid(ipywidgets.GridBox):
     def __init__(
         self,
-        maps: MapWithSliders | Map = None,
+        maps: MapWithControls | Map = None,
         n_columns: int = 2,
         synchronize: bool = False,
     ):
@@ -64,9 +344,7 @@ class MapGrid(ipywidgets.GridBox):
         self.synchronize = synchronize
 
         column_width = 100 // n_columns
-        layout = ipywidgets.Layout(
-            width="100%", grid_template_columns=f"repeat({n_columns}, {column_width}%)"
-        )
+        layout = ipywidgets.Layout(width="100%", grid_template_columns=f"repeat({n_columns}, {column_width}%)")
 
         if maps is None:
             maps = []
@@ -83,25 +361,25 @@ class MapGrid(ipywidgets.GridBox):
     def _replace_maps(self, maps):
         return type(self)(maps, n_columns=self.n_columns, synchronize=self.synchronize)
 
-    def add_map(self, map_: MapWithSliders | Map):
+    def add_map(self, map_: MapWithControls | Map):
         return self._replace_maps(self.maps + (map_,))
 
     @property
     def maps(self):
         return self.children
 
-    def __or__(self, other: MapGrid | MapWithSliders | Map):
+    def __or__(self, other: MapGrid | MapWithControls | Map):
         other_maps = extract_maps(other)
 
         return self._replace_maps(self.maps + other_maps)
 
-    def __ror__(self, other: MapWithSliders | Map):
+    def __ror__(self, other: MapWithControls | Map):
         other_maps = extract_maps(other)
 
         return self._replace_maps(self.maps + other_maps)
 
 
-class MapWithSliders(ipywidgets.VBox):
+class MapWithControls(ipywidgets.VBox):
     def change_layout(self, layout):
         return type(self)(self.children, layout=layout)
 
@@ -117,8 +395,8 @@ class MapWithSliders(ipywidgets.VBox):
     def layers(self) -> list[BaseLayer]:
         return self.map.layers
 
-    def __or__(self, other: MapWithSliders | Map):
-        [other_map] = extract_maps(other)
+    def __or__(self, other: MapWithControls | Map):
+        # [other_map] = extract_maps(other)
 
         return MapGrid([self, other], synchronize=True)
 
@@ -141,7 +419,7 @@ class MapWithSliders(ipywidgets.VBox):
     def add_layer(self, layer: BaseLayer):
         self.map.add_layer(layer)
 
-    def __and__(self, other: MapWithSliders | Map | BaseLayer):
+    def __and__(self, other: MapWithControls | Map | BaseLayer):
         if isinstance(other, BaseLayer):
             layers = [other]
             sliders = []
@@ -164,11 +442,7 @@ def create_arrow_table(polygons, arr, coords=None):
         "geometry": array,
         "cell_ids": ChunkedArray([Array.from_numpy(arr.coords["cell_ids"])]),
         name: ChunkedArray([Array.from_numpy(np.ascontiguousarray(arr.data))]),
-    } | {
-        coord: ChunkedArray([Array.from_numpy(arr.coords[coord].data)])
-        for coord in coords
-        if coord in arr.coords
-    }
+    } | {coord: ChunkedArray([Array.from_numpy(arr.coords[coord].data)]) for coord in coords if coord in arr.coords}
 
     fields = [array.field.with_name(name) for name, array in arrow_arrays.items()]
     schema = Schema(fields)
@@ -176,80 +450,84 @@ def create_arrow_table(polygons, arr, coords=None):
     return Table.from_arrays(list(arrow_arrays.values()), schema=schema)
 
 
-def normalize(var, center=None):
-    from matplotlib.colors import CenteredNorm, Normalize
-
-    if center is None:
-        vmin = var.min(skipna=True)
-        vmax = var.max(skipna=True)
-        normalizer = Normalize(vmin=vmin, vmax=vmax)
-    else:
-        halfrange = np.abs(var - center).max(skipna=True)
-        normalizer = CenteredNorm(vcenter=center, halfrange=halfrange)
-
-    return normalizer(var.data)
-
-
-def colorize(var, *, center, colormap, alpha):
-    from lonboard.colormap import apply_continuous_cmap
-
-    normalized_data = normalize(var, center=center)
-
-    return apply_continuous_cmap(normalized_data, colormap, alpha=alpha)
-
-
 def explore(
-    arr,
-    cmap="viridis",
-    center=None,
-    alpha=None,
-    coords=None,
+    obj: xr.DataArray | xr.Dataset,
+    coords: float | None = None,
+    cmap: str | Colormap | dict[str, str | Colormap] = "viridis",
+    alpha: float | None = None,
+    center: float | dict[str, float] | None = None,
+    vmin: float | dict[str, float] | None = None,
+    vmax: float | dict[str, float] | None = None,
+    robust: bool = False,
+    **map_kwargs,
 ):
     import lonboard
     from lonboard import SolidPolygonLayer
     from matplotlib import colormaps
 
     # guaranteed to be 1D
-    cell_id_coord = arr.dggs.coord
+    cell_id_coord = obj.dggs.coord
     [cell_dim] = cell_id_coord.dims
 
     cell_ids = cell_id_coord.data
-    grid_info = arr.dggs.grid_info
+    grid_info = obj.dggs.grid_info
 
     polygons = grid_info.cell_boundaries(cell_ids, backend="geoarrow")
+
+    if isinstance(obj, xr.Dataset):
+        # pick first data variable
+        first_var = next(iter(obj.data_vars))
+        arr = obj[first_var]
+        colorizer = Colorizer.for_dataset(
+            var_name=first_var,
+            data=arr,
+            cmap=cmap,
+            alpha=alpha,
+            center=center,
+            vmin=vmin,
+            vmax=vmax,
+            robust=robust,
+        )
+    else:
+        assert not isinstance(cmap, dict), "cmap cannot be a dict when obj is a DataArray"
+        assert not isinstance(center, dict), "center cannot be a dict when obj is a DataArray"
+        assert not isinstance(vmin, dict), "vmin cannot be a dict when obj is a DataArray"
+        assert not isinstance(vmax, dict), "vmax cannot be a dict when obj is a DataArray"
+        arr = obj
+        colorizer = Colorizer.for_dataarray(
+            data=arr,
+            cmap=cmap,
+            alpha=alpha,
+            center=center,
+            vmin=vmin,
+            vmax=vmax,
+            robust=robust,
+        )
 
     initial_indexers = {dim: 0 for dim in arr.dims if dim != cell_dim}
     initial_arr = arr.isel(initial_indexers)
 
-    colormap = colormaps[cmap] if isinstance(cmap, str) else cmap
-    colors = colorize(initial_arr, center=center, alpha=alpha, colormap=colormap)
-
+    fill_colors = colorizer.colorize(initial_arr.variable)
     table = create_arrow_table(polygons, initial_arr, coords=coords)
-    layer = SolidPolygonLayer(table=table, filled=True, get_fill_color=colors)
+    layer = SolidPolygonLayer(table=table, filled=True, get_fill_color=fill_colors)
 
-    map_ = lonboard.Map(layer)
+    map_ = lonboard.Map(layer, **map_kwargs)
 
-    if not initial_indexers:
-        # 1D data
+    if not initial_indexers and (isinstance(arr, xr.DataArray) or len(arr.data_vars) == 1):
+        # 1D data, special case, no sliders / selectors - no interactivity needed
         return map_
 
-    sliders = ipywidgets.VBox(
-        [
-            ipywidgets.IntSlider(min=0, max=arr.sizes[dim] - 1, description=dim)
-            for dim in arr.dims
-            if dim != cell_dim
-        ]
-    )
-
     container = MapContainer(
-        sliders,
         map_,
-        arr,
-        colorize_kwargs={"alpha": alpha, "center": center, "colormap": colormap},
+        obj,
+        {
+            "cmap": cmap,
+            "alpha": alpha,
+            "center": center,
+            "vmin": vmin,
+            "vmax": vmax,
+            "robust": robust,
+        },
     )
-
-    # connect slider with map
-    for slider in sliders.children:
-        slider.observe(partial(on_slider_change, container=container), names="value")
 
     return container.render()
