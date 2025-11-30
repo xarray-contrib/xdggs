@@ -132,9 +132,7 @@ class TestColorizer:
     def test_for_dataarray_with_vmin_vmax(self):
         """Test colorizer with explicit vmin/vmax."""
         data = xr.DataArray([0, 1, 2, 3], dims="cells")
-        colorizer = plotting.Colorizer.for_dataarray(
-            data, cmap="plasma", vmin=-10, vmax=10
-        )
+        colorizer = plotting.Colorizer.for_dataarray(data, cmap="plasma", vmin=-10, vmax=10)
 
         assert colorizer.normalizer.vmin == -10
         assert colorizer.normalizer.vmax == 10
@@ -158,9 +156,7 @@ class TestColorizer:
     def test_for_dataset_basic(self):
         """Test colorizer creation from Dataset."""
         ds = xr.Dataset({"temperature": xr.DataArray([10, 20, 30], dims="cells")})
-        colorizer = plotting.Colorizer.for_dataset(
-            "temperature", ds["temperature"], cmap="viridis"
-        )
+        colorizer = plotting.Colorizer.for_dataset("temperature", ds["temperature"], cmap="viridis")
 
         assert colorizer.colormap.name == "viridis"
         assert colorizer.normalizer.vmin == 10
@@ -246,7 +242,6 @@ class TestColorizer:
 class TestMapContainer:
     def test_init(self):
         """Test MapContainer initialization with proper map and data."""
-        from arro3.core import Table
         from lonboard import SolidPolygonLayer
 
         # Create a valid layer with geometry
@@ -310,9 +305,7 @@ class TestMapContainer:
     ["arr", "expected_type"],
     (
         pytest.param(
-            xr.DataArray(
-                [0, 1], coords={"cell_ids": ("cells", [10, 26])}, dims="cells"
-            ).dggs.decode(
+            xr.DataArray([0, 1], coords={"cell_ids": ("cells", [10, 26])}, dims="cells").dggs.decode(
                 {"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"}
             ),
             lonboard.Map,
@@ -323,9 +316,7 @@ class TestMapContainer:
                 [[0, 1], [2, 3]],
                 coords={"cell_ids": ("cells", [10, 26])},
                 dims=["time", "cells"],
-            ).dggs.decode(
-                {"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"}
-            ),
+            ).dggs.decode({"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"}),
             ipywidgets.VBox,
             id="2d",
         ),
