@@ -50,7 +50,10 @@ class Colorizer:
                     vmax = np.nanmax(data)
             normalizer = Normalize(vmin=vmin, vmax=vmax)
         elif center is not None:
-            halfrange = np.abs(data - center).max(skipna=True)
+            if robust:
+                halfrange = np.abs(data - center).quantile(0.98)
+            else:
+                halfrange = np.abs(data - center).max(skipna=True)
             normalizer = CenteredNorm(vcenter=center, halfrange=halfrange)
         else:
             if robust:
@@ -143,7 +146,7 @@ class Colorizer:
         import matplotlib.pyplot as plt
 
         sm = plt.cm.ScalarMappable(cmap=self.colormap, norm=self.normalizer)
-        fig, ax = plt.subplots(figsize=(6, 1))
+        fig, ax = plt.subplots(figsize=(9, 0.25))
         fig.colorbar(sm, cax=ax, orientation="horizontal", label=label)
         return fig, ax
 
@@ -162,6 +165,9 @@ class Colorizer:
 def create_slider_widget(arr, dim):
     # If the dimension has coordinates, use them as labels
     # Otherwise, use integer indices
+    style = {"description_width": "auto"}
+    layout = ipywidgets.Layout(min_width="300px")
+
     if dim in arr.coords:
         # Use a Float Slider for numeric coordinates
         # Use a Select Slider for non-numeric coordinates, e.g. time or strings
@@ -173,12 +179,16 @@ def create_slider_widget(arr, dim):
                 step=float(np.diff(np.unique(coord_values)).min()),
                 description=dim,
                 continuous_update=False,
+                style=style,
+                layout=layout,
             )
         else:
             slider = ipywidgets.SelectionSlider(
                 options=list(coord_values),
                 description=dim,
                 continuous_update=False,
+                style=style,
+                layout=layout,
             )
     else:
         slider = ipywidgets.IntSlider(
@@ -186,6 +196,8 @@ def create_slider_widget(arr, dim):
             max=arr.sizes[dim] - 1,
             description=dim,
             continuous_update=False,
+            style=style,
+            layout=layout,
         )
 
     return slider
@@ -296,34 +308,58 @@ class MapContainer:
         layer = self.map.layers[0]
         layer.get_fill_color = colors
 
-    def create_control_box(self):  #
+    def create_control_box(self):
         import matplotlib.pyplot as plt
 
         control_widgets = []
         if self.dvar_selector is not None:
             control_widgets.append(self.dvar_selector)
         if len(self.dimension_sliders):
-            control_widgets.append(ipywidgets.VBox(list(self.dimension_sliders.values())))
+            control_widgets.append(
+                ipywidgets.VBox(list(self.dimension_sliders.values()), layout={"padding": "0 10px", "margin": "0 10px"})
+            )
 
         fig, _ax = self.colorizer.get_cmap_preview(self.data_label)
         buf = BytesIO()
-        fig.savefig(buf, format="png", bbox_inches="tight")
+        fig.savefig(buf, format="png", bbox_inches="tight", dpi=100)
         buf.seek(0)
-        colorbar_widget = ipywidgets.Image(value=buf.read(), format="png", width=300)
+        colorbar_widget = ipywidgets.Image(value=buf.read(), format="png")
         buf.close()
         plt.close(fig)
-        control_widgets.append(colorbar_widget)
+
+        # Create layout: controls on left, colorbar on right (wraps to new row if needed)
+        controls_box = ipywidgets.HBox(
+            control_widgets,
+            layout=ipywidgets.Layout(flex="0 1 auto", min_width="fit-content", align_items="flex-start"),
+        )
+        colorbar_box = ipywidgets.Box(
+            [colorbar_widget],
+            layout=ipywidgets.Layout(flex="0 0 auto", align_items="center", max_width="500px", overflow="visible"),
+        )
+
+        box_children = [controls_box, colorbar_box]
 
         if not hasattr(self, "control_box"):
             # First time creation
-            self.control_box = ipywidgets.HBox(control_widgets)
+            self.control_box = ipywidgets.HBox(
+                box_children,
+                layout=ipywidgets.Layout(
+                    width="100%",
+                    height="auto",
+                    align_items="flex-start",
+                    padding="5px 0px 0px 0px",
+                    flex_flow="row wrap",
+                    justify_content="space-between",
+                    overflow="visible",
+                ),
+            )
         else:
             # Empty the existing box and refill
-            self.control_box.children = control_widgets
+            self.control_box.children = box_children
         # TODO: Add a Play widget for animating through the sliders
 
     def render(self):
-        return MapWithControls([self.map, self.control_box], layout=ipywidgets.Layout(width="100%"))
+        return MapWithControls([self.map, self.control_box], layout=ipywidgets.Layout(width="100%", overflow="hidden"))
 
 
 def extract_maps(obj: MapGrid | MapWithControls | Map):
