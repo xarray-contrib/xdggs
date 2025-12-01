@@ -99,9 +99,7 @@ class Colorizer:
         else:
             current_vmax = vmax
 
-        colormap = (
-            colormaps[current_cmap] if isinstance(current_cmap, str) else current_cmap
-        )
+        colormap = colormaps[current_cmap] if isinstance(current_cmap, str) else current_cmap
 
         normalizer = cls._get_normalizer(
             data,
@@ -169,7 +167,7 @@ class Colorizer:
 def create_slider_widget(arr, dim):
     # If the dimension has coordinates, use them as labels
     # Otherwise, use integer indices
-    style = {"description_width": "auto"}
+    style = {"description_width": "0px"}
     layout = ipywidgets.Layout(min_width="300px")
 
     if dim in arr.coords:
@@ -187,6 +185,7 @@ def create_slider_widget(arr, dim):
                 layout=layout,
             )
         else:
+            # TODO: Use format for datetime display?
             slider = ipywidgets.SelectionSlider(
                 options=list(coord_values),
                 description=dim,
@@ -194,6 +193,7 @@ def create_slider_widget(arr, dim):
                 style=style,
                 layout=layout,
             )
+
     else:
         slider = ipywidgets.IntSlider(
             min=0,
@@ -210,7 +210,7 @@ def create_slider_widget(arr, dim):
 class SliderPlayer:
     """Manages play/pause functionality for a single slider."""
 
-    def __init__(self, slider: ipywidgets.Widget, interval: float = 0.5):
+    def __init__(self, slider: ipywidgets.Widget, dim: str, interval: float = 0.5):
         """
         Initialize a slider player.
 
@@ -218,10 +218,13 @@ class SliderPlayer:
         ----------
         slider : ipywidgets.Widget
             The slider widget to control (IntSlider, FloatSlider, or SelectionSlider)
+        dim : str
+            The dimension name
         interval : float
             Time in seconds between steps when playing
         """
         self.slider = slider
+        self.dim = dim
         self.interval = interval
         self.is_playing = False
         self._thread = None
@@ -299,9 +302,13 @@ class SliderPlayer:
 
     def widget(self):
         """Return a widget with the slider and play button."""
-        return ipywidgets.HBox(
-            [self.play_button, self.slider],
-            layout=ipywidgets.Layout(align_items="center"),
+        return ipywidgets.VBox(
+            [
+                ipywidgets.Label(value=self.dim, style={"font_weight": "bold"}),
+                ipywidgets.HBox(
+                    [self.play_button, self.slider], layout=ipywidgets.Layout(align_items="center", gap="5px")
+                ),
+            ]
         )
 
 
@@ -324,7 +331,7 @@ def create_slider_with_player(arr, dim, interval: float = 0.5):
         A slider player instance with play/pause controls
     """
     slider = create_slider_widget(arr, dim)
-    return SliderPlayer(slider, interval=interval)
+    return SliderPlayer(slider, dim=dim, interval=interval)
 
 
 class MapContainer:
@@ -370,9 +377,7 @@ class MapContainer:
         if isinstance(self.obj, xr.Dataset):
             assert self.dvar_selector is not None
             selected_var = self.dvar_selector.value
-            colorizer = Colorizer.for_dataset(
-                selected_var, data, **self.colorizer_kwargs
-            )
+            colorizer = Colorizer.for_dataset(selected_var, data, **self.colorizer_kwargs)
         else:
             colorizer = Colorizer.for_dataarray(data, **self.colorizer_kwargs)
         return colorizer
@@ -414,15 +419,11 @@ class MapContainer:
         }
 
         # Store reference to the actual sliders for easier access
-        self.dimension_sliders = {
-            dim: player.slider for dim, player in self.slider_players.items()
-        }
+        self.dimension_sliders = {dim: player.slider for dim, player in self.slider_players.items()}
 
         # Reset indexers and selectors
         self.dimension_indexers = {
-            dim: 0
-            for dim, slider in self.dimension_sliders.items()
-            if isinstance(slider, ipywidgets.IntSlider)
+            dim: 0 for dim, slider in self.dimension_sliders.items() if isinstance(slider, ipywidgets.IntSlider)
         }
         self.dimension_selectors = {
             dim: slider.value
@@ -464,14 +465,8 @@ class MapContainer:
             control_widgets.append(self.dvar_selector)
         if len(self.slider_players):
             # Create widgets with play buttons for each slider
-            slider_widgets = [
-                player.widget() for player in self.slider_players.values()
-            ]
-            control_widgets.append(
-                ipywidgets.VBox(
-                    slider_widgets, layout={"padding": "0 10px", "margin": "0 10px"}
-                )
-            )
+            slider_widgets = [player.widget() for player in self.slider_players.values()]
+            control_widgets.append(ipywidgets.VBox(slider_widgets, layout={"padding": "0 10px", "margin": "0 10px"}))
 
         fig, _ax = self.colorizer.get_cmap_preview(self.data_label)
         buf = BytesIO()
@@ -484,9 +479,7 @@ class MapContainer:
         # Create layout: controls on left, colorbar on right (wraps to new row if needed)
         controls_box = ipywidgets.HBox(
             control_widgets,
-            layout=ipywidgets.Layout(
-                flex="0 1 auto", min_width="fit-content", align_items="flex-start"
-            ),
+            layout=ipywidgets.Layout(flex="0 1 auto", min_width="fit-content", align_items="flex-start"),
         )
         colorbar_box = ipywidgets.Box(
             [colorbar_widget],
@@ -549,9 +542,7 @@ class MapGrid(ipywidgets.GridBox):
         self.synchronize = synchronize
 
         column_width = 100 // n_columns
-        layout = ipywidgets.Layout(
-            width="100%", grid_template_columns=f"repeat({n_columns}, {column_width}%)"
-        )
+        layout = ipywidgets.Layout(width="100%", grid_template_columns=f"repeat({n_columns}, {column_width}%)")
 
         if maps is None:
             maps = []
@@ -649,11 +640,7 @@ def create_arrow_table(polygons, arr, coords=None):
         "geometry": array,
         "cell_ids": ChunkedArray([Array.from_numpy(arr.coords["cell_ids"])]),
         name: ChunkedArray([Array.from_numpy(np.ascontiguousarray(arr.data))]),
-    } | {
-        coord: ChunkedArray([Array.from_numpy(arr.coords[coord].data)])
-        for coord in coords
-        if coord in arr.coords
-    }
+    } | {coord: ChunkedArray([Array.from_numpy(arr.coords[coord].data)]) for coord in coords if coord in arr.coords}
 
     fields = [array.field.with_name(name) for name, array in arrow_arrays.items()]
     schema = Schema(fields)
@@ -700,18 +687,10 @@ def explore(
             robust=robust,
         )
     else:
-        assert not isinstance(
-            cmap, dict
-        ), "cmap cannot be a dict when obj is a DataArray"
-        assert not isinstance(
-            center, dict
-        ), "center cannot be a dict when obj is a DataArray"
-        assert not isinstance(
-            vmin, dict
-        ), "vmin cannot be a dict when obj is a DataArray"
-        assert not isinstance(
-            vmax, dict
-        ), "vmax cannot be a dict when obj is a DataArray"
+        assert not isinstance(cmap, dict), "cmap cannot be a dict when obj is a DataArray"
+        assert not isinstance(center, dict), "center cannot be a dict when obj is a DataArray"
+        assert not isinstance(vmin, dict), "vmin cannot be a dict when obj is a DataArray"
+        assert not isinstance(vmax, dict), "vmax cannot be a dict when obj is a DataArray"
         arr = obj
         colorizer = Colorizer.for_dataarray(
             data=arr,
@@ -742,9 +721,7 @@ def explore(
 
     map_ = lonboard.Map(layer, **map_kwargs)
 
-    if not initial_indexers and (
-        isinstance(arr, xr.DataArray) or len(arr.data_vars) == 1
-    ):
+    if not initial_indexers and (isinstance(arr, xr.DataArray) or len(arr.data_vars) == 1):
         # 1D data, special case, no sliders / selectors - no interactivity needed
         # This also results in a missing colorbar, since only the raw map is returned
         return map_
