@@ -1,9 +1,14 @@
+from typing import TYPE_CHECKING
+
 import numpy.typing as npt
 import xarray as xr
 
 from xdggs.grid import DGGSInfo
 from xdggs.index import DGGSIndex
 from xdggs.plotting import explore
+
+if TYPE_CHECKING:
+    from matplotlib.colors import Colormap
 
 
 @xr.register_dataset_accessor("dggs")
@@ -208,38 +213,86 @@ class DGGSAccessor:
 
         return xr.DataArray(zoomed, coords={self._name: self.cell_ids}, dims=dims)
 
-    def explore(self, *, cmap="viridis", center=None, alpha=None, coords=None):
-        """interactively explore the data using `lonboard`
+    def explore(
+        self,
+        *,
+        coords: float | None = None,
+        cmap: "str | Colormap | dict[str, str | Colormap]" = "viridis",
+        alpha: float | None = None,
+        center: float | dict[str, float] | None = None,
+        vmin: float | dict[str, float] | None = None,
+        vmax: float | dict[str, float] | None = None,
+        robust: bool = False,
+        map_kwargs: dict = {},
+        **coloring_kwargs,
+    ):
+        """Interactively explore the data using `lonboard`.
 
         Requires `lonboard`, `matplotlib`, and `arro3.core` to be installed.
 
         Parameters
         ----------
-        cmap : str
-            The name of the color map to use
-        center : int or float, optional
-            If set, will use this as the center value of a diverging color map.
-        alpha : float, optional
-            If set, controls the transparency of the polygons.
         coords : list of str, default: ["latitude", "longitude"]
             Additional coordinates to contain in the table of contents.
+        cmap : str or Colormap or dict[str, str or Colormap], default: "viridis"
+            The name of the color map to use. If a dict is provided, it can map variable
+            names to specific color maps.
+        alpha : float, optional
+            If set, controls the transparency of the polygons.
+        center : int or float or dict[str, float], optional
+            If set, will use this as the center value of a diverging color map.
+            Similar to cmap, can be a dict mapping variable names to center values.
+        vmin : float or dict[str, float], optional
+            If set, will use this as the minimum value for colormap normalization.
+            Similar to cmap, can be a dict mapping variable names to minimum values.
+        vmax : float or dict[str, float], optional
+            If set, will use this as the maximum value for colormap normalization.
+            Similar to cmap, can be a dict mapping variable names to maximum values.
+        robust : bool, default: False
+            If True, the colormap range is computed with robust quantiles (2nd and 98th percentile)
+            instead of the actual min and max of the data.
+            This is ignored if vmin and/or vmax are set.
+        map_kwargs : dict, optional
+            Additional keyword arguments are forwarded to `lonboard.Map`.
+        coloring_kwargs : dict, optional
+            Cmap, center, vmin and vmax can also be set as dictionary entries for each variable by this.
+            E.g. `coloring_kwargs={"air_anomaly": {"cmap": "coolwarm", "center": 0.0}}` would result in
+            the same as setting `cmap={"air_anomaly": "coolwarm"}` and `center={"air_anomaly": 0.0}`.
 
         Returns
         -------
         map : lonboard.Map
             The rendered map.
 
-        Notes
-        -----
-        Plotting currently is restricted to 1D `DataArray` objects.
         """
-        if isinstance(self._obj, xr.Dataset):
-            raise ValueError("does not work with Dataset objects, yet")
-
+        if coloring_kwargs:
+            # Manually building the dicts to override the function arguments
+            if not isinstance(cmap, dict):
+                cmap = dict.fromkeys(self._obj.data_vars, cmap)
+            if not isinstance(center, dict):
+                center = dict.fromkeys(self._obj.data_vars, center)
+            if not isinstance(vmin, dict):
+                vmin = dict.fromkeys(self._obj.data_vars, vmin)
+            if not isinstance(vmax, dict):
+                vmax = dict.fromkeys(self._obj.data_vars, vmax)
+            # Now all color_kwargs are dicts
+            for data_var, params in coloring_kwargs.items():
+                if "cmap" in params:
+                    cmap[data_var] = params["cmap"]
+                if "center" in params:
+                    center[data_var] = params["center"]
+                if "vmin" in params:
+                    vmin[data_var] = params["vmin"]
+                if "vmax" in params:
+                    vmax[data_var] = params["vmax"]
         return explore(
             self._obj,
-            cmap=cmap,
-            center=center,
-            alpha=alpha,
             coords=coords,
+            cmap=cmap,
+            alpha=alpha,
+            center=center,
+            vmin=vmin,
+            vmax=vmax,
+            robust=robust,
+            **map_kwargs,
         )

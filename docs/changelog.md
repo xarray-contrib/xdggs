@@ -2,6 +2,8 @@
 
 ## 0.4.1 (_unreleased_)
 
+- Improve plotting: Add possibility to use `explore` on Datasets. In such a case, the user can select a data variable from a dropdown menu. Use Coordinates for the dimension sliders. Add colorbars. Add slider animations. Use the new H3Layer for H3 grids. ({pull}`197`)
+
 ## 0.4.0 (2025-11-03)
 
 - support interactive facet plots and combining maps ({pull}`183`)
