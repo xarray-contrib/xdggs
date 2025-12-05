@@ -12,7 +12,8 @@ function construct_slider_row(name, slider_view) {
   let row = document.createElement("div");
   row.style.setProperty("display", "grid");
   row.style.setProperty("padding", "3px");
-  row.style.setProperty("grid-template-columns", "50px 1fr 5fr 1fr");
+  row.style.setProperty("grid-template-columns", "1fr 5fr 1fr");
+  row.style.setProperty("height", "fit-content");
 
   // play button for animation
   /* let button = document.createElement("button");
