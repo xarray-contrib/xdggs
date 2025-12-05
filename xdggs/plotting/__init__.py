@@ -1,4 +1,8 @@
-from typing import Any
+from __future__ import annotations
+
+from dataclasses import dataclass
+from functools import partial
+from typing import TYPE_CHECKING, Any
 
 import ipywidgets
 import numpy as np
@@ -15,6 +19,9 @@ from xdggs.plotting.colorize import (
 from xdggs.plotting.map import MapWithControls
 from xdggs.plotting.variables import construct_variable_chooser
 
+if TYPE_CHECKING:
+    from lonboard import BaseLayer
+
 
 def format_labels(values):
     if values.dtype.kind in "M":
@@ -23,6 +30,76 @@ def format_labels(values):
         labels = np.astype(values, np.dtypes.StringDType()).tolist()
 
     return labels
+
+
+def extract_label(arr):
+    units = arr.attrs.get("units")
+    long_name = arr.attrs.get("long_name")
+    standard_name = arr.attrs.get("standard_name")
+    name = arr.name
+
+    label = long_name or standard_name or name or "(unknown)"
+
+    if units is not None:
+        label += f" [{units}]"
+
+    return label
+
+
+@dataclass
+class Container:
+    widget: MapWithControls
+    layer: BaseLayer
+    obj: xr.Dataset | xr.DataArray
+    colorize_params: ColorizeParameters
+
+
+def on_slider_change(change, changed_dim, container):
+    indexers = {
+        dim: slider.value
+        for dim, slider in container.widget.sliders.items()
+        if dim != changed_dim
+    } | {changed_dim: change["new"]}
+
+    if isinstance(container.obj, xr.DataArray):
+        arr = container.obj
+    else:
+        name = container.widget.variables.value
+        arr = container.obj[name]
+
+    new_slice = arr.isel(indexers)
+    normalized, stats = normalize(new_slice, container.colorize_params)
+    colors = colorize(normalized, container.colorize_params)
+
+    layer = container.layer
+    layer.get_fill_color = colors
+
+    colorbar = container.widget.colorbar
+    for name, value in stats.items():
+        setattr(colorbar, name, value)
+
+
+def on_variable_change(change, container):
+    if isinstance(container.obj, xr.DataArray):
+        # nothing to do
+        return
+
+    indexers = {dim: slider.value for dim, slider in container.widget.sliders.items()}
+
+    name = change["new"]
+    arr = container.obj[name]
+
+    new_slice = arr.isel(indexers)
+    normalized, stats = normalize(new_slice, container.colorize_params)
+    colors = colorize(normalized, container.colorize_params)
+
+    layer = container.layer
+    layer.get_fill_color = colors
+
+    colorbar = container.widget.colorbar
+    for name, value in stats.items():
+        setattr(colorbar, name, value)
+    colorbar.label = extract_label(arr)
 
 
 def explore(
@@ -34,6 +111,12 @@ def explore(
 ):
     import lonboard
     from lonboard import SolidPolygonLayer
+
+    map_kwargs = {}
+    if view is not None:
+        map_kwargs["view"] = view
+    if basemap is not None:
+        map_kwargs["basemap"] = basemap
 
     if isinstance(colorize_params, dict):
         colorize_params = ColorizeParameters.from_dict(colorize_params)
@@ -53,34 +136,35 @@ def explore(
 
     initial_indexers = {dim: 0 for dim in obj.dims if dim != cell_dim}
     if isinstance(obj, xr.Dataset):
-        initial_arr = obj[variable_chooser.value].isel(initial_indexers)
+        arr = obj[variable_chooser.value]
     else:
-        initial_arr = obj.isel(initial_indexers)
+        arr = obj
+    initial_arr = arr.isel(initial_indexers)
 
-    label = initial_arr.attrs.get("long_name") or initial_arr.name or ""
+    label = extract_label(arr)
 
     dimension_coordinates = {
         dim: format_labels(obj[dim].data) for dim in initial_indexers
     }
 
     normalized_data, stats = normalize(initial_arr, params=colorize_params)
-    colors = colorize(initial_arr, colorize_params)
+    colors = colorize(normalized_data, colorize_params)
 
     table = create_arrow_table(polygons, initial_arr, coords=coords)
     layer = SolidPolygonLayer(table=table, filled=True, get_fill_color=colors)
 
-    map_ = lonboard.Map(layer, view=view, basemap=basemap)
+    map_ = lonboard.Map(layer, **map_kwargs)
 
-    sliders = [
-        ipywidgets.IntSlider(
+    sliders = {
+        dim: ipywidgets.IntSlider(
             min=0,
             max=obj.sizes[dim] - 1,
-            description=dim,
-            disabled=dim not in initial_arr.dims,
+            disabled=dim not in arr.dims,
+            readout=False,
         )
         for dim in obj.dims
         if dim != cell_dim
-    ]
+    }
 
     colorbar = Colorbar(
         colors=extract_colors(colorize_params.cmap), label=label, **stats
@@ -95,17 +179,17 @@ def explore(
         colorbar=colorbar,
     )
 
-    # container = MapContainer(
-    #     sliders,
-    #     map_,
-    #     obj,
-    #     colorize_kwargs={"alpha": alpha, "center": center, "colormap": colormap},
-    # )
+    container = Container(map_widget, layer, obj, colorize_params)
 
-    # # connect slider with map
-    # for slider in sliders.children:
-    #     slider.observe(partial(on_slider_change, container=container), names="value")
+    # event handling
+    for dim, slider in sliders.items():
+        slider.observe(
+            partial(on_slider_change, changed_dim=dim, container=container),
+            names="value",
+        )
 
-    # return container.render()
+    variable_chooser.observe(
+        partial(on_variable_change, container=container), names="value"
+    )
 
     return map_widget
