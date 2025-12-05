@@ -217,6 +217,8 @@ class DGGSAccessor:
         vmax=None,
         alpha=None,
         coords=None,
+        view=None,
+        basemap=None,
     ):
         """interactively explore the data using `lonboard`
 
@@ -252,4 +254,6 @@ class DGGSAccessor:
                 "alpha": alpha,
             },
             coords=coords,
+            view=view,
+            basemap=basemap,
         )
