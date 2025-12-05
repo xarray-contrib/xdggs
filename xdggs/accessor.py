@@ -208,7 +208,18 @@ class DGGSAccessor:
 
         return xr.DataArray(zoomed, coords={self._name: self.cell_ids}, dims=dims)
 
-    def explore(self, *, cmap="viridis", center=None, alpha=None, coords=None):
+    def explore(
+        self,
+        *,
+        cmap="viridis",
+        center=None,
+        vmin=None,
+        vmax=None,
+        alpha=None,
+        coords=None,
+        view=None,
+        basemap=None,
+    ):
         """interactively explore the data using `lonboard`
 
         Requires `lonboard`, `matplotlib`, and `arro3.core` to be installed.
@@ -233,13 +244,16 @@ class DGGSAccessor:
         -----
         Plotting currently is restricted to 1D `DataArray` objects.
         """
-        if isinstance(self._obj, xr.Dataset):
-            raise ValueError("does not work with Dataset objects, yet")
-
         return explore(
             self._obj,
-            cmap=cmap,
-            center=center,
-            alpha=alpha,
+            colorize_params={
+                "cmap": cmap,
+                "center": center,
+                "vmin": vmin,
+                "vmax": vmax,
+                "alpha": alpha,
+            },
             coords=coords,
+            view=view,
+            basemap=basemap,
         )
