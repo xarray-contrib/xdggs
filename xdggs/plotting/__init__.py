@@ -55,17 +55,24 @@ class Container:
 
 
 def on_slider_change(change, changed_dim, container):
-    indexers = {
-        dim: slider.value
-        for dim, slider in container.widget.sliders.items()
-        if dim != changed_dim
-    } | {changed_dim: change["new"]}
-
     if isinstance(container.obj, xr.DataArray):
         arr = container.obj
     else:
         name = container.widget.variables.value
         arr = container.obj[name]
+
+    if changed_dim not in arr.dims:
+        # should not happen
+        return
+
+    indexers = {
+        dim: slider.value
+        for dim, slider in container.widget.sliders.items()
+        if dim in arr.dims and dim != changed_dim
+    } | {changed_dim: change["new"]}
+
+    for dim, slider in container.widget.sliders.items():
+        slider.disabled = dim not in arr.dims
 
     new_slice = arr.isel(indexers)
     normalized, stats = normalize(new_slice, container.colorize_params)
@@ -84,14 +91,21 @@ def on_variable_change(change, container):
         # nothing to do
         return
 
-    indexers = {dim: slider.value for dim, slider in container.widget.sliders.items()}
-
     name = change["new"]
     arr = container.obj[name]
+
+    indexers = {
+        dim: slider.value
+        for dim, slider in container.widget.sliders.items()
+        if dim in arr.dims
+    }
 
     new_slice = arr.isel(indexers)
     normalized, stats = normalize(new_slice, container.colorize_params)
     colors = colorize(normalized, container.colorize_params)
+
+    for dim, slider in container.widget.sliders.items():
+        slider.disabled = dim not in arr.dims
 
     layer = container.layer
     layer.get_fill_color = colors
@@ -134,18 +148,18 @@ def explore(
     if isinstance(obj, xr.Dataset) and not variable_chooser.options:
         raise ValueError("cannot find spatial variables")
 
-    initial_indexers = {dim: 0 for dim in obj.dims if dim != cell_dim}
     if isinstance(obj, xr.Dataset):
         arr = obj[variable_chooser.value]
     else:
         arr = obj
+
+    dimension_indices = {dim: 0 for dim in obj.dims if dim != cell_dim}
+    initial_indexers = {d: v for d, v in dimension_indices.items() if d in arr.dims}
     initial_arr = arr.isel(initial_indexers)
 
     label = extract_label(arr)
 
-    dimension_coordinates = {
-        dim: format_labels(obj[dim].data) for dim in initial_indexers
-    }
+    dimension_coordinates = {dim: format_labels(obj[dim].data) for dim in obj.dims}
 
     normalized_data, stats = normalize(initial_arr, params=colorize_params)
     colors = colorize(normalized_data, colorize_params)
@@ -173,7 +187,7 @@ def explore(
     map_widget = MapWithControls(
         map=map_,
         variables=variable_chooser,
-        dimensions=initial_indexers,
+        dimensions=dimension_indices,
         coordinates=dimension_coordinates,
         sliders=sliders,
         colorbar=colorbar,
