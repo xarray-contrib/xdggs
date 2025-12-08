@@ -60,6 +60,6 @@ class ColorizeParameters:
 
         method, quantile = kinds[kind]
         if self.robust:
-            return var.quantile(q=quantile, skipna=True)
+            return var.quantile(q=quantile, skipna=True).item()
         else:
-            return getattr(var, method)(skipna=True)
+            return getattr(var, method)(skipna=True).item()
