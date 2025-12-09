@@ -9,7 +9,7 @@ def normalize(var, params):
     from matplotlib.colors import CenteredNorm, Normalize
 
     if params.center is not None:
-        halfrange = np.abs(var - params.center).max(skipna=True)
+        halfrange = params.derive_limit(np.abs(var - params.center), kind="vmax")
         normalizer = CenteredNorm(vcenter=params.center, halfrange=halfrange)
     else:
         vmin = params.derive_limit(var, kind="vmin")
