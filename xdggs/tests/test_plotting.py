@@ -147,12 +147,35 @@ def test_create_arrow_table(polygons, arr, coords, expected):
             {"vmin": 0.0, "vmax": 10.0},
             id="centered-2",
         ),
+        pytest.param(
+            xr.Variable("cells", np.arange(5, dtype="float64")),
+            ColorizeParameters(vmin=1, vmax=3),
+            np.array([-0.5, 0, 0.5, 1, 1.5], dtype="float64"),
+            {"vmin": 1.0, "vmax": 3.0},
+            id="vmin-vmax",
+        ),
+        pytest.param(
+            xr.Variable("cells", np.linspace(0, 1, 3)),
+            ColorizeParameters(robust=True),
+            np.array([-0.020833333, 0.5, 1.020833333], dtype="float64"),
+            {"vmin": 0.02, "vmax": 0.98},
+            id="robust",
+        ),
+        pytest.param(
+            xr.Variable("cells", np.linspace(-1.5, 1, 4)),
+            ColorizeParameters(center=0.0, robust=True),
+            np.array(
+                [-0.010204082, 0.27324263, 0.556689342, 0.840136054], dtype="float64"
+            ),
+            {"vmin": -1.47, "vmax": 1.47},
+            id="centered-robust",
+        ),
     ),
 )
 def test_normalize(var, params, expected_values, expected_stats):
     normalized, stats = plotting.normalize(var, params=params)
 
-    np.testing.assert_allclose(normalized, expected_values)
+    np.testing.assert_allclose(np.asarray(normalized), expected_values)
     assert stats == expected_stats
 
 
