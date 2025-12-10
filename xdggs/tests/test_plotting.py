@@ -180,22 +180,24 @@ def test_normalize(var, params, expected_values, expected_stats):
 
 
 @pytest.mark.parametrize(
-    ["var", "kwargs", "expected"],
+    ["data", "params", "expected"],
     (
         pytest.param(
-            xr.Variable("cells", [0, 3]),
-            {"center": 2, "colormap": colormaps["viridis"], "alpha": 1},
-            np.array([[68, 1, 84], [94, 201, 97]], dtype="uint8"),
+            np.array([0.0, 0.7], dtype="float64"),
+            ColorizeParameters(cmap=colormaps["plasma"], alpha=None),
+            np.array([[12, 7, 134], [242, 132, 75]], dtype="uint8"),
+            id="opaque",
         ),
         pytest.param(
-            xr.Variable("cells", [-1, 1]),
-            {"center": None, "colormap": colormaps["viridis"], "alpha": 0.8},
+            np.array([0, 1], dtype="float64"),
+            ColorizeParameters(cmap=colormaps["viridis"], alpha=0.8),
             np.array([[68, 1, 84, 204], [253, 231, 36, 204]], dtype="uint8"),
+            id="alpha",
         ),
     ),
 )
-def test_colorize(var, kwargs, expected):
-    actual = plotting.colorize(var, **kwargs)
+def test_colorize(data, params, expected):
+    actual = plotting.colorize(data, params)
 
     np.testing.assert_equal(actual, expected)
 
