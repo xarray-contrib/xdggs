@@ -7,6 +7,7 @@ from arro3.core import Array, Table
 from matplotlib import colormaps
 
 from xdggs import plotting
+from xdggs.plotting.colorize import ColorizeParameters
 
 
 @pytest.mark.parametrize(
@@ -109,44 +110,50 @@ def test_create_arrow_table(polygons, arr, coords, expected):
 
 
 @pytest.mark.parametrize(
-    ["var", "center", "expected"],
+    ["var", "params", "expected_values", "expected_stats"],
     (
         pytest.param(
             xr.Variable("cells", np.array([-5, np.nan, -2, 1])),
-            None,
+            ColorizeParameters(),
             np.array([0, np.nan, 0.5, 1]),
+            {"vmin": -5.0, "vmax": 1.0},
             id="linear-missing_values",
         ),
         pytest.param(
             xr.Variable("cells", np.arange(-5, 2, dtype="float")),
-            None,
+            ColorizeParameters(),
             np.linspace(0, 1, 7),
+            {"vmin": -5.0, "vmax": 1.0},
             id="linear-manual",
         ),
         pytest.param(
             xr.Variable("cells", np.linspace(0, 10, 5)),
-            None,
+            ColorizeParameters(),
             np.linspace(0, 1, 5),
+            {"vmin": 0.0, "vmax": 10.0},
             id="linear-linspace",
         ),
         pytest.param(
             xr.Variable("cells", np.linspace(-5, 5, 10)),
-            0,
+            ColorizeParameters(center=0),
             np.linspace(0, 1, 10),
+            {"vmin": -5.0, "vmax": 5.0},
             id="centered-0",
         ),
         pytest.param(
             xr.Variable("cells", np.linspace(0, 10, 10)),
-            5,
+            ColorizeParameters(center=5),
             np.linspace(0, 1, 10),
+            {"vmin": 0.0, "vmax": 10.0},
             id="centered-2",
         ),
     ),
 )
-def test_normalize(var, center, expected):
-    actual = plotting.normalize(var, center=center)
+def test_normalize(var, params, expected_values, expected_stats):
+    normalized, stats = plotting.normalize(var, params=params)
 
-    np.testing.assert_allclose(actual, expected)
+    np.testing.assert_allclose(normalized, expected_values)
+    assert stats == expected_stats
 
 
 @pytest.mark.parametrize(
