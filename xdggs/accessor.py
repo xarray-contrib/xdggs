@@ -1,9 +1,20 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy.typing as npt
 import xarray as xr
 
 from xdggs.grid import DGGSInfo
 from xdggs.index import DGGSIndex
 from xdggs.plotting import explore
+
+if TYPE_CHECKING:
+    from lonboard.basemap import MaplibreBasemap
+    from lonboard.experimental.view import BaseView
+    from matplotlib.colors import Colormap
+
+    from xdggs.plotting import MapWithControls
 
 
 @xr.register_dataset_accessor("dggs")
@@ -211,16 +222,16 @@ class DGGSAccessor:
     def explore(
         self,
         *,
-        cmap="viridis",
-        center=None,
-        vmin=None,
-        vmax=None,
-        robust=False,
-        alpha=None,
-        coords=None,
-        view=None,
-        basemap=None,
-    ):
+        cmap: str | Colormap = "viridis",
+        center: int | float | None = None,
+        vmin: int | float | None = None,
+        vmax: int | float | None = None,
+        robust: bool = False,
+        alpha: float | None = None,
+        coords: list[str] | None = None,
+        view: BaseView | None = None,
+        basemap: MaplibreBasemap | None = None,
+    ) -> MapWithControls:
         """interactively explore the data using `lonboard`
 
         Requires `lonboard`, `matplotlib`, and `arro3.core` to be installed.

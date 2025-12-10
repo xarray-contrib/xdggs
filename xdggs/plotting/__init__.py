@@ -21,6 +21,8 @@ from xdggs.plotting.variables import construct_variable_chooser
 
 if TYPE_CHECKING:
     from lonboard import BaseLayer
+    from lonboard.basemap import MaplibreBasemap
+    from lonboard.experimental.view import BaseView
 
 
 def format_labels(values):
@@ -117,12 +119,12 @@ def on_variable_change(change, container):
 
 
 def explore(
-    obj,
+    obj: xr.Dataset | xr.DataArray,
     colorize_params: ColorizeParameters | dict[str, Any] = ColorizeParameters(),
-    coords: list[str] = None,
-    view=None,
-    basemap=None,
-):
+    coords: list[str] | None = None,
+    view: BaseView | None = None,
+    basemap: MaplibreBasemap | None = None,
+) -> MapWithControls:
     import lonboard
     from lonboard import SolidPolygonLayer
 
