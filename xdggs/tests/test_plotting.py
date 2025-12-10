@@ -103,7 +103,7 @@ from xdggs import plotting
     ),
 )
 def test_create_arrow_table(polygons, arr, coords, expected):
-    actual = plotting.create_arrow_table(polygons, arr, coords=coords)
+    actual = plotting.arrow.create_arrow_table(polygons, arr, coords=coords)
 
     assert actual == expected
 
