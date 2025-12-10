@@ -1,5 +1,3 @@
-import ipywidgets
-import lonboard
 import numpy as np
 import pytest
 import xarray as xr
@@ -211,7 +209,7 @@ def test_colorize(data, params, expected):
             ).dggs.decode(
                 {"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"}
             ),
-            lonboard.Map,
+            plotting.MapWithControls,
             id="1d",
         ),
         pytest.param(
@@ -222,7 +220,7 @@ def test_colorize(data, params, expected):
             ).dggs.decode(
                 {"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"}
             ),
-            ipywidgets.VBox,
+            plotting.MapWithControls,
             id="2d",
         ),
     ),
