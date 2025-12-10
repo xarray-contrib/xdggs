@@ -1,9 +1,20 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy.typing as npt
 import xarray as xr
 
 from xdggs.grid import DGGSInfo
 from xdggs.index import DGGSIndex
 from xdggs.plotting import explore
+
+if TYPE_CHECKING:
+    from lonboard.basemap import MaplibreBasemap
+    from lonboard.experimental.view import BaseView
+    from matplotlib.colors import Colormap
+
+    from xdggs.plotting import MapWithControls
 
 
 @xr.register_dataset_accessor("dggs")
@@ -208,7 +219,19 @@ class DGGSAccessor:
 
         return xr.DataArray(zoomed, coords={self._name: self.cell_ids}, dims=dims)
 
-    def explore(self, *, cmap="viridis", center=None, alpha=None, coords=None):
+    def explore(
+        self,
+        *,
+        cmap: str | Colormap = "viridis",
+        center: int | float | None = None,
+        vmin: int | float | None = None,
+        vmax: int | float | None = None,
+        robust: bool = False,
+        alpha: float | None = None,
+        coords: list[str] | None = None,
+        view: BaseView | None = None,
+        basemap: MaplibreBasemap | None = None,
+    ) -> MapWithControls:
         """interactively explore the data using `lonboard`
 
         Requires `lonboard`, `matplotlib`, and `arro3.core` to be installed.
@@ -233,13 +256,17 @@ class DGGSAccessor:
         -----
         Plotting currently is restricted to 1D `DataArray` objects.
         """
-        if isinstance(self._obj, xr.Dataset):
-            raise ValueError("does not work with Dataset objects, yet")
-
         return explore(
             self._obj,
-            cmap=cmap,
-            center=center,
-            alpha=alpha,
+            colorize_params={
+                "cmap": cmap,
+                "center": center,
+                "vmin": vmin,
+                "vmax": vmax,
+                "robust": robust,
+                "alpha": alpha,
+            },
             coords=coords,
+            view=view,
+            basemap=basemap,
         )
