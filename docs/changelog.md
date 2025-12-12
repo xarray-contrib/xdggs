@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.4.1 (_unreleased_)
+## 0.5.0 (2025-12-12)
 
 - Support ellipsoids for `healpix` ({pull}`194`)
 - Move the plotting code into a custom `anywidget`-based widget ({pull}`199`)
