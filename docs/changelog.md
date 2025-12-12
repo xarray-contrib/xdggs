@@ -2,6 +2,10 @@
 
 ## 0.4.1 (_unreleased_)
 
+- Support ellipsoids for `healpix` ({pull}`194`)
+- Move the plotting code into a custom `anywidget`-based widget ({pull}`199`)
+- Temporarily remove the interactive facet plot feature ({pull}`200`)
+
 ## 0.4.0 (2025-11-03)
 
 - support interactive facet plots and combining maps ({pull}`183`)
