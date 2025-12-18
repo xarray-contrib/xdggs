@@ -3,13 +3,12 @@ from collections.abc import Hashable, Mapping
 from dataclasses import dataclass
 from typing import Any, ClassVar, Literal, Self, TypeVar
 
-import cdshealpix.nested
-import cdshealpix.ring
 import numpy as np
 import xarray as xr
 from healpix_geo.nested import RangeMOCIndex
 from xarray.core.indexes import IndexSelResult, PandasIndex
 
+from xdggs.ellipsoid import Ellipsoid, Sphere, parse_ellipsoid
 from xdggs.grid import DGGSInfo, translate_parameters
 from xdggs.index import DGGSIndex
 from xdggs.itertools import identity
@@ -110,6 +109,8 @@ class HealpixInfo(DGGSInfo):
         .. warning::
             Note that ``"unique"`` is currently not supported as the underlying library
             (:doc:`cdshealpix <cdshealpix-python:index>`) does not support it.
+    ellipsoid : ellipsoid-like, optional
+        The reference ellipsoid. If not passed, a sphere is assumed.
     """
 
     level: int
@@ -117,6 +118,9 @@ class HealpixInfo(DGGSInfo):
 
     indexing_scheme: Literal["nested", "ring"] = "nested"
     """int : The indexing scheme of the grid"""
+
+    ellipsoid: str | Sphere | Ellipsoid | None = None
+    """ellipsoid-like : The ellipsoid"""
 
     valid_parameters: ClassVar[dict[str, Any]] = {
         "level": range(0, 29 + 1),
@@ -149,6 +153,14 @@ class HealpixInfo(DGGSInfo):
         else:
             return self.indexing_scheme == "nested"
 
+    def _format_ellipsoid(self) -> str:
+        if self.ellipsoid is None:
+            return "sphere"
+        elif isinstance(self.ellipsoid, str):
+            return self.ellipsoid
+
+        return self.ellipsoid._serialize()
+
     @classmethod
     def from_dict(cls: type[T], mapping: dict[str, Any]) -> T:
         """construct a `HealpixInfo` object from a mapping of attributes
@@ -172,12 +184,19 @@ class HealpixInfo(DGGSInfo):
 
             return potential_level
 
+        def translate_ellipsoid(value):
+            if isinstance(value, (str, Sphere, Ellipsoid)):
+                return value
+
+            return parse_ellipsoid(value)
+
         translations = {
             "nside": ("level", translate_nside),
             "order": ("level", identity),
             "resolution": ("level", identity),
             "depth": ("level", identity),
             "nest": ("indexing_scheme", lambda nest: "nested" if nest else "ring"),
+            "ellipsoid": ("ellipsoid", translate_ellipsoid),
         }
 
         params = translate_parameters(mapping, translations)
@@ -192,11 +211,19 @@ class HealpixInfo(DGGSInfo):
         mapping : dict of str to any
             The normalized grid parameters.
         """
+        optional_values = {}
+        if self.ellipsoid is not None:
+            optional_values["ellipsoid"] = (
+                self.ellipsoid
+                if isinstance(self.ellipsoid, str)
+                else self.ellipsoid.to_dict()
+            )
+
         return {
             "grid_name": "healpix",
             "level": self.level,
             "indexing_scheme": self.indexing_scheme,
-        }
+        } | optional_values
 
     def cell_ids2geographic(self, cell_ids):
         """
@@ -214,17 +241,15 @@ class HealpixInfo(DGGSInfo):
         lat : array-like
             The latitude coordinate values of the grid cells in degree
         """
+        import healpix_geo
+
         converters = {
-            "nested": cdshealpix.nested.healpix_to_lonlat,
-            "ring": lambda cell_ids, level: cdshealpix.ring.healpix_to_lonlat(
-                cell_ids, nside=2**level
-            ),
+            "nested": healpix_geo.nested.healpix_to_lonlat,
+            "ring": healpix_geo.ring.healpix_to_lonlat,
         }
         converter = converters[self.indexing_scheme]
 
-        lon, lat = converter(cell_ids, self.level)
-
-        return np.asarray(lon.to("degree")), np.asarray(lat.to("degree"))
+        return converter(cell_ids, self.level, self._format_ellipsoid())
 
     def geographic2cell_ids(self, lon, lat):
         """
@@ -245,20 +270,15 @@ class HealpixInfo(DGGSInfo):
         cell_ids : array-like
             Array-like containing the cell ids.
         """
-        from astropy.coordinates import Latitude, Longitude
+        import healpix_geo
 
         converters = {
-            "nested": cdshealpix.nested.lonlat_to_healpix,
-            "ring": lambda lon, lat, level: cdshealpix.ring.lonlat_to_healpix(
-                lon, lat, nside=2**level
-            ),
+            "nested": healpix_geo.nested.lonlat_to_healpix,
+            "ring": healpix_geo.ring.lonlat_to_healpix,
         }
         converter = converters[self.indexing_scheme]
 
-        longitude = Longitude(lon, unit="degree")
-        latitude = Latitude(lat, unit="degree")
-
-        return converter(longitude, latitude, self.level)
+        return converter(lon, lat, self.level, ellipsoid=self._format_ellipsoid())
 
     def cell_boundaries(self, cell_ids: Any, backend="shapely") -> np.ndarray:
         """
@@ -280,18 +300,15 @@ class HealpixInfo(DGGSInfo):
             - ``"shapely"``: return a array of :py:class:`shapely.Polygon` objects
             - ``"geoarrow"``: return a ``geoarrow`` array
         """
+        import healpix_geo
+
         converters = {
-            "nested": cdshealpix.nested.vertices,
-            "ring": lambda cell_ids, level, **kwargs: cdshealpix.ring.vertices(
-                cell_ids, nside=2**level, **kwargs
-            ),
+            "nested": healpix_geo.nested.vertices,
+            "ring": healpix_geo.ring.vertices,
         }
         converter = converters[self.indexing_scheme]
 
-        lon_, lat_ = converter(cell_ids, self.level, step=1)
-
-        lon = np.asarray(lon_.to("degree"))
-        lat = np.asarray(lat_.to("degree"))
+        lon, lat = converter(cell_ids, self.level, ellipsoid=self._format_ellipsoid())
 
         lon_reshaped = np.reshape(lon, (-1, 4))
         lat_reshaped = np.reshape(lat, (-1, 4))
