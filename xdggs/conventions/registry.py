@@ -1,36 +1,27 @@
 import warnings
 
-decoders = {}
-encoders = {}
+conventions = {}
+
+
+class Convention:
+    def decode(self, obj, grid_info, name, index_options):
+        raise NotImplementedError
+
+    def encode(self, obj, *, encoding=None):
+        raise NotImplementedError
 
 
 class DecoderWarning(UserWarning):
     pass
 
 
-def register_decoder(name):
-    def register(func):
-        if name in decoders:
-            warnings.warn(
-                DecoderWarning(f"Overwriting existing convention decoder {name!r}.")
-            )
+def register_convention(name):
+    def register(cls):
+        if name in conventions:
+            warnings.warn(DecoderWarning(f"Overwriting existing convention {name!r}."))
 
-        decoders[name] = func
+        conventions[name] = cls()
 
-        return func
-
-    return register
-
-
-def register_encoder(name):
-    def register(func):
-        if name in encoders:
-            warnings.warn(
-                DecoderWarning(f"Overwriting existing convention encoder {name!r}.")
-            )
-
-        encoders[name] = func
-
-        return func
+        return cls
 
     return register
