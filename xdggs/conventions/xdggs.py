@@ -37,7 +37,7 @@ class Xdggs(Convention):
         var_.attrs = grid_info
         index = index_cls.from_variables({name: var_}, options=index_options)
 
-        return xr.Coordinates({name: var.variable}, indexes={name: index})
+        return xr.Coordinates.from_xindex(index)
 
     def encode(self, obj):
         def _convert(ds):
