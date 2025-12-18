@@ -218,6 +218,8 @@ class H3Index(DGGSIndex):
         grid_info: DGGSInfo,
     ):
         super().__init__(cell_ids, dim, grid_info)
+
+        self._name = name
         self._index.index.name = name
 
     @classmethod
@@ -238,7 +240,7 @@ class H3Index(DGGSIndex):
         return self._grid
 
     def _replace(self, new_index: xr.Index):
-        return type(self)(new_index, self._dim, self._grid)
+        return type(self)(new_index, self._dim, self._name, self._grid)
 
     def _repr_inline_(self, max_width: int):
         return f"H3Index(level={self._grid.level})"

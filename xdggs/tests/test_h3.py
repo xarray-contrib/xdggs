@@ -43,7 +43,6 @@ variable_combinations = [
 
 
 class TestH3Info:
-
     @pytest.mark.parametrize(
         ["level", "error"],
         (
@@ -243,17 +242,19 @@ class TestH3Info:
 
 
 @pytest.mark.parametrize("level", levels)
+@pytest.mark.parametrize("name", variable_names)
 @pytest.mark.parametrize("dim", dims)
 @pytest.mark.parametrize("cell_ids", cell_ids)
-def test_init(cell_ids, dim, level):
+def test_init(cell_ids, dim, name, level):
     grid = h3.H3Info(level)
-    index = h3.H3Index(cell_ids, dim, grid)
+    index = h3.H3Index(cell_ids, dim, name, grid)
 
     assert index._grid == grid
     assert index._dim == dim
 
     # TODO: how do we check the index, if at all?
     assert index._index.dim == dim
+    assert index._index.index.name == name
     assert np.all(index._index.index.values == cell_ids)
 
 
@@ -261,7 +262,7 @@ def test_init(cell_ids, dim, level):
 def test_grid(level):
     grid = h3.H3Info(level)
 
-    index = h3.H3Index([0], "cell_ids", grid)
+    index = h3.H3Index([0], "cells", "cell_ids", grid)
 
     assert index.grid_info is grid
 
@@ -285,28 +286,30 @@ def test_from_variables(variable_name, variable, options):
 
 @pytest.mark.parametrize(["old_variable", "new_variable"], variable_combinations)
 def test_replace(old_variable, new_variable):
+    name = "cell_ids"
+
     grid = h3.H3Info(level=old_variable.attrs["level"])
     index = h3.H3Index(
         cell_ids=old_variable.data,
         dim=old_variable.dims[0],
+        name=name,
         grid_info=grid,
     )
-    new_pandas_index = PandasIndex.from_variables(
-        {"cell_ids": new_variable}, options={}
-    )
+    new_pandas_index = PandasIndex.from_variables({name: new_variable}, options={})
 
     new_index = index._replace(new_pandas_index)
 
     assert new_index._grid == index._grid
     assert new_index._dim == index._dim
     assert new_index._index == new_pandas_index
+    assert new_index._name == name
 
 
 @pytest.mark.parametrize("max_width", [20, 50, 80, 120])
 @pytest.mark.parametrize("level", levels)
 def test_repr_inline(level, max_width):
     grid = h3.H3Info(level=level)
-    index = h3.H3Index(cell_ids=[0], dim="cells", grid_info=grid)
+    index = h3.H3Index(cell_ids=[0], dim="cells", name="cell_ids", grid_info=grid)
 
     actual = index._repr_inline_(max_width)
 
@@ -322,13 +325,14 @@ def test_join():
     data2 = np.array([0x821987FFFFFFFFF, 0x822837FFFFFFFFF, 0x82285FFFFFFFFFF])
 
     dim = "cells"
+    name = "cell_ids"
     grid_info = h3.H3Info(level=2)
 
-    index1 = h3.H3Index(data1, dim=dim, grid_info=grid_info)
-    index2 = h3.H3Index(data2, dim=dim, grid_info=grid_info)
+    index1 = h3.H3Index(data1, dim=dim, name=name, grid_info=grid_info)
+    index2 = h3.H3Index(data2, dim=dim, name=name, grid_info=grid_info)
 
     actual = index1.join(index2, how="inner")
-    expected = h3.H3Index(data2, dim=dim, grid_info=grid_info)
+    expected = h3.H3Index(data2, dim=dim, name=name, grid_info=grid_info)
 
     assert actual._grid == expected._grid
     assert actual._dim == expected._dim
@@ -340,12 +344,13 @@ def test_join_error():
     data2 = np.array([0x832831FFFFFFFFF, 0x832832FFFFFFFFF])
 
     dim = "cells"
+    name = "cell_ids"
 
     grid_info1 = h3.H3Info(level=1)
     grid_info2 = h3.H3Info(level=6)
 
-    index1 = h3.H3Index(data1, dim=dim, grid_info=grid_info1)
-    index2 = h3.H3Index(data2, dim=dim, grid_info=grid_info2)
+    index1 = h3.H3Index(data1, dim=dim, name=name, grid_info=grid_info1)
+    index2 = h3.H3Index(data2, dim=dim, name=name, grid_info=grid_info2)
 
     with pytest.raises(ValueError, match="different grid parameters"):
         index1.join(index2, how="inner")
@@ -356,6 +361,7 @@ def test_reindex_like():
     index1 = h3.H3Index(
         cell_ids=np.array([0x821987FFFFFFFFF, 0x822837FFFFFFFFF, 0x82285FFFFFFFFFF]),
         dim="cells",
+        name="cell_ids",
         grid_info=grid,
     )
     index2 = h3.H3Index(
@@ -363,6 +369,7 @@ def test_reindex_like():
             [0x821987FFFFFFFFF, 0x822831FFFFFFFFF, 0x822837FFFFFFFFF, 0x82285FFFFFFFFFF]
         ),
         dim="cells",
+        name="cell_ids",
         grid_info=grid,
     )
 
@@ -378,12 +385,13 @@ def test_reindex_like_error():
     data2 = np.array([0x832831FFFFFFFFF, 0x832832FFFFFFFFF])
 
     dim = "cells"
+    name = "cell_ids"
 
     grid_info1 = h3.H3Info(level=1)
     grid_info2 = h3.H3Info(level=6)
 
-    index1 = h3.H3Index(data1, dim=dim, grid_info=grid_info1)
-    index2 = h3.H3Index(data2, dim=dim, grid_info=grid_info2)
+    index1 = h3.H3Index(data1, dim=dim, name=name, grid_info=grid_info1)
+    index2 = h3.H3Index(data2, dim=dim, name=name, grid_info=grid_info2)
 
     with pytest.raises(ValueError, match="different grid parameters"):
         index1.reindex_like(index2)
@@ -398,6 +406,7 @@ def test_equals(variant):
         np.array([0x832831FFFFFFFFF, 0x832832FFFFFFFFF]),
     ]
     dims = ["cells", "zones"]
+    name = "cell_ids"
     grid_info = [h3.H3Info(level=1), h3.H3Info(level=6)]
 
     dim1 = dims[0]
@@ -416,7 +425,7 @@ def test_equals(variant):
     expected = expected_results.get(variant, False)
     dim2, values2, grid_info2 = variants[variant]
 
-    index1 = h3.H3Index(values1, dim=dim1, grid_info=grid_info1)
-    index2 = h3.H3Index(values2, dim=dim2, grid_info=grid_info2)
+    index1 = h3.H3Index(values1, dim=dim1, name=name, grid_info=grid_info1)
+    index2 = h3.H3Index(values2, dim=dim2, name=name, grid_info=grid_info2)
 
     assert index1.equals(index2) == expected
