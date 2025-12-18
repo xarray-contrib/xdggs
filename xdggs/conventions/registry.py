@@ -1,6 +1,6 @@
 import warnings
 
-conventions = {}
+_conventions = {}
 
 
 class Convention:
@@ -17,10 +17,10 @@ class DecoderWarning(UserWarning):
 
 def register_convention(name):
     def register(cls):
-        if name in conventions:
+        if name in _conventions:
             warnings.warn(DecoderWarning(f"Overwriting existing convention {name!r}."))
 
-        conventions[name] = cls()
+        _conventions[name] = cls()
 
         return cls
 
