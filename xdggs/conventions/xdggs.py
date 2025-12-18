@@ -46,8 +46,9 @@ class Xdggs(Convention):
             grid_name = infer_grid_name(ds.dggs.index)
             metadata = {"grid_name": grid_name} | ds.dggs.grid_info.to_dict()
 
-            return ds.assign_coords(
-                {coord: lambda ds: ds[coord].assign_attrs(metadata)}
-            )
+            # TODO: `assign_coords` + `assign_attrs` drops the index
+            ds_ = ds.copy(deep=False)
+            ds_[coord].attrs.update(metadata)
+            return ds_
 
         return call_on_dataset(_convert, obj)
