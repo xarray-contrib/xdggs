@@ -3,8 +3,7 @@ import xarray as xr
 
 from xdggs.conventions.registry import Convention, register_convention
 from xdggs.conventions.utils import infer_grid_name
-from xdggs.grid import GRID_REGISTRY
-from xdggs.utils import call_on_dataset
+from xdggs.utils import GRID_REGISTRY, call_on_dataset
 
 
 @register_convention("cf")
