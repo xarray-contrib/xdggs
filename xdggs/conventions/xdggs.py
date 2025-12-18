@@ -1,5 +1,6 @@
 import xarray as xr
 
+from xdggs.conventions.errors import DecoderError
 from xdggs.conventions.registry import Convention, register_convention
 from xdggs.conventions.utils import infer_grid_name
 from xdggs.grid import DGGSInfo
@@ -15,11 +16,11 @@ class Xdggs(Convention):
         try:
             var = obj[name]
         except KeyError:
-            raise ValueError("Cannot find the cell ids coordinate")
+            raise DecoderError("xdggs convention: Cannot find the cell ids coordinate")
 
         if len(var.dims) != 1:
             # TODO: allow 0D
-            raise ValueError("cell id coordinate must be 1D")
+            raise DecoderError("xdggs convention: cell id coordinate must be 1D")
         [dim] = var.dims
 
         if grid_info is None:
@@ -30,7 +31,7 @@ class Xdggs(Convention):
 
         grid_name = grid_info["grid_name"]
         if grid_name not in GRID_REGISTRY:
-            raise ValueError(f"unknown grid name: {grid_name}")
+            raise DecoderError(f"xdggs convention: unknown grid name: {grid_name}")
         index_cls = GRID_REGISTRY[grid_name]
 
         var_ = var.copy(deep=True)
