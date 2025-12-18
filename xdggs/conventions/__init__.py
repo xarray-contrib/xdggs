@@ -1,9 +1,6 @@
 from xdggs.conventions import cf, easygems, xdggs  # noqa: F401
-from xdggs.conventions.registry import _conventions, register_convention
-
-
-class DecoderError(Exception):
-    pass
+from xdggs.conventions.errors import DecoderError
+from xdggs.conventions.registry import Convention, _conventions, register_convention
 
 
 def detect_decoder(obj, grid_info, name):
@@ -16,4 +13,4 @@ def detect_decoder(obj, grid_info, name):
     raise ValueError("cannot detect a matching convention")
 
 
-__all__ = ["register_convention", "detect_decoder", "DecoderError"]
+__all__ = ["register_convention", "detect_decoder", "DecoderError", "Convention"]
