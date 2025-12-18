@@ -26,23 +26,24 @@ class TestXdggs:
     def test_decode(self, grid_info, cell_ids, name, dim):
         convention = Xdggs()
 
-        obj = xr.Dataset(coords={name: (dim, cell_ids, grid_info)})
+        var = xr.Variable(dim, cell_ids, grid_info)
+        index = xdggs.index.DGGSIndex.from_variables({name: var}, options={})
+        expected = xr.Coordinates.from_xindex(index)
+
+        obj = xr.Dataset(coords={name: var})
         actual = convention.decode(
             obj,
             grid_info=None,
             name=name,
             index_options={},
         )
-
         assert name in actual.variables and name in actual.xindexes
-        xr.testing.assert_identical(actual[name], obj[name])
+        xr.testing.assert_identical(actual[name], expected[name])
 
         obj = xr.Dataset(coords={name: (dim, cell_ids)})
         actual = convention.decode(
             obj, grid_info=grid_info, name=name, index_options={}
         )
-        expected = obj.assign_coords({name: obj[name].assign_attrs(grid_info)})
-
         assert name in actual.variables and name in actual.xindexes
         xr.testing.assert_identical(actual[name].variable, expected[name].variable)
 
@@ -73,8 +74,6 @@ class TestXdggs:
 
         # no-op
         encoded = convention.encode(obj)
-        print(obj.xindexes)
-        print(encoded.xindexes)
 
         xr.testing.assert_identical(encoded, obj)
         assert list(encoded.xindexes) == [name]
