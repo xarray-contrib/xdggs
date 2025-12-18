@@ -5,6 +5,7 @@ import xarray as xr
 import xdggs
 from xdggs.conventions.cf import Cf
 from xdggs.conventions.xdggs import Xdggs
+from xdggs.tests import assert_indexes_equal
 
 
 class TestXdggsConvention:
@@ -38,15 +39,15 @@ class TestXdggsConvention:
             name=name,
             index_options={},
         )
-        assert name in actual.variables and name in actual.xindexes
         xr.testing.assert_identical(actual[name], expected[name])
+        assert_indexes_equal(actual[name].xindexes, expected[name].xindexes)
 
         obj = xr.Dataset(coords={name: (dim, cell_ids)})
         actual = convention.decode(
             obj, grid_info=grid_info, name=name, index_options={}
         )
-        assert name in actual.variables and name in actual.xindexes
         xr.testing.assert_identical(actual[name].variable, expected[name].variable)
+        assert_indexes_equal(actual[name].xindexes, expected[name].xindexes)
 
     @pytest.mark.parametrize(
         ["name", "dim"], [("cell_ids", "cells"), ("zone_ids", "zones")]
@@ -77,8 +78,7 @@ class TestXdggsConvention:
         encoded = convention.encode(obj)
 
         xr.testing.assert_identical(encoded, obj)
-        assert list(encoded.xindexes) == [name]
-        assert encoded.xindexes[name].equals(index)
+        assert_indexes_equal(encoded.xindexes, obj.xindexes)
 
 
 class TestCfConvention:
@@ -127,8 +127,8 @@ class TestCfConvention:
             name=name,
             index_options={},
         )
-        assert name in actual.variables and name in actual.xindexes
-        xr.testing.assert_identical(actual[name], expected[name])
+        xr.testing.assert_identical(actual, expected)
+        assert_indexes_equal(actual.xindexes, expected.xindexes)
 
     @pytest.mark.parametrize(
         ["name", "dim"], [("cell_ids", "cells"), ("zone_ids", "zones")]
@@ -165,5 +165,4 @@ class TestCfConvention:
         encoded = convention.encode(obj)
 
         xr.testing.assert_identical(encoded, expected)
-        # can't have an index
-        assert list(encoded.xindexes) == []
+        assert_indexes_equal(encoded.xindexes, expected.xindexes)
