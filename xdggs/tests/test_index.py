@@ -2,6 +2,7 @@ import pytest
 import xarray as xr
 
 from xdggs import index
+from xdggs.conventions.errors import DecoderError
 
 
 @pytest.fixture
@@ -19,10 +20,10 @@ def test_create_index(dggs_example):
 
 def test_decode(dggs_example):
     # TODO: improve unknown index message
-    with pytest.raises(ValueError, match="test"):
+    with pytest.raises(DecoderError, match="test"):
         dggs_example.pipe(index.decode)
 
 
 def test_decode_indexed(dggs_example):
-    with pytest.raises(ValueError, match="test"):
+    with pytest.raises(DecoderError, match="test"):
         dggs_example.set_xindex("cell_ids").pipe(index.decode)
