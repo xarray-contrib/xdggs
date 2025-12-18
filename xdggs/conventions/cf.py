@@ -37,11 +37,11 @@ class Cf(Convention):
                 )
             name = coord_names[0]
 
-        translations = {"refinement_level": "level"}
+        translations = {"grid_mapping_name": "grid_name", "refinement_level": "level"}
         grid_info = {
             translations.get(name, name): value for name, value in crs.attrs.items()
         }
-        grid_name = grid_info.pop("grid_mapping_name")
+        grid_name = grid_info.pop("grid_name")
         var = vars_[name].copy(deep=False)
         var.attrs = grid_info
 
@@ -50,8 +50,7 @@ class Cf(Convention):
         index_cls = GRID_REGISTRY[grid_name]
 
         index = index_cls.from_variables({name: var}, options=index_options)
-
-        return xr.Coordinates({name: var}, indexes={name: index})
+        return xr.Coordinates.from_xindex(index)
 
     def encode(self, obj):
         def _convert(ds):
@@ -67,16 +66,22 @@ class Cf(Convention):
             crs = xr.Variable((), np.int8(0), metadata)
 
             additional_var_attrs = {"coordinates": coord, "grid_mapping": "crs"}
-            coord_attrs = {"standard_name": "healpix_index", "units": "1"}
+            coord_attrs = {"standard_name": f"{grid_name}_index", "units": "1"}
 
-            new = ds.copy(deep=False)
+            new = ds.drop_indexes(coord).copy(deep=False)
             for key, var in new.variables.items():
                 if key == coord or dim not in var.dims:
                     continue
 
                 var.attrs |= additional_var_attrs
 
-            new[coord].attrs |= coord_attrs
+            grid_info_dict = grid_info.to_dict()
+            new_attrs = {
+                name: value
+                for name, value in new[coord].attrs.items()
+                if name not in grid_info_dict
+            }
+            new[coord].attrs = new_attrs | coord_attrs
 
             return new.assign_coords({"crs": crs})
 
