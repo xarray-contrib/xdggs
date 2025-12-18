@@ -686,9 +686,6 @@ class HealpixIndex(DGGSIndex):
 
         return cls(var.data, dim, grid_info, index_kind=index_kind)
 
-    def create_variables(self, variables):
-        return self._index.create_variables(variables)
-
     def _replace(self, new_index: xr.Index):
         return type(self)(new_index, self._dim, self._grid, index_kind=self._kind)
 
