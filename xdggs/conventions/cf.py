@@ -1,6 +1,7 @@
 import numpy as np
 import xarray as xr
 
+from xdggs.conventions.errors import DecoderError
 from xdggs.conventions.registry import Convention, register_convention
 from xdggs.conventions.utils import infer_grid_name
 from xdggs.utils import GRID_REGISTRY, call_on_dataset
@@ -17,8 +18,8 @@ class Cf(Convention):
             name: var for name, var in vars_.items() if "grid_mapping_name" in var.attrs
         }
         if len(grid_mapping_vars) != 1:
-            raise ValueError(
-                "needs exactly one grid mapping variable for now."
+            raise DecoderError(
+                "cf convention: needs exactly one grid mapping variable for now."
                 f" Got {len(grid_mapping_vars)}"
             )
         crs = next(iter(grid_mapping_vars.values()))
@@ -35,8 +36,9 @@ class Cf(Convention):
             )
             coord_names = list(coords)
             if not coord_names:
-                raise ValueError(
-                    "Cannot find the cell index variable. Please specify it explicitly."
+                raise DecoderError(
+                    "cf convention: Cannot find the cell index variable."
+                    " Please specify it explicitly."
                 )
             name = coord_names[0]
 
@@ -49,7 +51,7 @@ class Cf(Convention):
         var.attrs = grid_info
 
         if grid_name not in GRID_REGISTRY:
-            raise ValueError(f"unknown grid name: {grid_name}")
+            raise DecoderError(f"cf convention: unknown grid name: {grid_name}")
         index_cls = GRID_REGISTRY[grid_name]
 
         index = index_cls.from_variables({name: var}, options=index_options)
