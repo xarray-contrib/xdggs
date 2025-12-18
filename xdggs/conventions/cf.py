@@ -17,7 +17,10 @@ class Cf(Convention):
             name: var for name, var in vars_.items() if "grid_mapping_name" in var.attrs
         }
         if len(grid_mapping_vars) != 1:
-            raise ValueError("needs exactly one grid mapping variable for now")
+            raise ValueError(
+                "needs exactly one grid mapping variable for now."
+                f" Got {len(grid_mapping_vars)}"
+            )
         crs = next(iter(grid_mapping_vars.values()))
 
         if name is None:
