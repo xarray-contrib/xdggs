@@ -14,7 +14,7 @@ class Xdggs(Convention):
 
         try:
             var = obj[name]
-        except IndexError:
+        except KeyError:
             raise ValueError("Cannot find the cell ids coordinate")
 
         if len(var.dims) != 1:
