@@ -70,12 +70,10 @@ class DGGSAccessor:
         obj : xarray.DataArray or xarray.Dataset
             The object with a DGGS index on the cell id coordinate.
         """
-        if callable(convention):
-            decoder = convention
-        else:
-            decoder = conventions._decoders.get(convention)
-            if decoder is None:
-                valid_names = conventions._decoders.keys()
+        if isinstance(convention, str):
+            convention = conventions._conventions.get(convention)
+            if convention is None:
+                valid_names = conventions._conventions.keys()
                 raise ValueError(
                     f"unknown convention: {convention}."
                     f" Choose a known convention: {', '.join(valid_names)}"
@@ -84,7 +82,7 @@ class DGGSAccessor:
         if index_options is None:
             index_options = {}
 
-        coords = decoder(
+        coords = convention.decode(
             self._obj, grid_info=grid_info, name=name, index_options=index_options
         )
         return self._obj.assign_coords(coords)
@@ -287,8 +285,8 @@ class DGGSAccessor:
         obj : xr.DataArray or xr.Dataset
             The object converted to the given dimension.
         """
-        converter = conventions._encoders.get(convention)
+        converter = conventions._conventions.get(convention)
         if converter is None:
             raise ValueError(f"unknown convention: {convention}")
 
-        return converter(self._obj)
+        return converter.encode(self._obj)
