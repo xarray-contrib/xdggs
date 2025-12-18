@@ -653,6 +653,7 @@ class HealpixIndex(DGGSIndex):
             raise ValueError(f"grid info object has an invalid type: {type(grid_info)}")
 
         self._dim = dim
+        self._name = name
 
         if isinstance(cell_ids, xr.Index):
             self._index = cell_ids
@@ -689,7 +690,9 @@ class HealpixIndex(DGGSIndex):
         return cls(var.data, dim, name, grid_info, index_kind=index_kind)
 
     def _replace(self, new_index: xr.Index):
-        return type(self)(new_index, self._dim, self._grid, index_kind=self._kind)
+        return type(self)(
+            new_index, self._dim, self._name, self._grid, index_kind=self._kind
+        )
 
     @property
     def grid_info(self) -> HealpixInfo:
