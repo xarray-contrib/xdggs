@@ -645,6 +645,7 @@ class HealpixIndex(DGGSIndex):
         self,
         cell_ids: Any | xr.Index,
         dim: str,
+        name: str,
         grid_info: DGGSInfo,
         index_kind: str = "pandas",
     ):
@@ -657,9 +658,10 @@ class HealpixIndex(DGGSIndex):
             self._index = cell_ids
         elif index_kind == "pandas":
             self._index = PandasIndex(cell_ids, dim)
+            self._index.index.name = name
         elif index_kind == "moc":
             self._index = HealpixMocIndex.from_array(
-                cell_ids, dim=dim, grid_info=grid_info, name="cell_ids"
+                cell_ids, dim=dim, grid_info=grid_info, name=name
             )
         self._kind = index_kind
 
@@ -678,13 +680,13 @@ class HealpixIndex(DGGSIndex):
         *,
         options: Mapping[str, Any],
     ) -> "HealpixIndex":
-        _, var, dim = _extract_cell_id_variable(variables)
+        name, var, dim = _extract_cell_id_variable(variables)
 
         index_kind = options.pop("index_kind", "pandas")
 
         grid_info = HealpixInfo.from_dict(var.attrs | options)
 
-        return cls(var.data, dim, grid_info, index_kind=index_kind)
+        return cls(var.data, dim, name, grid_info, index_kind=index_kind)
 
     def _replace(self, new_index: xr.Index):
         return type(self)(new_index, self._dim, self._grid, index_kind=self._kind)
