@@ -9,7 +9,7 @@ from xdggs.grid import DGGSInfo
 class Convention:
     def decode(
         self,
-        obj: xr.Dataset | xr.DataArray,
+        obj: xr.Dataset,
         *,
         grid_info: DGGSInfo | None,
         name: Hashable | None,
@@ -40,7 +40,7 @@ class Convention:
         raise NotImplementedError
 
     def encode(
-        self, obj: xr.Dataset | xr.DataArray, *, encoding: dict[str, Any] | None = None
+        self, obj: xr.Dataset, *, encoding: dict[str, Any] | None = None
     ) -> xr.Dataset:
         """
         Encode according to the convention.
