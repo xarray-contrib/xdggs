@@ -303,8 +303,8 @@ class DGGSAccessor:
             basemap=basemap,
         )
 
-    def as_convention(self, convention: str):
-        """Convert the dataset to a specific convention
+    def encode(self, convention: str):
+        """Encode the dataset to the given convention
 
         Parameters
         ----------
