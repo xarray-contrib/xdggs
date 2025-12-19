@@ -114,13 +114,12 @@ class Cf(Convention):
 
             var.attrs |= additional_var_attrs
 
-        new_attrs = {
+        existing_attrs = {
             name: value
             for name, value in coord.attrs.items()
             if name not in grid_info_dict
         }
-        coord.attrs = new_attrs | coord_attrs
+        coord.attrs = existing_attrs | coord_attrs
 
         coords = xr.Coordinates({crs_name: crs, name: coord}, indexes={})
-
         return new.assign_coords(coords)
