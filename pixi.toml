@@ -90,6 +90,7 @@ autobuild-docs = { cmd = "sphinx-autobuild -b html -w warnings.log -W -Tn -j aut
 build-docs-rtd = { cmd = "python -m sphinx -b html -W -T -j auto . $READTHEDOCS_OUTPUT/html", cwd = "docs" }
 
 [feature.dev.dependencies]
+python = "3.13.*"
 ipython = "*"
 black = "*"
 isort = "*"
@@ -100,12 +101,11 @@ python-build = ">=1.3.0,<2"
 geopandas = ">=1.1.1,<2"
 pyinstrument = ">=5.1.1,<6"
 zarr = ">=3.1.5,<4"
-python = "3.13.*"
 
 [environments]
 nightly = { features = ["tests", "nightly"], no-default-feature = true }
-ci-py311 = { features = ["tests", "ci-py311"], solve-group = "main" }
-ci-py312 = { features = ["tests", "ci-py312"], solve-group = "main" }
-ci-py313 = { features = ["tests", "ci-py313"], solve-group = "main" }
-docs = { features = ["docs"], solve-group = "main" }
-dev = { features = ["tests", "dev"], solve-group = "main" }
+ci-py311 = { features = ["tests", "ci-py311"] }
+ci-py312 = { features = ["tests", "ci-py312"] }
+ci-py313 = { features = ["tests", "ci-py313"] }
+docs = { features = ["docs"] }
+dev = { features = ["tests", "dev"] }
