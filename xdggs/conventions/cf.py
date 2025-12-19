@@ -1,3 +1,6 @@
+from collections.abc import Hashable
+from typing import Any, Literal
+
 import numpy as np
 import xarray as xr
 
@@ -5,35 +8,59 @@ from xdggs.conventions.base import Convention
 from xdggs.conventions.errors import DecoderError
 from xdggs.conventions.registry import register_convention
 from xdggs.conventions.utils import infer_grid_name
-from xdggs.utils import GRID_REGISTRY, call_on_dataset
+from xdggs.utils import GRID_REGISTRY
+
+
+def remove_grid_mapping(ds, name):
+    new = ds.copy(deep=False)
+    for var in new.variables.values():
+        if var.attrs.get("grid_mapping") != name:
+            continue
+
+        del var.attrs["grid_mapping"]
+
+    return new
 
 
 @register_convention("cf")
 class Cf(Convention):
-    def decode(self, obj, grid_info, name, index_options):
-        vars_ = call_on_dataset(
-            lambda ds: ds.variables,
-            obj,
-        )
+    def translate_keys(
+        self,
+        mapping: dict[str, Any],
+        direction: Literal["forward", "inverse"] = "forward",
+    ) -> dict[str, Any]:
+        translations = {"grid_mapping_name": "grid_name", "refinement_level": "level"}
+        if direction == "inverse":
+            translations = {v: k for k, v in translations.items()}
+
+        return {translations.get(key, key): value for key, value in mapping.items()}
+
+    def decode(
+        self,
+        ds: xr.Dataset,
+        *,
+        grid_info: dict[str, Any] | None = None,
+        name: Hashable | None = None,
+        index_options: dict[str, Any] | None = None,
+    ) -> xr.Dataset:
         grid_mapping_vars = {
-            name: var for name, var in vars_.items() if "grid_mapping_name" in var.attrs
+            name: var
+            for name, var in ds.variables.items()
+            if "grid_mapping_name" in var.attrs
         }
         if len(grid_mapping_vars) != 1:
             raise DecoderError(
-                "cf convention: needs exactly one grid mapping variable for now."
+                "cf convention: requires exactly one grid mapping variable for now."
                 f" Got {len(grid_mapping_vars)}"
             )
-        crs = next(iter(grid_mapping_vars.values()))
+        crs_name, crs = next(iter(grid_mapping_vars.items()))
 
         if name is None:
             standard_name = f"{crs.attrs['grid_mapping_name']}_index"
-            coords = call_on_dataset(
-                lambda ds: (
-                    ds.drop_vars(list(grid_mapping_vars))
-                    .filter_by_attrs(standard_name=standard_name)
-                    .variables
-                ),
-                obj,
+            coords = (
+                ds.drop_vars(list(grid_mapping_vars))
+                .filter_by_attrs(standard_name=standard_name)
+                .variables
             )
             coord_names = list(coords)
             if not coord_names:
@@ -43,12 +70,10 @@ class Cf(Convention):
                 )
             name = coord_names[0]
 
-        translations = {"grid_mapping_name": "grid_name", "refinement_level": "level"}
-        grid_info = {
-            translations.get(name, name): value for name, value in crs.attrs.items()
-        }
-        grid_name = grid_info.pop("grid_name")
-        var = vars_[name].copy(deep=False)
+        grid_info = self.translate_keys(crs.attrs, direction="forward")
+        grid_name = grid_info["grid_name"]
+
+        var = ds.variables[name].copy(deep=False)
         var.attrs = grid_info
 
         if grid_name not in GRID_REGISTRY:
@@ -56,39 +81,46 @@ class Cf(Convention):
         index_cls = GRID_REGISTRY[grid_name]
 
         index = index_cls.from_variables({name: var}, options=index_options)
-        return xr.Coordinates.from_xindex(index)
+        return (
+            ds.drop_vars([crs_name, name])
+            .pipe(remove_grid_mapping, grid_name)
+            .assign_coords(xr.Coordinates.from_xindex(index))
+        )
 
-    def encode(self, obj):
-        def _convert(ds):
-            grid_info = ds.dggs.grid_info
-            dim = ds.dggs.index._dim
-            coord = ds.dggs._name
+    def encode(self, ds: xr.Dataset, *, encoding: dict[str, Any] | None = None):
+        if encoding is None:
+            encoding = {}
 
-            grid_name = infer_grid_name(ds.dggs.index)
-            metadata = grid_info.to_dict() | {"grid_mapping_name": grid_name}
-            metadata["refinement_level"] = metadata.pop("level")
-            metadata.pop("grid_name", None)
+        crs_name = encoding.get("grid_mapping_variable", "crs")
 
-            crs = xr.Variable((), np.int8(0), metadata)
+        grid_info = ds.dggs.grid_info
+        dim = ds.dggs.index._dim
+        name = ds.dggs._name
+        coord = ds.dggs.coord.variable
 
-            additional_var_attrs = {"coordinates": coord, "grid_mapping": "crs"}
-            coord_attrs = {"standard_name": f"{grid_name}_index", "units": "1"}
+        grid_name = infer_grid_name(ds.dggs.index)
+        grid_info_dict = grid_info.to_dict()
+        metadata = self.translate_keys(grid_info_dict, direction="inverse")
 
-            new = ds.drop_indexes(coord).copy(deep=False)
-            for key, var in new.variables.items():
-                if key == coord or dim not in var.dims:
-                    continue
+        crs = xr.Variable((), np.int8(0), metadata)
 
-                var.attrs |= additional_var_attrs
+        additional_var_attrs = {"coordinates": coord, "grid_mapping": grid_name}
+        coord_attrs = {"standard_name": f"{grid_name}_index", "units": "1"}
 
-            grid_info_dict = grid_info.to_dict()
-            new_attrs = {
-                name: value
-                for name, value in new[coord].attrs.items()
-                if name not in grid_info_dict
-            }
-            new[coord].attrs = new_attrs | coord_attrs
+        new = ds.drop_indexes(name).drop_vars(name).copy(deep=False)
+        for var in new.variables.values():
+            if dim not in var.dims:
+                continue
 
-            return new.assign_coords({"crs": crs})
+            var.attrs |= additional_var_attrs
 
-        return call_on_dataset(_convert, obj)
+        new_attrs = {
+            name: value
+            for name, value in coord.attrs.items()
+            if name not in grid_info_dict
+        }
+        coord.attrs = new_attrs | coord_attrs
+
+        coords = xr.Coordinates({crs_name: crs, name: coord}, indexes={})
+
+        return new.assign_coords(coords)
