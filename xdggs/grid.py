@@ -54,6 +54,9 @@ class DGGSInfo:
         raise NotImplementedError()
 
 
+GridInfoType = dict[str, Any] | DGGSInfo
+
+
 def translate_parameters(mapping, translations):
     def translate(name, value):
         new_name, translator = translations.get(name, (name, identity))

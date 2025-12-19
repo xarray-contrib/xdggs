@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from functools import partial
 from typing import TYPE_CHECKING
 
 import numpy.typing as npt
@@ -10,9 +9,10 @@ from xdggs import conventions
 from xdggs.grid import DGGSInfo
 from xdggs.index import DGGSIndex
 from xdggs.plotting import explore
-from xdggs.utils import call_on_dataset
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from lonboard.basemap import MaplibreBasemap
     from lonboard.experimental.view import BaseView
     from matplotlib.colors import Colormap
@@ -83,26 +83,13 @@ class DGGSAccessor:
         obj : xarray.DataArray or xarray.Dataset
             The object with a DGGS index on the cell id coordinate.
         """
-        if isinstance(convention, str):
-            convention = conventions._conventions.get(convention)
-            if convention is None:
-                valid_names = conventions._conventions.keys()
-                raise ValueError(
-                    f"unknown convention: {convention}."
-                    f" Choose a known convention: {', '.join(valid_names)}"
-                )
-
-        if index_options is None:
-            index_options = {}
-
-        return call_on_dataset(
-            partial(
-                convention.decode,
-                grid_info=grid_info,
-                name=name,
-                index_options=index_options,
-            ),
+        return conventions.decode(
             self._obj,
+            grid_info=grid_info,
+            name=name,
+            convention=convention,
+            index_options=index_options,
+            **index_kwargs,
         )
 
     @property
@@ -303,7 +290,7 @@ class DGGSAccessor:
             basemap=basemap,
         )
 
-    def encode(self, convention: str):
+    def encode(self, convention: str, *, encoding: dict[str, Any] | None = None):
         """Encode the dataset to the given convention
 
         Parameters
@@ -319,8 +306,4 @@ class DGGSAccessor:
         obj : xr.DataArray or xr.Dataset
             The object converted to the given dimension.
         """
-        converter = conventions._conventions.get(convention)
-        if converter is None:
-            raise ValueError(f"unknown convention: {convention}")
-
-        return call_on_dataset(converter.encode, self._obj)
+        return conventions.encode(self._obj, convention=convention, encoding=encoding)
