@@ -104,7 +104,7 @@ class Cf(Convention):
 
         crs = xr.Variable((), np.int8(0), metadata)
 
-        additional_var_attrs = {"coordinates": coord, "grid_mapping": grid_name}
+        additional_var_attrs = {"grid_mapping": grid_name}
         coord_attrs = {"standard_name": f"{grid_name}_index", "units": "1"}
 
         new = ds.drop_indexes(name).drop_vars(name).copy(deep=False)
