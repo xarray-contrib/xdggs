@@ -30,7 +30,7 @@ class TestXdggsConvention:
 
         var = xr.Variable(dim, cell_ids, grid_info)
         index = xdggs.index.DGGSIndex.from_variables({name: var}, options={})
-        expected = xr.Coordinates.from_xindex(index)
+        expected = xr.Coordinates.from_xindex(index).to_dataset()
 
         obj = xr.Dataset(coords={name: var})
         actual = convention.decode(
@@ -39,14 +39,15 @@ class TestXdggsConvention:
             name=name,
             index_options={},
         )
-        xr.testing.assert_identical(actual[name], expected[name])
+        print(obj, actual, expected)
+        xr.testing.assert_identical(actual, expected)
         assert_indexes_equal(actual[name].xindexes, expected[name].xindexes)
 
         obj = xr.Dataset(coords={name: (dim, cell_ids)})
         actual = convention.decode(
             obj, grid_info=grid_info, name=name, index_options={}
         )
-        xr.testing.assert_identical(actual[name].variable, expected[name].variable)
+        xr.testing.assert_identical(actual, expected)
         assert_indexes_equal(actual[name].xindexes, expected[name].xindexes)
 
     @pytest.mark.parametrize(
@@ -112,7 +113,7 @@ class TestCfConvention:
 
         var = xr.Variable(dim, cell_ids, grid_info)
         index = xdggs.index.DGGSIndex.from_variables({name: var}, options={})
-        expected = xr.Coordinates.from_xindex(index)
+        expected = xr.Coordinates.from_xindex(index).to_dataset()
 
         metadata = self.index_metadata(grid_info)
         translated_grid_info = self.translate(grid_info)
