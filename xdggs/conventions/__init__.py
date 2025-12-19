@@ -3,7 +3,7 @@ from __future__ import annotations
 from functools import partial
 from typing import TYPE_CHECKING, overload
 
-from xdggs.conventions import cf, easygems, xdggs  # noqa: F401
+from xdggs.conventions import cf, xdggs  # noqa: F401
 from xdggs.conventions.base import Convention
 from xdggs.conventions.errors import DecoderError
 from xdggs.conventions.registry import _conventions, register_convention
