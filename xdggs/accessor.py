@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import partial
 from typing import TYPE_CHECKING
 
 import numpy.typing as npt
@@ -9,6 +10,7 @@ from xdggs import conventions
 from xdggs.grid import DGGSInfo
 from xdggs.index import DGGSIndex
 from xdggs.plotting import explore
+from xdggs.utils import call_on_dataset
 
 if TYPE_CHECKING:
     from lonboard.basemap import MaplibreBasemap
@@ -93,10 +95,15 @@ class DGGSAccessor:
         if index_options is None:
             index_options = {}
 
-        coords = convention.decode(
-            self._obj, grid_info=grid_info, name=name, index_options=index_options
+        return call_on_dataset(
+            partial(
+                convention.decode,
+                grid_info=grid_info,
+                name=name,
+                index_options=index_options,
+            ),
+            self._obj,
         )
-        return self._obj.assign_coords(coords)
 
     @property
     def index(self) -> DGGSIndex:
@@ -316,4 +323,4 @@ class DGGSAccessor:
         if converter is None:
             raise ValueError(f"unknown convention: {convention}")
 
-        return converter.encode(self._obj)
+        return call_on_dataset(converter.encode, self._obj)
