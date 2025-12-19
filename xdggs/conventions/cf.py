@@ -1,8 +1,9 @@
 import numpy as np
 import xarray as xr
 
+from xdggs.conventions.base import Convention
 from xdggs.conventions.errors import DecoderError
-from xdggs.conventions.registry import Convention, register_convention
+from xdggs.conventions.registry import register_convention
 from xdggs.conventions.utils import infer_grid_name
 from xdggs.utils import GRID_REGISTRY, call_on_dataset
 

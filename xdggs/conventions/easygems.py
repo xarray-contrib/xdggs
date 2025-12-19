@@ -1,7 +1,8 @@
 import numpy as np
 import xarray as xr
 
-from xdggs.conventions.registry import Convention, register_convention
+from xdggs.conventions.base import Convention
+from xdggs.conventions.registry import register_convention
 from xdggs.utils import call_on_dataset
 
 

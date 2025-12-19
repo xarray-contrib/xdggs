@@ -1,6 +1,7 @@
 from xdggs.conventions import cf, easygems, xdggs  # noqa: F401
+from xdggs.conventions.base import Convention
 from xdggs.conventions.errors import DecoderError
-from xdggs.conventions.registry import Convention, _conventions, register_convention
+from xdggs.conventions.registry import _conventions, register_convention
 
 
 def detect_decoder(obj, grid_info, name):

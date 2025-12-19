@@ -1,22 +1,16 @@
 import warnings
 
+from xdggs.conventions.base import Convention
+
 _conventions = {}
-
-
-class Convention:
-    def decode(self, obj, grid_info, name, index_options):
-        raise NotImplementedError
-
-    def encode(self, obj, *, encoding=None):
-        raise NotImplementedError
 
 
 class DecoderWarning(UserWarning):
     pass
 
 
-def register_convention(name):
-    def register(cls):
+def register_convention(name: str):
+    def register(cls: type[Convention]):
         if name in _conventions:
             warnings.warn(DecoderWarning(f"Overwriting existing convention {name!r}."))
 
