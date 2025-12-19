@@ -103,8 +103,8 @@ zarr = ">=3.1.5,<4"
 
 [environments]
 nightly = { features = ["tests", "nightly"], no-default-feature = true }
-ci-py311 = ["tests", "ci-py311"]
-ci-py312 = ["tests", "ci-py312"]
-ci-py313 = ["tests", "ci-py313"]
-docs = ["docs"]
-dev = ["tests", "dev"]
+ci-py311 = { features = ["tests", "ci-py311"], solve-group = "main" }
+ci-py312 = { features = ["tests", "ci-py312"], solve-group = "main" }
+ci-py313 = { features = ["tests", "ci-py313"], solve-group = "main" }
+docs = { features = ["docs"], solve-group = "main" }
+dev = { features = ["tests", "dev"], solve-group = "main" }
