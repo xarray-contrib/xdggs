@@ -3,7 +3,9 @@ import pytest
 import xarray as xr
 
 import xdggs
+from xdggs import conventions
 from xdggs.conventions.cf import Cf
+from xdggs.conventions.errors import DecoderError
 from xdggs.conventions.xdggs import Xdggs
 from xdggs.tests import assert_indexes_equal
 
@@ -167,3 +169,19 @@ class TestCfConvention:
 
         xr.testing.assert_identical(encoded, expected)
         assert_indexes_equal(encoded.xindexes, expected.xindexes)
+
+
+def test_decode():
+    grid_info = {"grid_name": "test", "level": 2}
+    ds = xr.Dataset(coords={"cell_ids": ("cells", [0, 1], grid_info)})
+
+    # TODO: improve unknown index message
+    with pytest.raises(DecoderError, match="test"):
+        ds.pipe(conventions.decode)
+
+
+def test_decode_indexed():
+    grid_info = {"grid_name": "test", "level": 2}
+    ds = xr.Dataset(coords={"cell_ids": ("cells", [0, 1], grid_info)})
+    with pytest.raises(DecoderError, match="test"):
+        ds.set_xindex("cell_ids").pipe(conventions.decode)
