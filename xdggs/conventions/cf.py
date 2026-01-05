@@ -96,7 +96,7 @@ class Cf(Convention):
         grid_info = ds.dggs.grid_info
         dim = ds.dggs.index._dim
         name = ds.dggs._name
-        coord = ds.dggs.coord.variable
+        coord = ds.dggs.coord.variable.copy(deep=False)
 
         grid_name = infer_grid_name(ds.dggs.index)
         grid_info_dict = grid_info.to_dict()
