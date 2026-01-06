@@ -18,13 +18,14 @@ tutorials/h3
 tutorials/healpix
 ```
 
-<!-- ```{toctree} -->
-<!-- --- -->
-<!-- maxdepth: 3 -->
-<!-- caption: User guide -->
-<!-- hidden: true -->
-<!-- --- -->
-<!-- ``` -->
+```{toctree}
+---
+maxdepth: 3
+caption: User guide
+hidden: true
+---
+Conventions <user_guide/conventions>
+```
 
 ```{toctree}
 ---
