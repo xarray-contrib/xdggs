@@ -45,7 +45,7 @@ xarray = "*"
 numpy = "*"
 pandas = "*"
 pyarrow = "*"
-h3ronpy = { git = "git+https://github.com/keewis/h3ronpy.git", subdirectory = "h3ronpy", rev = "version" }
+h3ronpy = { git = "git+https://github.com/nmandery/h3ronpy.git", subdirectory = "h3ronpy" }
 cdshealpix = { git = "git+https://github.com/cds-astro/cds-healpix-python.git" }
 healpix-geo = { git = "git+https://github.com/eopf-dggs/healpix-geo.git" }
 astropy = { git = "git+https://github.com/astropy/astropy.git" }
