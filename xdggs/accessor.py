@@ -298,6 +298,7 @@ class DGGSAccessor:
         ----------
         convention : str
             The name of the convention. Supported are:
+
             - "easygems": ``grid_mapping`` coordinate and ``cell`` dimension and ``cell`` coordinate with a `pandas` index.
             - "cf": ``grid_mapping`` coordinate with ``cell_index`` coordinate and ``cell`` dimension.
             - "xdggs": ``cell_ids`` coordinate with grid metadata and a ``cells`` coordinate.
