@@ -136,3 +136,12 @@ Index
 
    register_dggs
    DGGSIndex
+
+Conventions
+-----------
+.. autosummary::
+   :toctree: generated
+
+   conventions.Convention
+   conventions.register_convention
+   conventions.DecoderError

@@ -46,3 +46,6 @@
    DGGSIndex.cell_boundaries
    DGGSIndex.zoom_to
    DGGSIndex.grid_info
+
+   conventions.Convention.decode
+   conventions.Convention.encode
