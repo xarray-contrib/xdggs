@@ -72,4 +72,4 @@ jobs:
         if: success()
         id: status
         run: |
-          pixi run -e ${{ matrix.env }} tests --cov=xdggs
+          pixi run -e ${{ matrix.env }} tests
