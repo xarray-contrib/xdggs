@@ -7,6 +7,7 @@ from xdggs import conventions
 from xdggs.conventions.cf import Cf
 from xdggs.conventions.errors import DecoderError
 from xdggs.conventions.xdggs import Xdggs
+from xdggs.conventions.zarr import Zarr
 from xdggs.tests import assert_indexes_equal
 
 
@@ -164,6 +165,107 @@ class TestCfConvention:
         expected = xr.Coordinates(
             {"crs": crs, name: index_var}, indexes={}
         ).to_dataset()
+
+        encoded = convention.encode(obj)
+
+        xr.testing.assert_identical(encoded, expected)
+        assert_indexes_equal(encoded.xindexes, expected.xindexes)
+
+
+class TestZarrConvention:
+    def translate(self, mapping):
+        translations = {"grid_name": "name", "level": "refinement_level"}
+        return {translations.get(name, name): value for name, value in mapping.items()}
+
+    @pytest.mark.parametrize(
+        ["name", "dim"], [("cell_ids", "cells"), ("zone_ids", "zones")]
+    )
+    @pytest.mark.parametrize(
+        ["grid_info", "cell_ids"],
+        (
+            (
+                {"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"},
+                np.array([3, 6, 9], dtype="uint64"),
+            ),
+            (
+                {"grid_name": "h3", "level": 4},
+                np.array([0x832830FFFFFFFFF], dtype="uint64"),
+            ),
+        ),
+    )
+    def test_decode(self, grid_info, cell_ids, name, dim):
+        convention = Zarr()
+
+        dggs_metadata_object = self.translate(grid_info) | {
+            "spatial_dimension": dim,
+            "coordinate": name,
+            "compression": "none",
+        }
+        metadata = {
+            "zarr_conventions": [convention.convention_metadata],
+            "dggs": dggs_metadata_object,
+        }
+
+        var = xr.Variable(dim, cell_ids)
+        index = xdggs.index.DGGSIndex.from_variables(
+            {name: xr.Variable(dim, cell_ids, grid_info)}, options={}
+        )
+        expected = xr.Coordinates.from_xindex(index).to_dataset()
+
+        obj = xr.Dataset(coords={name: var}, attrs=metadata)
+        actual = convention.decode(
+            obj,
+            grid_info=None,
+            name=name,
+            index_options={},
+        )
+        print(obj, actual, expected)
+        xr.testing.assert_identical(actual, expected)
+        assert_indexes_equal(actual[name].xindexes, expected[name].xindexes)
+
+        obj = xr.Dataset(coords={name: (dim, cell_ids)})
+        actual = convention.decode(
+            obj, grid_info=dggs_metadata_object, name=name, index_options={}
+        )
+        xr.testing.assert_identical(actual, expected)
+        assert_indexes_equal(actual[name].xindexes, expected[name].xindexes)
+
+    @pytest.mark.parametrize(
+        ["name", "dim"], [("cell_ids", "cells"), ("zone_ids", "zones")]
+    )
+    @pytest.mark.parametrize(
+        ["grid_info", "cell_ids"],
+        (
+            (
+                {"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"},
+                np.array([3, 6, 9], dtype="uint64"),
+            ),
+            (
+                {"grid_name": "h3", "level": 4},
+                np.array([0x832830FFFFFFFFF], dtype="uint64"),
+            ),
+        ),
+    )
+    def test_encode(self, grid_info, cell_ids, name, dim):
+        convention = Zarr()
+
+        index_cls = xdggs.index.GRID_REGISTRY[grid_info["grid_name"]]
+        var = xr.Variable(dim, cell_ids, grid_info)
+        index = index_cls.from_variables({name: var}, options={})
+
+        obj = xr.Dataset(coords=xr.Coordinates({name: var}, indexes={name: index}))
+
+        coord = obj.dggs.coord
+        dggs_metadata_object = self.translate(grid_info) | {
+            "spatial_dimension": coord.dims[0],
+            "coordinate": coord.name,
+            "compression": "none",
+        }
+        metadata = {
+            "zarr_conventions": [convention.convention_metadata],
+            "dggs": dggs_metadata_object,
+        }
+        expected = obj.drop_indexes(coord.name).assign_attrs(metadata)
 
         encoded = convention.encode(obj)
 
