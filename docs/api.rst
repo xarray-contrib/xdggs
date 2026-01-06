@@ -135,7 +135,6 @@ Index
    :toctree: generated
 
    register_dggs
-   DGGSIndex
 
 Conventions
 -----------

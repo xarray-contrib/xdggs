@@ -23,9 +23,9 @@ class Convention:
 
         Parameters
         ----------
-        ds : xr.Dataset
+        ds : xarray.Dataset
             The encoded dataset.
-        grid_info : mapping or DGGSInfo, optional
+        grid_info : mapping or xdggs.DGGSInfo, optional
              Overrides for the grid metadata.
         name : str, optional
             The name of the cell ids coordinate.
@@ -34,7 +34,7 @@ class Convention:
 
         Returns
         -------
-        decoded : xr.Dataset
+        decoded : xarray.Dataset
             The decoded dataset with a DGGSIndex.
         """
         raise NotImplementedError
@@ -53,14 +53,14 @@ class Convention:
 
         Parameters
         ----------
-        ds : xr.Dataset
+        ds : xarray.Dataset
             The dataset to encode. Must have a DGGSIndex.
         encoding : mapping of str to Any, optional
             Additional options for the convention.
 
         Returns
         -------
-        encoded : xr.Dataset
+        encoded : xarray.Dataset
             The encoded dataset.
         """
         raise NotImplementedError

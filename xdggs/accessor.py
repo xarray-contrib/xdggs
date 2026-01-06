@@ -56,7 +56,7 @@ class DGGSAccessor:
 
         Parameters
         ----------
-        grid_info : dict or DGGSInfo, optional
+        grid_info : dict or xdggs.DGGSInfo, optional
             Override the grid parameters on the dataset. Useful to set attributes on
             the dataset.
         name : str, optional
@@ -149,7 +149,7 @@ class DGGSAccessor:
 
         Returns
         -------
-        subset
+        subset : xarray.Dataset or xarray.DataArray
             A new :py:class:`xarray.Dataset` or :py:class:`xarray.DataArray`
             with all cells that contain the input latitude/longitude data points.
         """
@@ -263,8 +263,9 @@ class DGGSAccessor:
             If set, will use this as the center value of a diverging color map.
         alpha : float, optional
             If set, controls the transparency of the polygons.
-        coords : list of str, default: ["latitude", "longitude"]
-            Additional coordinates to contain in the table of contents.
+        coords : list of str, optional
+            Additional coordinates to contain in the table of
+            contents. Defaults to ``["latitude", "longitude"]``.
 
         Returns
         -------
@@ -303,7 +304,7 @@ class DGGSAccessor:
 
         Returns
         -------
-        obj : xr.DataArray or xr.Dataset
+        obj : xarray.DataArray or xarray.Dataset
             The object converted to the given dimension.
         """
         return conventions.encode(self._obj, convention=convention, encoding=encoding)

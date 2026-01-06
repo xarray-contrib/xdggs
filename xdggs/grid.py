@@ -20,7 +20,7 @@ class DGGSInfo:
         grows exponentially with increasing level values, ranging from 5-100 cells at
         level 0 to millions or billions of cells at level 10+ (the exact numbers depends
         on the specific grid).
-    ellipsoid : str or Sphere or Ellipsoid, default: "sphere"
+    ellipsoid : ellipsoid-like, default: "sphere"
         The base ellipsoid of the DGGS. If a string, this is the standard name of the ellipsoid or sphere.
     """
 

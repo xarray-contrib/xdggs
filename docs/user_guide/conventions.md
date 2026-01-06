@@ -60,6 +60,9 @@ For example:
 
 ```{jupyter-execute}
 import xdggs
+from collections.abc import Hashable
+from typing import Any
+from xdggs.grid import DGGSInfo
 
 
 @xdggs.conventions.register_convention("my-convention")
@@ -68,7 +71,7 @@ class MyConvention(xdggs.conventions.Convention):
         self,
         obj: xr.Dataset,
         *,
-        grid_info: DGGSInfo | None,
+        grid_info: dict[str, Any] | DGGSInfo | None,
         name: Hashable | None,
         index_options: dict[str, Any] | None,
     ) -> xr.Dataset:

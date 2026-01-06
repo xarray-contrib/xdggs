@@ -83,6 +83,7 @@ h5netcdf = "*"
 pooch = "*"
 shapely = ">=2.1.1"
 sphinx-autobuild = ">=2024.10.3"
+jupyter-sphinx = ">=0.5.3,<0.6"
 
 [feature.docs.tasks]
 build-docs = { cmd = "rm -rf generated/; python -m sphinx -b html -w warnings.log -W -Tn -j auto . _build", cwd = "docs" }
