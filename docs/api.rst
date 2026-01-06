@@ -82,7 +82,7 @@ Parameters
    :toctree: generated
    :template: autosummary/accessor_method.rst
 
-   Dataset.dggs.decode
+   DataArray.dggs.decode
 
 Indexing
 --------
