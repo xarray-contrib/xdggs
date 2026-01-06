@@ -120,7 +120,7 @@ class HealpixInfo(DGGSInfo):
     """int : The indexing scheme of the grid"""
 
     ellipsoid: str | Sphere | Ellipsoid | None = None
-    """ellipsoid-like : The ellipsoid"""
+    """The ellipsoid"""
 
     valid_parameters: ClassVar[dict[str, Any]] = {
         "level": range(0, 29 + 1),
