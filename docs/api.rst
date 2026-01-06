@@ -44,6 +44,7 @@ Parameters
    :template: autosummary/accessor_method.rst
 
    Dataset.dggs.decode
+   Dataset.dggs.encode
 
 Indexing
 --------
@@ -83,6 +84,7 @@ Parameters
    :template: autosummary/accessor_method.rst
 
    DataArray.dggs.decode
+   DataArray.dggs.encode
 
 Indexing
 --------
