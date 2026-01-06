@@ -10,6 +10,19 @@ class ConventionWarning(UserWarning):
 
 
 def register_convention(name: str):
+    """Decorator used to register a convention object
+
+    Parameters
+    ----------
+    name : str
+        Name of the registered convention
+
+    Returns
+    -------
+    callable
+        A callable that registers a :py:class:`Convention` object
+    """
+
     def register(cls: type[Convention]):
         if name in _conventions:
             warnings.warn(
