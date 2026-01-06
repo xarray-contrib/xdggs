@@ -125,3 +125,14 @@ Tutorial
    :toctree: generated
 
    tutorial.open_dataset
+
+Advanced API
+============
+
+Index
+-----
+.. autosummary::
+   :toctree: generated
+
+   register_dggs
+   DGGSIndex

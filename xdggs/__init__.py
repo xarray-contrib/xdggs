@@ -7,6 +7,7 @@ from xdggs.grid import DGGSInfo
 from xdggs.h3 import H3Index, H3Info
 from xdggs.healpix import HealpixIndex, HealpixInfo
 from xdggs.index import DGGSIndex
+from xdggs.utils import register_dggs
 
 __version__ = version("xdggs")
 
@@ -20,4 +21,5 @@ __all__ = [
     "HealpixIndex",
     "encode",
     "decode",
+    "register_dggs",
 ]

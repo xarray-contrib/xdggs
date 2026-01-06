@@ -33,3 +33,16 @@
    H3Info.cell_boundaries
    H3Info.cell_ids2geographic
    H3Info.geographic2cell_ids
+
+   DGGSIndex.from_variables
+   DGGSIndex.values
+   DGGSIndex.equals
+   DGGSIndex.create_variables
+   DGGSIndex.isel
+   DGGSIndex.sel
+   DGGSIndex.join
+   DGGSIndex.reindex_like
+   DGGSIndex.cell_centers
+   DGGSIndex.cell_boundaries
+   DGGSIndex.zoom_to
+   DGGSIndex.grid_info
