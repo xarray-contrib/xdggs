@@ -51,10 +51,10 @@ xr.testing.assert_identical(zarr_decoded, decoded)
 
 ## Registering a custom convention
 
-Conventions are defined as an object inheriting from {py:class}`xdggs.conventions.Convention`. It must define two methods:
+Conventions are defined as an object inheriting from {py:class}`~xdggs.conventions.Convention`. It must define two methods:
 
-- {py:meth}`xdggs.conventions.Convention.decode` for decoding into the in-memory structure
-- {py:meth}`xdggs.conventions.Convention.encode` for encoding the in-memory format to the given convention
+- {py:meth}`~xdggs.conventions.Convention.decode` for decoding into the in-memory structure
+- {py:meth}`~xdggs.conventions.Convention.encode` for encoding the in-memory format to the given convention
 
 For example:
 
