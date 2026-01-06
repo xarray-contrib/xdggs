@@ -17,41 +17,6 @@ if TYPE_CHECKING:
     from xarray.core.types import JoinOptions
 
 
-def decode(ds, grid_info=None, *, name="cell_ids", index_options=None, **index_kwargs):
-    """
-    decode grid parameters and create a DGGS index
-
-    Parameters
-    ----------
-    ds : xarray.Dataset
-        The input dataset. Must contain a coordinate for the cell ids with at
-        least the attributes `grid_name` and `level`.
-    grid_info : dict or DGGSInfo, optional
-        Override the grid parameters on the dataset. Useful to set attributes on
-        the dataset.
-    name : str, default: "cell_ids"
-        The name of the coordinate containing the cell ids.
-    index_options, **index_kwargs : dict, optional
-        Additional options to forward to the index.
-
-    Returns
-    -------
-    decoded : xarray.DataArray or xarray.Dataset
-        The input dataset with a DGGS index on the cell id coordinate.
-
-    See Also
-    --------
-    xarray.Dataset.dggs.decode
-    xarray.DataArray.dggs.decode
-    """
-    if index_options is None:
-        index_options = {}
-
-    return ds.dggs.decode(
-        name=name, grid_info=grid_info, index_options=index_options | index_kwargs
-    )
-
-
 class DGGSIndex(Index):
     _dim: str
     _index: xr.Index

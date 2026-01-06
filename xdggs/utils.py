@@ -1,3 +1,5 @@
+import xarray as xr
+
 GRID_REGISTRY = {}
 
 
@@ -17,3 +19,20 @@ def _extract_cell_id_variable(variables):
     dim = next(iter(var.dims))
 
     return name, var, dim
+
+
+def call_on_dataset(func, obj, *args, kwargs=None):
+    if kwargs is None:
+        kwargs = {}
+
+    if isinstance(obj, xr.DataArray):
+        ds = obj._to_temp_dataset()
+    else:
+        ds = obj
+
+    result = func(ds, *args, **kwargs)
+
+    if isinstance(obj, xr.DataArray) and isinstance(result, xr.Dataset):
+        return obj._from_temp_dataset(result)
+    else:
+        return result

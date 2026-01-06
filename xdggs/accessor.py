@@ -5,11 +5,14 @@ from typing import TYPE_CHECKING
 import numpy.typing as npt
 import xarray as xr
 
+from xdggs import conventions
 from xdggs.grid import DGGSInfo
 from xdggs.index import DGGSIndex
 from xdggs.plotting import explore
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from lonboard.basemap import MaplibreBasemap
     from lonboard.experimental.view import BaseView
     from matplotlib.colors import Colormap
@@ -41,17 +44,37 @@ class DGGSAccessor:
         self._index = index
 
     def decode(
-        self, grid_info=None, *, name="cell_ids", index_options=None, **index_kwargs
+        self,
+        grid_info=None,
+        *,
+        name="cell_ids",
+        convention="xdggs",
+        index_options=None,
+        **index_kwargs,
     ) -> xr.Dataset | xr.DataArray:
         """decode the DGGS cell ids
 
         Parameters
         ----------
-        grid_info : dict or DGGSInfo, optional
+        grid_info : dict or xdggs.DGGSInfo, optional
             Override the grid parameters on the dataset. Useful to set attributes on
             the dataset.
-        name : str, default: "cell_ids"
-            The name of the coordinate containing the cell ids.
+        name : str, optional
+            The name of the coordinate containing the cell ids. The default name
+            depends on the convention.
+        convention : str, default: "xdggs"
+            The name of the metadata convention. Built-in conventions are:
+
+            - "xdggs": the existing xdggs convention. ``name`` points to the
+              coordinate containing cell ids, and which has all the grid
+              metadata. The ``name`` parameter defaults to ``"cell_ids"``.
+            - "cf": the upcoming CF convention standardization. While the
+              convention extension is specialized on ``healpix`` for now, the
+              decoder can work with other DGGS as well. For this, all metadata
+              lives on a variable with a ``grid_mapping_name`` attribute, and
+              the cell ids coordinate is indicated by the ``coordinates``
+              attribute on data variables / other coordinates (this can be
+              overridden by the ``name`` parameter).
         index_options, **index_kwargs : dict, optional
             Additional options to forward to the index.
 
@@ -60,17 +83,13 @@ class DGGSAccessor:
         obj : xarray.DataArray or xarray.Dataset
             The object with a DGGS index on the cell id coordinate.
         """
-        var = self._obj[name]
-        if isinstance(grid_info, DGGSInfo):
-            grid_info = grid_info.to_dict()
-        if isinstance(grid_info, dict):
-            var.attrs = grid_info
-
-        if index_options is None:
-            index_options = {}
-
-        return self._obj.drop_indexes(name, errors="ignore").set_xindex(
-            name, DGGSIndex, **(index_options | index_kwargs)
+        return conventions.decode(
+            self._obj,
+            grid_info=grid_info,
+            name=name,
+            convention=convention,
+            index_options=index_options,
+            **index_kwargs,
         )
 
     @property
@@ -130,7 +149,7 @@ class DGGSAccessor:
 
         Returns
         -------
-        subset
+        subset : xarray.Dataset or xarray.DataArray
             A new :py:class:`xarray.Dataset` or :py:class:`xarray.DataArray`
             with all cells that contain the input latitude/longitude data points.
         """
@@ -244,8 +263,9 @@ class DGGSAccessor:
             If set, will use this as the center value of a diverging color map.
         alpha : float, optional
             If set, controls the transparency of the polygons.
-        coords : list of str, default: ["latitude", "longitude"]
-            Additional coordinates to contain in the table of contents.
+        coords : list of str, optional
+            Additional coordinates to contain in the table of
+            contents. Defaults to ``["latitude", "longitude"]``.
 
         Returns
         -------
@@ -270,3 +290,22 @@ class DGGSAccessor:
             view=view,
             basemap=basemap,
         )
+
+    def encode(self, convention: str, *, encoding: dict[str, Any] | None = None):
+        """Encode the dataset to the given convention
+
+        Parameters
+        ----------
+        convention : str
+            The name of the convention. Supported are:
+
+            - "easygems": ``grid_mapping`` coordinate and ``cell`` dimension and ``cell`` coordinate with a `pandas` index.
+            - "cf": ``grid_mapping`` coordinate with ``cell_index`` coordinate and ``cell`` dimension.
+            - "xdggs": ``cell_ids`` coordinate with grid metadata and a ``cells`` coordinate.
+
+        Returns
+        -------
+        obj : xarray.DataArray or xarray.Dataset
+            The object converted to the given dimension.
+        """
+        return conventions.encode(self._obj, convention=convention, encoding=encoding)

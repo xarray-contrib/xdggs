@@ -31,6 +31,7 @@ class strategies:
     invalid_indexing_schemes = st.text().filter(lambda x: x not in ["nested", "ring"])
 
     dims = xrst.names()
+    variable_names = xrst.names()
 
     @classmethod
     def grid_mappings(cls):
@@ -594,9 +595,14 @@ def test_healpix_info_from_dict(mapping, expected) -> None:
 
 
 class TestHealpixIndex:
-    @given(strategies.cell_ids(), strategies.dims, strategies.grids())
-    def test_init(self, cell_ids, dim, grid) -> None:
-        index = healpix.HealpixIndex(cell_ids, dim, grid)
+    @given(
+        strategies.cell_ids(),
+        strategies.dims,
+        strategies.variable_names,
+        strategies.grids(),
+    )
+    def test_init(self, cell_ids, dim, name, grid) -> None:
+        index = healpix.HealpixIndex(cell_ids, dim, name, grid)
 
         assert index._grid == grid
         assert index._dim == dim
@@ -606,7 +612,7 @@ class TestHealpixIndex:
 
     @given(strategies.grids())
     def test_grid(self, grid):
-        index = healpix.HealpixIndex([0], dim="cells", grid_info=grid)
+        index = healpix.HealpixIndex([0], dim="cells", name="cell_ids", grid_info=grid)
 
         assert index.grid_info is grid
 
@@ -646,9 +652,11 @@ def test_from_variables_moc() -> None:
 def test_replace(old_variable, new_variable) -> None:
     grid = healpix.HealpixInfo.from_dict(old_variable.attrs)
 
+    name = "cell_ids"
     index = healpix.HealpixIndex(
         cell_ids=old_variable.data,
         dim=old_variable.dims[0],
+        name=name,
         grid_info=grid,
     )
 
@@ -660,6 +668,7 @@ def test_replace(old_variable, new_variable) -> None:
 
     assert new_index._dim == index._dim
     assert new_index._index == new_pandas_index
+    assert new_index._name == name
     assert index._grid == grid
 
 
@@ -667,7 +676,9 @@ def test_replace(old_variable, new_variable) -> None:
 @pytest.mark.parametrize("level", [0, 1, 3])
 def test_repr_inline(level, max_width) -> None:
     grid_info = healpix.HealpixInfo(level=level, indexing_scheme="nested")
-    index = healpix.HealpixIndex(cell_ids=[0], dim="cells", grid_info=grid_info)
+    index = healpix.HealpixIndex(
+        cell_ids=[0], dim="cells", name="cell_ids", grid_info=grid_info
+    )
 
     actual = index._repr_inline_(max_width)
 
@@ -983,16 +994,18 @@ def test_join():
     data2 = np.array([0, 7])
 
     dim = "cells"
+    name = "cell_ids"
     grid_info = healpix.HealpixInfo(level=2)
 
-    index1 = healpix.HealpixIndex(data1, dim=dim, grid_info=grid_info)
-    index2 = healpix.HealpixIndex(data2, dim=dim, grid_info=grid_info)
+    index1 = healpix.HealpixIndex(data1, dim=dim, name=name, grid_info=grid_info)
+    index2 = healpix.HealpixIndex(data2, dim=dim, name=name, grid_info=grid_info)
 
     actual = index1.join(index2, how="inner")
-    expected = healpix.HealpixIndex(data2, dim=dim, grid_info=grid_info)
+    expected = healpix.HealpixIndex(data2, dim=dim, name=name, grid_info=grid_info)
 
     assert actual._grid == expected._grid
     assert actual._dim == expected._dim
+    assert actual._name == expected._name
     assert np.all(actual._index.index == expected._index.index)
 
 
@@ -1001,12 +1014,13 @@ def test_join_error():
     data2 = np.array([5, 7, 9], dtype="uint64")
 
     dim = "cells"
+    name = "cell_ids"
 
     grid_info1 = healpix.HealpixInfo(level=1)
     grid_info2 = healpix.HealpixInfo(level=6)
 
-    index1 = healpix.HealpixIndex(data1, dim=dim, grid_info=grid_info1)
-    index2 = healpix.HealpixIndex(data2, dim=dim, grid_info=grid_info2)
+    index1 = healpix.HealpixIndex(data1, dim=dim, name=name, grid_info=grid_info1)
+    index2 = healpix.HealpixIndex(data2, dim=dim, name=name, grid_info=grid_info2)
 
     with pytest.raises(ValueError, match="different grid parameters"):
         index1.join(index2, how="inner")
@@ -1017,11 +1031,13 @@ def test_reindex_like():
     index1 = healpix.HealpixIndex(
         cell_ids=np.array([0, 7]),
         dim="cells",
+        name="cell_ids",
         grid_info=grid,
     )
     index2 = healpix.HealpixIndex(
         cell_ids=np.array([0, 5, 7, 9]),
         dim="cells",
+        name="cell_ids",
         grid_info=grid,
     )
 
@@ -1037,12 +1053,13 @@ def test_reindex_like_error():
     data2 = np.array([0, 5, 7], dtype="uint64")
 
     dim = "cells"
+    name = "cell_ids"
 
     grid_info1 = healpix.HealpixInfo(level=1)
     grid_info2 = healpix.HealpixInfo(level=6)
 
-    index1 = healpix.HealpixIndex(data1, dim=dim, grid_info=grid_info1)
-    index2 = healpix.HealpixIndex(data2, dim=dim, grid_info=grid_info2)
+    index1 = healpix.HealpixIndex(data1, dim=dim, name=name, grid_info=grid_info1)
+    index2 = healpix.HealpixIndex(data2, dim=dim, name=name, grid_info=grid_info2)
 
     with pytest.raises(ValueError, match="different grid parameters"):
         index1.reindex_like(index2)
@@ -1054,6 +1071,7 @@ def test_reindex_like_error():
 def test_equals(variant):
     values = [np.array([0, 7], dtype="uint64"), np.array([0, 5, 7], dtype="uint64")]
     dims = ["cells", "zones"]
+    name = "cell_ids"
     grid_info = [healpix.HealpixInfo(level=1), healpix.HealpixInfo(level=6)]
 
     dim1 = dims[0]
@@ -1072,7 +1090,7 @@ def test_equals(variant):
     expected = expected_results.get(variant, False)
     dim2, values2, grid_info2 = variants[variant]
 
-    index1 = healpix.HealpixIndex(values1, dim=dim1, grid_info=grid_info1)
-    index2 = healpix.HealpixIndex(values2, dim=dim2, grid_info=grid_info2)
+    index1 = healpix.HealpixIndex(values1, dim=dim1, name=name, grid_info=grid_info1)
+    index2 = healpix.HealpixIndex(values2, dim=dim2, name=name, grid_info=grid_info2)
 
     assert index1.equals(index2) == expected
