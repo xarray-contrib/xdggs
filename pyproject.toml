@@ -7,7 +7,7 @@ authors = [
 maintainers = [
   { name = "xdggs contributors" },
 ]
-license = { text = "Apache-2.0" }
+license = "Apache-2.0"
 description = "Xarray extension for DGGS"
 keywords = ["DGGS", "xarray", "GIS"]
 readme = "README.md"
