@@ -7,7 +7,7 @@ authors = [
 maintainers = [
   { name = "xdggs contributors" },
 ]
-license = { text = "Apache-2.0" }
+license = "Apache-2.0"
 description = "Xarray extension for DGGS"
 keywords = ["DGGS", "xarray", "GIS"]
 readme = "README.md"
@@ -65,13 +65,10 @@ exclude = [
 line-length = 100
 
 [tool.ruff.lint]
-# E402: module level import not at top of file
-# E501: line too long - let black worry about that
-# E731: do not assign a lambda expression, use a def
 ignore = [
-  "E402",
-  "E501",
-  "E731",
+  "E402", # E402: module level import not at top of file
+  "E501", # E501: line too long - let black worry about that
+  "E731", # E731: do not assign a lambda expression, use a def
 ]
 select = [
   "F",   # Pyflakes
