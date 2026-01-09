@@ -103,20 +103,20 @@ class HealpixInfo(DGGSInfo):
         grows exponentially with increasing level values, ranging from 5-100 cells at
         level 0 to millions or billions of cells at level 10+ (the exact numbers depends
         on the specific grid).
-    indexing_scheme : {"nested", "ring", "unique"}, default: "nested"
+    indexing_scheme : {"nested", "ring", "zuniq", "nuniq"}, default: "nested"
         The indexing scheme of the healpix grid.
 
         .. warning::
-            Note that ``"unique"`` is currently not supported as the underlying library
-            (:doc:`cdshealpix <cdshealpix-python:index>`) does not support it.
+            Note that ``"nuniq"`` is currently not supported as the underlying library
+            (:doc:`healpix-geo <healpix-geo:index>`) does not support it.
     ellipsoid : ellipsoid-like, optional
         The reference ellipsoid. If not passed, a sphere is assumed.
     """
 
-    level: int
-    """int : The hierarchical level of the grid"""
+    level: int | None
+    """int or None : The hierarchical level of the grid"""
 
-    indexing_scheme: Literal["nested", "ring"] = "nested"
+    indexing_scheme: Literal["nested", "ring", "zuniq"] = "nested"
     """int : The indexing scheme of the grid"""
 
     ellipsoid: str | Sphere | Ellipsoid | None = None
@@ -124,19 +124,21 @@ class HealpixInfo(DGGSInfo):
 
     valid_parameters: ClassVar[dict[str, Any]] = {
         "level": range(0, 29 + 1),
-        "indexing_scheme": ["nested", "ring"],
+        "indexing_scheme": ["nested", "ring", "zuniq", "nuniq"],
     }
 
     def __post_init__(self):
-        if self.level not in self.valid_parameters["level"]:
-            raise ValueError("level must be an integer in the range of [0, 29]")
-
         if self.indexing_scheme not in self.valid_parameters["indexing_scheme"]:
             raise ValueError(
                 f"indexing scheme must be one of {self.valid_parameters['indexing_scheme']}"
             )
-        elif self.indexing_scheme == "unique":
-            raise ValueError("the indexing scheme `unique` is currently not supported")
+        elif self.indexing_scheme == "nuniq":
+            raise ValueError("the indexing scheme `nuniq` is currently not supported")
+
+        if self.indexing_scheme in {"zuniq", "nuniq"} and self.level is not None:
+            raise ValueError("level must be `None` for uniq indexing schemes")
+        elif self.level not in self.valid_parameters["level"]:
+            raise ValueError("level must be an integer in the range of [0, 29]")
 
     @property
     def nside(self: Self) -> int:
