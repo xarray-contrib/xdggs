@@ -12,7 +12,7 @@ from xdggs.ellipsoid import Ellipsoid, Sphere, parse_ellipsoid
 from xdggs.grid import DGGSInfo, translate_parameters
 from xdggs.index import DGGSIndex
 from xdggs.itertools import identity
-from xdggs.utils import _extract_cell_id_variable, register_dggs
+from xdggs.utils import _extract_cell_id_variable, ignore_parameters, register_dggs
 
 T = TypeVar("T")
 
@@ -248,10 +248,11 @@ class HealpixInfo(DGGSInfo):
         converters = {
             "nested": healpix_geo.nested.healpix_to_lonlat,
             "ring": healpix_geo.ring.healpix_to_lonlat,
+            "zuniq": ignore_parameters("level")(healpix_geo.zuniq.healpix_to_lonlat),
         }
         converter = converters[self.indexing_scheme]
 
-        return converter(cell_ids, self.level, self._format_ellipsoid())
+        return converter(cell_ids, depth=self.level, ellipsoid=self._format_ellipsoid())
 
     def geographic2cell_ids(self, lon, lat):
         """
@@ -277,10 +278,11 @@ class HealpixInfo(DGGSInfo):
         converters = {
             "nested": healpix_geo.nested.lonlat_to_healpix,
             "ring": healpix_geo.ring.lonlat_to_healpix,
+            "zuniq": healpix_geo.zuniq.lonlat_to_healpix,
         }
         converter = converters[self.indexing_scheme]
 
-        return converter(lon, lat, self.level, ellipsoid=self._format_ellipsoid())
+        return converter(lon, lat, depth=self.level, ellipsoid=self._format_ellipsoid())
 
     def cell_boundaries(self, cell_ids: Any, backend="shapely") -> np.ndarray:
         """
@@ -307,10 +309,13 @@ class HealpixInfo(DGGSInfo):
         converters = {
             "nested": healpix_geo.nested.vertices,
             "ring": healpix_geo.ring.vertices,
+            "zuniq": ignore_parameters("depth")(healpix_geo.zuniq.vertices),
         }
         converter = converters[self.indexing_scheme]
 
-        lon, lat = converter(cell_ids, self.level, ellipsoid=self._format_ellipsoid())
+        lon, lat = converter(
+            cell_ids, depth=self.level, ellipsoid=self._format_ellipsoid()
+        )
 
         lon_reshaped = np.reshape(lon, (-1, 4))
         lat_reshaped = np.reshape(lat, (-1, 4))
@@ -335,6 +340,10 @@ class HealpixInfo(DGGSInfo):
             raise ValueError(
                 "Scaling does not make sense for the 'ring' scheme."
                 " Please convert to a nested scheme first."
+            )
+        elif self.indexing_scheme == "zuniq":
+            raise NotImplementedError(
+                "Zooming cell ids in the 'zuniq' scheme currently not supported"
             )
 
         from healpix_geo.nested import zoom_to
