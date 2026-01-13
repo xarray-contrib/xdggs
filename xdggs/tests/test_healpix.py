@@ -155,6 +155,15 @@ variables = [
             "ellipsoid": "WGS84",
         },
     ),
+    xr.Variable(
+        "cells",
+        np.array([810647932926689280]),
+        {
+            "grid_name": "healpix",
+            "level": None,
+            "indexing_scheme": "zuniq",
+        },
+    ),
 ]
 variable_combinations = list(itertools.product(variables, repeat=2))
 
@@ -317,6 +326,18 @@ class TestHealpixInfo:
                 ),
             ),
             (
+                {"level": None, "indexing_scheme": "zuniq"},
+                np.array([2864289363007635456], dtype="uint64"),
+                np.array(
+                    [
+                        [0.0, 19.47122063],
+                        [11.25, 30],
+                        [0.0, 41.8103149],
+                        [-11.25, 30],
+                    ]
+                ),
+            ),
+            (
                 {"level": 2, "indexing_scheme": "nested", "ellipsoid": "WGS84"},
                 np.array([79]),
                 np.array(
@@ -401,6 +422,16 @@ class TestHealpixInfo:
                     np.array([19.55202227, 24.72167338, 41.93785391]),
                 ),
             ),
+            pytest.param(
+                np.array([2864289363007635456], dtype="uint64"),
+                None,
+                "zuniq",
+                None,
+                (
+                    np.array([0.0]),
+                    np.array([30.0]),
+                ),
+            ),
         ),
     )
     def test_cell_ids2geographic(
@@ -449,6 +480,13 @@ class TestHealpixInfo:
                 "nested",
                 "WGS84",
                 np.array([5, 11, 21]),
+            ),
+            pytest.param(
+                np.array([[0.0, 30.0]]),
+                2,
+                "zuniq",
+                None,
+                np.array([2864289363007635456], dtype="uint64"),
             ),
         ),
     )
