@@ -28,7 +28,9 @@ class strategies:
     levels = st.integers(min_value=0, max_value=29)
     # TODO: add back `"unique"` once that is supported
     indexing_schemes = st.sampled_from(["nested", "ring"])
-    invalid_indexing_schemes = st.text().filter(lambda x: x not in ["nested", "ring"])
+    invalid_indexing_schemes = st.text().filter(
+        lambda x: x not in ["nested", "ring", "zuniq"]
+    )
 
     dims = xrst.names()
     variable_names = xrst.names()
@@ -72,16 +74,26 @@ class strategies:
 
     options = st.just({})
 
+    @st.composite
     def grids(
+        draw,
+        *,
         levels=levels,
         indexing_schemes=indexing_schemes,
         ellipsoids=ellipsoids("in_memory_only"),
     ):
-        return st.builds(
-            healpix.HealpixInfo,
-            level=levels,
-            indexing_scheme=indexing_schemes,
-            ellipsoid=ellipsoids,
+        indexing_scheme = draw(indexing_schemes)
+        if indexing_scheme == "zuniq":
+            levels = None
+        else:
+            level = draw(levels)
+
+        ellipsoid = draw(ellipsoids)
+
+        return healpix.HealpixInfo(
+            level=level,
+            indexing_scheme=indexing_scheme,
+            ellipsoid=ellipsoid,
         )
 
     @classmethod
@@ -155,6 +167,15 @@ variables = [
             "ellipsoid": "WGS84",
         },
     ),
+    xr.Variable(
+        "cells",
+        np.array([810647932926689280]),
+        {
+            "grid_name": "healpix",
+            "level": None,
+            "indexing_scheme": "zuniq",
+        },
+    ),
 ]
 variable_combinations = list(itertools.product(variables, repeat=2))
 
@@ -169,7 +190,11 @@ class TestHealpixInfo:
 
     @given(strategies.invalid_indexing_schemes)
     def test_init_invalid_indexing_scheme(self, indexing_scheme):
-        with pytest.raises(ValueError, match="indexing scheme must be one of"):
+        if indexing_scheme == "nuniq":
+            pattern = "is currently not supported"
+        else:
+            pattern = "indexing scheme must be one of"
+        with pytest.raises(ValueError, match=pattern):
             healpix.HealpixInfo(
                 level=0,
                 indexing_scheme=indexing_scheme,
@@ -187,23 +212,20 @@ class TestHealpixInfo:
         assert grid.indexing_scheme == indexing_scheme
         assert grid.ellipsoid == ellipsoid
 
-    @given(strategies.levels)
-    def test_nside(self, level):
-        grid = healpix.HealpixInfo(level=level)
+    @given(strategies.grids())
+    def test_nside(self, grid):
+        assert grid.nside == 2**grid.level
 
-        assert grid.nside == 2**level
-
-    @given(strategies.indexing_schemes)
-    def test_nest(self, indexing_scheme):
-        grid = healpix.HealpixInfo(level=1, indexing_scheme=indexing_scheme)
-        if indexing_scheme not in {"nested", "ring"}:
+    @given(strategies.grids())
+    def test_nest(self, grid):
+        if grid.indexing_scheme not in {"nested", "ring"}:
             with pytest.raises(
                 ValueError, match="cannot convert indexing scheme .* to `nest`"
             ):
                 grid.nest
             return
 
-        expected = indexing_scheme == "nested"
+        expected = grid.indexing_scheme == "nested"
 
         assert grid.nest == expected
 
@@ -317,6 +339,18 @@ class TestHealpixInfo:
                 ),
             ),
             (
+                {"level": None, "indexing_scheme": "zuniq"},
+                np.array([2864289363007635456], dtype="uint64"),
+                np.array(
+                    [
+                        [0.0, 19.47122063],
+                        [11.25, 30],
+                        [0.0, 41.8103149],
+                        [-11.25, 30],
+                    ]
+                ),
+            ),
+            (
                 {"level": 2, "indexing_scheme": "nested", "ellipsoid": "WGS84"},
                 np.array([79]),
                 np.array(
@@ -399,6 +433,16 @@ class TestHealpixInfo:
                 (
                     np.array([61.875, 33.75, 84.375]),
                     np.array([19.55202227, 24.72167338, 41.93785391]),
+                ),
+            ),
+            pytest.param(
+                np.array([2864289363007635456], dtype="uint64"),
+                None,
+                "zuniq",
+                None,
+                (
+                    np.array([0.0]),
+                    np.array([30.0]),
                 ),
             ),
         ),

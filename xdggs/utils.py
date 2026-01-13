@@ -1,3 +1,5 @@
+import functools
+
 import xarray as xr
 
 GRID_REGISTRY = {}
@@ -19,6 +21,20 @@ def _extract_cell_id_variable(variables):
     dim = next(iter(var.dims))
 
     return name, var, dim
+
+
+def ignore_parameters(*names):
+    def inner(f):
+        @functools.wraps(f)
+        def wrapper(*args, **kwargs):
+            for name in names:
+                kwargs.pop(name, None)
+
+            return f(*args, **kwargs)
+
+        return wrapper
+
+    return inner
 
 
 def call_on_dataset(func, obj, *args, kwargs=None):
