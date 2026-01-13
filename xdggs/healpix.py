@@ -249,7 +249,7 @@ class HealpixInfo(DGGSInfo):
         converters = {
             "nested": healpix_geo.nested.healpix_to_lonlat,
             "ring": healpix_geo.ring.healpix_to_lonlat,
-            "zuniq": ignore_parameters("level")(healpix_geo.zuniq.healpix_to_lonlat),
+            "zuniq": ignore_parameters("depth")(healpix_geo.zuniq.healpix_to_lonlat),
         }
         converter = converters[self.indexing_scheme]
 
