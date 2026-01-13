@@ -28,7 +28,9 @@ class strategies:
     levels = st.integers(min_value=0, max_value=29)
     # TODO: add back `"unique"` once that is supported
     indexing_schemes = st.sampled_from(["nested", "ring"])
-    invalid_indexing_schemes = st.text().filter(lambda x: x not in ["nested", "ring"])
+    invalid_indexing_schemes = st.text().filter(
+        lambda x: x not in ["nested", "ring", "zuniq"]
+    )
 
     dims = xrst.names()
     variable_names = xrst.names()
@@ -72,16 +74,26 @@ class strategies:
 
     options = st.just({})
 
+    @st.composite
     def grids(
+        draw,
+        *,
         levels=levels,
         indexing_schemes=indexing_schemes,
         ellipsoids=ellipsoids("in_memory_only"),
     ):
-        return st.builds(
-            healpix.HealpixInfo,
-            level=levels,
-            indexing_scheme=indexing_schemes,
-            ellipsoid=ellipsoids,
+        indexing_scheme = draw(indexing_schemes)
+        if indexing_scheme == "zuniq":
+            levels = None
+        else:
+            level = draw(levels)
+
+        ellipsoid = draw(ellipsoids)
+
+        return healpix.HealpixInfo(
+            level=level,
+            indexing_scheme=indexing_scheme,
+            ellipsoid=ellipsoid,
         )
 
     @classmethod
