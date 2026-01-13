@@ -190,7 +190,11 @@ class TestHealpixInfo:
 
     @given(strategies.invalid_indexing_schemes)
     def test_init_invalid_indexing_scheme(self, indexing_scheme):
-        with pytest.raises(ValueError, match="indexing scheme must be one of"):
+        if indexing_scheme == "nuniq":
+            pattern = "is currently not supported"
+        else:
+            pattern = "indexing scheme must be one of"
+        with pytest.raises(ValueError, match=pattern):
             healpix.HealpixInfo(
                 level=0,
                 indexing_scheme=indexing_scheme,
