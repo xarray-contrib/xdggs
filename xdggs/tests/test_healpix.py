@@ -212,23 +212,20 @@ class TestHealpixInfo:
         assert grid.indexing_scheme == indexing_scheme
         assert grid.ellipsoid == ellipsoid
 
-    @given(strategies.levels)
-    def test_nside(self, level):
-        grid = healpix.HealpixInfo(level=level)
+    @given(strategies.grids())
+    def test_nside(self, grid):
+        assert grid.nside == 2**grid.level
 
-        assert grid.nside == 2**level
-
-    @given(strategies.indexing_schemes)
-    def test_nest(self, indexing_scheme):
-        grid = healpix.HealpixInfo(level=1, indexing_scheme=indexing_scheme)
-        if indexing_scheme not in {"nested", "ring"}:
+    @given(strategies.grids())
+    def test_nest(self, grid):
+        if grid.indexing_scheme not in {"nested", "ring"}:
             with pytest.raises(
                 ValueError, match="cannot convert indexing scheme .* to `nest`"
             ):
                 grid.nest
             return
 
-        expected = indexing_scheme == "nested"
+        expected = grid.indexing_scheme == "nested"
 
         assert grid.nest == expected
 
