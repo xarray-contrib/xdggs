@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0 (_unreleased_)
+
+- Support variable-sized cells with the `"zuniq"` indexing scheme in `healpix` ({pull}`207`)
+
 ## 0.5.0 (2025-12-12)
 
 - Support ellipsoids for `healpix` ({pull}`194`)
