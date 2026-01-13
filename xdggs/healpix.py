@@ -275,10 +275,16 @@ class HealpixInfo(DGGSInfo):
         """
         import healpix_geo
 
+        if self.indexing_scheme in {"zuniq", "nuniq"}:
+            raise ValueError(
+                "Converting geographic coordinates to `uniq` schemes is not supported."
+                " Please convert to a `nested` scheme and convert that to"
+                " the desired uniq scheme."
+            )
+
         converters = {
             "nested": healpix_geo.nested.lonlat_to_healpix,
             "ring": healpix_geo.ring.lonlat_to_healpix,
-            "zuniq": healpix_geo.zuniq.lonlat_to_healpix,
         }
         converter = converters[self.indexing_scheme]
 

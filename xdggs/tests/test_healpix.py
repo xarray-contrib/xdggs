@@ -494,13 +494,6 @@ class TestHealpixInfo:
                 "WGS84",
                 np.array([5, 11, 21]),
             ),
-            pytest.param(
-                np.array([[0.0, 30.0]]),
-                2,
-                "zuniq",
-                None,
-                np.array([2864289363007635456], dtype="uint64"),
-            ),
         ),
     )
     def test_geographic2cell_ids(
