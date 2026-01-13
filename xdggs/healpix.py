@@ -135,8 +135,9 @@ class HealpixInfo(DGGSInfo):
         elif self.indexing_scheme == "nuniq":
             raise ValueError("the indexing scheme `nuniq` is currently not supported")
 
-        if self.indexing_scheme in {"zuniq", "nuniq"} and self.level is not None:
-            raise ValueError("level must be `None` for uniq indexing schemes")
+        if self.indexing_scheme in {"zuniq", "nuniq"}:
+            if self.level is not None:
+                raise ValueError("level must be `None` for uniq indexing schemes")
         elif self.level not in self.valid_parameters["level"]:
             raise ValueError("level must be an integer in the range of [0, 29]")
 
