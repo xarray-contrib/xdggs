@@ -33,6 +33,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "IPython.sphinxext.ipython_directive",
     "IPython.sphinxext.ipython_console_highlighting",
+    "jupyter_sphinx",
     "sphinx_autosummary_accessors",
     "myst_nb",
     "sphinx_design",
@@ -88,6 +89,8 @@ napoleon_type_aliases = {
     "scalar": ":term:`scalar`",
     "array": ":term:`array`",
     "hashable": ":term:`hashable <name>`",
+    # geographic
+    "ellipsoid-like": ":term:`ellipsoid-like <healpix-geo:ellipsoid-like>`",
 }
 
 # -- Options for HTML output -------------------------------------------------

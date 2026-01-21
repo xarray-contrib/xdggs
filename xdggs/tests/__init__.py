@@ -59,3 +59,47 @@ def raise_if_dask_computes(max_computes=0):
         return nullcontext()
     scheduler = CountingScheduler(max_computes)
     return dask.config.set(scheduler=scheduler)
+
+
+def diff_dict_keys(left, right):
+    left_only = left.keys() - right.keys()
+    right_only = right.keys() - left.keys()
+
+    diff = []
+    if left_only:
+        diff.append("- only in left:")
+        diff.extend([f"   {k}: {v}" for k, v in left.items() if k in left_only])
+    if right_only:
+        diff.append("- only in right:")
+        diff.extend([f"   {k}: {v}" for k, v in right.items() if k in right_only])
+
+    return "\n".join(["mismatch in indexes:", *diff])
+
+
+def diff_indexes(left, right, mismatching):
+    diffs = [
+        "\n".join(
+            [
+                f"Indexed variable: {name}",
+                f"L  {left[name]}",
+                f"R  {right[name]}",
+            ]
+        )
+        for name in mismatching
+    ]
+
+    return "\n".join(["indexes do not match", "", *diffs])
+
+
+def assert_indexes_equal(left, right):
+    __tracebackhide__ = True
+
+    assert left.keys() == right.keys(), diff_dict_keys(left, right)
+
+    mismatching = [
+        k
+        for k in left
+        if type(left[k]) is not type(right[k]) or not left[k].equals(right[k])
+    ]
+
+    assert not mismatching, diff_indexes(left, right, mismatching)

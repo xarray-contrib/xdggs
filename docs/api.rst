@@ -44,6 +44,7 @@ Parameters
    :template: autosummary/accessor_method.rst
 
    Dataset.dggs.decode
+   Dataset.dggs.encode
 
 Indexing
 --------
@@ -82,7 +83,8 @@ Parameters
    :toctree: generated
    :template: autosummary/accessor_method.rst
 
-   Dataset.dggs.decode
+   DataArray.dggs.decode
+   DataArray.dggs.encode
 
 Indexing
 --------
@@ -123,3 +125,22 @@ Tutorial
    :toctree: generated
 
    tutorial.open_dataset
+
+Advanced API
+============
+
+Index
+-----
+.. autosummary::
+   :toctree: generated
+
+   register_dggs
+
+Conventions
+-----------
+.. autosummary::
+   :toctree: generated
+
+   conventions.Convention
+   conventions.register_convention
+   conventions.DecoderError

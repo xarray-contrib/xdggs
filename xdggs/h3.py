@@ -234,9 +234,13 @@ class H3Index(DGGSIndex):
         self,
         cell_ids: Any | xr.Index,
         dim: str,
+        name: str,
         grid_info: DGGSInfo,
     ):
         super().__init__(cell_ids, dim, grid_info)
+
+        self._name = name
+        self._index.index.name = name
 
     @classmethod
     def from_variables(
@@ -245,18 +249,18 @@ class H3Index(DGGSIndex):
         *,
         options: Mapping[str, Any],
     ) -> "H3Index":
-        _, var, dim = _extract_cell_id_variable(variables)
+        name, var, dim = _extract_cell_id_variable(variables)
 
         grid_info = H3Info.from_dict(var.attrs | options)
 
-        return cls(var.data, dim, grid_info)
+        return cls(var.data, dim, name, grid_info)
 
     @property
     def grid_info(self) -> H3Info:
         return self._grid
 
     def _replace(self, new_index: xr.Index):
-        return type(self)(new_index, self._dim, self._grid)
+        return type(self)(new_index, self._dim, self._name, self._grid)
 
     def _repr_inline_(self, max_width: int):
         return f"H3Index(level={self._grid.level})"

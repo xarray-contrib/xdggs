@@ -1,14 +1,25 @@
 # Changelog
 
-## 0.3.0 (_unreleased_)
+## 0.6.0 (_unreleased_)
+
+- Support variable-sized cells with the `"zuniq"` indexing scheme in `healpix` ({pull}`207`)
+
+## 0.5.0 (2025-12-12)
+
+- Support ellipsoids for `healpix` ({pull}`194`)
+- Move the plotting code into a custom `anywidget`-based widget ({pull}`199`)
+- Temporarily remove the interactive facet plot feature ({pull}`200`)
+
+## 0.4.0 (2025-11-03)
+
+- support interactive facet plots and combining maps ({pull}`183`)
+
+## 0.3.0 (2025-09-26)
 
 ### New features
 
-- Implement a healpix index based on multi-order coverage (MOC) for reduced memory footprints ({pull}`151`)
-
-### Bug fixes
-
-### Documentation
+- support for alignment between indexes with the same grid parameters ({pull}`166`)
+- allow choosing a moc-based index for healpix ({pull}`153`)
 
 ## 0.2.2 (2025-09-15)
 

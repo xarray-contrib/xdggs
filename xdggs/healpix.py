@@ -3,17 +3,16 @@ from collections.abc import Hashable, Mapping
 from dataclasses import dataclass
 from typing import Any, ClassVar, Literal, Self, TypeVar
 
-import cdshealpix.nested
-import cdshealpix.ring
 import numpy as np
 import xarray as xr
 from healpix_geo.nested import RangeMOCIndex
 from xarray.core.indexes import IndexSelResult, PandasIndex
 
+from xdggs.ellipsoid import Ellipsoid, Sphere, parse_ellipsoid
 from xdggs.grid import DGGSInfo, translate_parameters
 from xdggs.index import DGGSIndex
 from xdggs.itertools import identity
-from xdggs.utils import _extract_cell_id_variable, register_dggs
+from xdggs.utils import _extract_cell_id_variable, ignore_parameters, register_dggs
 
 T = TypeVar("T")
 
@@ -104,35 +103,43 @@ class HealpixInfo(DGGSInfo):
         grows exponentially with increasing level values, ranging from 5-100 cells at
         level 0 to millions or billions of cells at level 10+ (the exact numbers depends
         on the specific grid).
-    indexing_scheme : {"nested", "ring", "unique"}, default: "nested"
+    indexing_scheme : {"nested", "ring", "zuniq", "nuniq"}, default: "nested"
         The indexing scheme of the healpix grid.
 
         .. warning::
-            Note that ``"unique"`` is currently not supported as the underlying library
-            (:doc:`cdshealpix <cdshealpix-python:index>`) does not support it.
+            Note that ``"nuniq"`` is currently not supported as the underlying library
+            (:doc:`healpix-geo <healpix-geo:index>`) does not support it.
+    ellipsoid : ellipsoid-like, optional
+        The reference ellipsoid. If not passed, a sphere is assumed.
     """
 
-    level: int
-    """int : The hierarchical level of the grid"""
+    level: int | None
+    """int or None : The hierarchical level of the grid"""
 
-    indexing_scheme: Literal["nested", "ring"] = "nested"
+    indexing_scheme: Literal["nested", "ring", "zuniq"] = "nested"
     """int : The indexing scheme of the grid"""
+
+    ellipsoid: str | Sphere | Ellipsoid | None = None
+    """The ellipsoid"""
 
     valid_parameters: ClassVar[dict[str, Any]] = {
         "level": range(0, 29 + 1),
-        "indexing_scheme": ["nested", "ring"],
+        "indexing_scheme": ["nested", "ring", "zuniq", "nuniq"],
     }
 
     def __post_init__(self):
-        if self.level not in self.valid_parameters["level"]:
-            raise ValueError("level must be an integer in the range of [0, 29]")
-
         if self.indexing_scheme not in self.valid_parameters["indexing_scheme"]:
             raise ValueError(
                 f"indexing scheme must be one of {self.valid_parameters['indexing_scheme']}"
             )
-        elif self.indexing_scheme == "unique":
-            raise ValueError("the indexing scheme `unique` is currently not supported")
+        elif self.indexing_scheme == "nuniq":
+            raise ValueError("the indexing scheme `nuniq` is currently not supported")
+
+        if self.indexing_scheme in {"zuniq", "nuniq"}:
+            if self.level is not None:
+                raise ValueError("level must be `None` for uniq indexing schemes")
+        elif self.level not in self.valid_parameters["level"]:
+            raise ValueError("level must be an integer in the range of [0, 29]")
 
     @property
     def nside(self: Self) -> int:
@@ -148,6 +155,14 @@ class HealpixInfo(DGGSInfo):
             )
         else:
             return self.indexing_scheme == "nested"
+
+    def _format_ellipsoid(self) -> str:
+        if self.ellipsoid is None:
+            return "sphere"
+        elif isinstance(self.ellipsoid, str):
+            return self.ellipsoid
+
+        return self.ellipsoid._serialize()
 
     @classmethod
     def from_dict(cls: type[T], mapping: dict[str, Any]) -> T:
@@ -172,12 +187,19 @@ class HealpixInfo(DGGSInfo):
 
             return potential_level
 
+        def translate_ellipsoid(value):
+            if isinstance(value, (str, Sphere, Ellipsoid)):
+                return value
+
+            return parse_ellipsoid(value)
+
         translations = {
             "nside": ("level", translate_nside),
             "order": ("level", identity),
             "resolution": ("level", identity),
             "depth": ("level", identity),
             "nest": ("indexing_scheme", lambda nest: "nested" if nest else "ring"),
+            "ellipsoid": ("ellipsoid", translate_ellipsoid),
         }
 
         params = translate_parameters(mapping, translations)
@@ -192,11 +214,19 @@ class HealpixInfo(DGGSInfo):
         mapping : dict of str to any
             The normalized grid parameters.
         """
+        optional_values = {}
+        if self.ellipsoid is not None:
+            optional_values["ellipsoid"] = (
+                self.ellipsoid
+                if isinstance(self.ellipsoid, str)
+                else self.ellipsoid.to_dict()
+            )
+
         return {
             "grid_name": "healpix",
             "level": self.level,
             "indexing_scheme": self.indexing_scheme,
-        }
+        } | optional_values
 
     def cell_ids2geographic(self, cell_ids):
         """
@@ -214,17 +244,16 @@ class HealpixInfo(DGGSInfo):
         lat : array-like
             The latitude coordinate values of the grid cells in degree
         """
+        import healpix_geo
+
         converters = {
-            "nested": cdshealpix.nested.healpix_to_lonlat,
-            "ring": lambda cell_ids, level: cdshealpix.ring.healpix_to_lonlat(
-                cell_ids, nside=2**level
-            ),
+            "nested": healpix_geo.nested.healpix_to_lonlat,
+            "ring": healpix_geo.ring.healpix_to_lonlat,
+            "zuniq": ignore_parameters("depth")(healpix_geo.zuniq.healpix_to_lonlat),
         }
         converter = converters[self.indexing_scheme]
 
-        lon, lat = converter(cell_ids, self.level)
-
-        return np.asarray(lon.to("degree")), np.asarray(lat.to("degree"))
+        return converter(cell_ids, depth=self.level, ellipsoid=self._format_ellipsoid())
 
     def geographic2cell_ids(self, lon, lat):
         """
@@ -245,20 +274,22 @@ class HealpixInfo(DGGSInfo):
         cell_ids : array-like
             Array-like containing the cell ids.
         """
-        from astropy.coordinates import Latitude, Longitude
+        import healpix_geo
+
+        if self.indexing_scheme in {"zuniq", "nuniq"}:
+            raise ValueError(
+                "Converting geographic coordinates to `uniq` schemes is not supported."
+                " Please convert to a `nested` scheme and convert that to"
+                " the desired uniq scheme."
+            )
 
         converters = {
-            "nested": cdshealpix.nested.lonlat_to_healpix,
-            "ring": lambda lon, lat, level: cdshealpix.ring.lonlat_to_healpix(
-                lon, lat, nside=2**level
-            ),
+            "nested": healpix_geo.nested.lonlat_to_healpix,
+            "ring": healpix_geo.ring.lonlat_to_healpix,
         }
         converter = converters[self.indexing_scheme]
 
-        longitude = Longitude(lon, unit="degree")
-        latitude = Latitude(lat, unit="degree")
-
-        return converter(longitude, latitude, self.level)
+        return converter(lon, lat, depth=self.level, ellipsoid=self._format_ellipsoid())
 
     def cell_boundaries(self, cell_ids: Any, backend="shapely") -> np.ndarray:
         """
@@ -280,18 +311,18 @@ class HealpixInfo(DGGSInfo):
             - ``"shapely"``: return a array of :py:class:`shapely.Polygon` objects
             - ``"geoarrow"``: return a ``geoarrow`` array
         """
+        import healpix_geo
+
         converters = {
-            "nested": cdshealpix.nested.vertices,
-            "ring": lambda cell_ids, level, **kwargs: cdshealpix.ring.vertices(
-                cell_ids, nside=2**level, **kwargs
-            ),
+            "nested": healpix_geo.nested.vertices,
+            "ring": healpix_geo.ring.vertices,
+            "zuniq": ignore_parameters("depth")(healpix_geo.zuniq.vertices),
         }
         converter = converters[self.indexing_scheme]
 
-        lon_, lat_ = converter(cell_ids, self.level, step=1)
-
-        lon = np.asarray(lon_.to("degree"))
-        lat = np.asarray(lat_.to("degree"))
+        lon, lat = converter(
+            cell_ids, depth=self.level, ellipsoid=self._format_ellipsoid()
+        )
 
         lon_reshaped = np.reshape(lon, (-1, 4))
         lat_reshaped = np.reshape(lat, (-1, 4))
@@ -312,6 +343,7 @@ class HealpixInfo(DGGSInfo):
         return backend_func(vertices)
 
     def geometry2cell_ids(self, geom, *, containment=None):
+        import cdshealpix.nested
         from astropy.coordinates import Latitude, Longitude
 
         if self.indexing_scheme != "nested":
@@ -339,6 +371,10 @@ class HealpixInfo(DGGSInfo):
             raise ValueError(
                 "Scaling does not make sense for the 'ring' scheme."
                 " Please convert to a nested scheme first."
+            )
+        elif self.indexing_scheme == "zuniq":
+            raise NotImplementedError(
+                "Zooming cell ids in the 'zuniq' scheme currently not supported"
             )
 
         from healpix_geo.nested import zoom_to
@@ -668,6 +704,7 @@ class HealpixIndex(DGGSIndex):
         self,
         cell_ids: Any | xr.Index,
         dim: str,
+        name: str,
         grid_info: DGGSInfo,
         index_kind: str = "pandas",
     ):
@@ -675,14 +712,16 @@ class HealpixIndex(DGGSIndex):
             raise ValueError(f"grid info object has an invalid type: {type(grid_info)}")
 
         self._dim = dim
+        self._name = name
 
         if isinstance(cell_ids, xr.Index):
             self._index = cell_ids
         elif index_kind == "pandas":
             self._index = PandasIndex(cell_ids, dim)
+            self._index.index.name = name
         elif index_kind == "moc":
             self._index = HealpixMocIndex.from_array(
-                cell_ids, dim=dim, grid_info=grid_info, name="cell_ids"
+                cell_ids, dim=dim, grid_info=grid_info, name=name
             )
         self._kind = index_kind
 
@@ -701,19 +740,18 @@ class HealpixIndex(DGGSIndex):
         *,
         options: Mapping[str, Any],
     ) -> "HealpixIndex":
-        _, var, dim = _extract_cell_id_variable(variables)
+        name, var, dim = _extract_cell_id_variable(variables)
 
         index_kind = options.pop("index_kind", "pandas")
 
         grid_info = HealpixInfo.from_dict(var.attrs | options)
 
-        return cls(var.data, dim, grid_info, index_kind=index_kind)
-
-    def create_variables(self, variables):
-        return self._index.create_variables(variables)
+        return cls(var.data, dim, name, grid_info, index_kind=index_kind)
 
     def _replace(self, new_index: xr.Index):
-        return type(self)(new_index, self._dim, self._grid, index_kind=self._kind)
+        return type(self)(
+            new_index, self._dim, self._name, self._grid, index_kind=self._kind
+        )
 
     @property
     def grid_info(self) -> HealpixInfo:
