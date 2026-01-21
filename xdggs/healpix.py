@@ -311,7 +311,7 @@ class HealpixInfo(DGGSInfo):
 
         return backend_func(vertices)
 
-    def rasterize_geometry(self, geom, *, mode=None):
+    def geometry2cell_ids(self, geom, *, containment=None):
         from astropy.coordinates import Latitude, Longitude
 
         if self.indexing_scheme != "nested":

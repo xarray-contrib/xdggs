@@ -201,17 +201,17 @@ class H3Info(DGGSInfo):
             raise ValueError(f"invalid backend: {backend!r}")
         return backend_func(wkb)
 
-    def rasterize_geometry(self, geom, *, mode="contains_centroid"):
+    def geometry2cell_ids(self, geom, *, containment="contains_centroid"):
         modes = {
             "contains_centroid": ContainmentMode.ContainsCentroid,
             "contains_boundary": ContainmentMode.ContainsBoundary,
             "covers": ContainmentMode.Covers,
             "intersects_boundary": ContainmentMode.IntersectsBoundary,
         }
-        containment_mode = modes.get(mode)
-        if containment_mode is None:
+        mode = modes.get(containment)
+        if mode is None:
             raise ValueError(
-                f"invalid mode: {mode}."
+                f"invalid mode: {containment}."
                 f" Must be one of [{', '.join(repr(m) for m in modes)}]"
             )
 

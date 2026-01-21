@@ -101,8 +101,8 @@ class DGGSIndex(Index):
             raise ValueError("finding nearest grid cell has no meaning")
         return self._index.sel(labels, method=method, tolerance=tolerance)
 
-    def query(self, geom):
-        rasterized = self._grid.rasterize_geometry(geom)
+    def query(self, geom, *, containment=None):
+        rasterized = self._grid.geometry2cell_ids(geom, containment=containment)
 
         geometry_index = pd.Index(rasterized)
         new_index, _, indexer = geometry_index.join(
