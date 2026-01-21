@@ -343,8 +343,7 @@ class HealpixInfo(DGGSInfo):
         return backend_func(vertices)
 
     def geometry2cell_ids(self, geom, *, containment=None):
-        import cdshealpix.nested
-        from astropy.coordinates import Latitude, Longitude
+        import healpix_geo.nested
 
         if self.indexing_scheme != "nested":
             raise ValueError(
@@ -357,11 +356,11 @@ class HealpixInfo(DGGSInfo):
             )
 
         coords = np.asarray(geom.exterior.coords)
-        lon_ = Longitude(coords[:, 0], unit="deg")
-        lat_ = Latitude(coords[:, 1], unit="deg")
+        lon_ = coords[:, 0]
+        lat_ = coords[:, 1]
 
-        ipix, _, _ = cdshealpix.nested.polygon_search(
-            lon_, lat_, depth=self.level, flat=True
+        ipix, _, _ = healpix_geo.nested.polygon_search(
+            lon_, lat_, depth=self.level, ellipsoid=self._format_ellipsoid(), flat=True
         )
 
         return ipix
