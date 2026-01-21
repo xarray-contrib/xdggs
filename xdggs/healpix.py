@@ -357,6 +357,11 @@ class HealpixInfo(DGGSInfo):
 
         return zoom_to(cell_ids, self.level, level)
 
+    def neighbours(self, cell_ids, ring=1):
+        from healpix_geo.nested import kth_neighbourhood
+
+        return kth_neighbourhood(cell_ids, depth=self.level, ring=ring)
+
 
 def construct_chunk_ranges(chunks, until):
     start = 0
