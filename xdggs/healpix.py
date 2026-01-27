@@ -555,7 +555,9 @@ class HealpixMocIndex(xr.Index):
 
         return cls.from_array(var.data, dim=dim, name=name, grid_info=grid_info)
 
-    def create_variables(self, variables):
+    def create_variables(
+        self, variables: Mapping[Any, xr.Variable] | None = None
+    ) -> dict[Hashable, xr.Variable]:
         """Create new coordinate variables from this index
 
         Parameters
