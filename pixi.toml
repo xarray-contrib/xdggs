@@ -71,7 +71,7 @@ python = "3.13.*"
 
 [feature.docs.dependencies]
 python = "3.13.*"
-sphinx = "*"
+sphinx = "<9"
 myst-nb = "*"
 sphinx-book-theme = "*"
 sphinx-autosummary-accessors = "*"
