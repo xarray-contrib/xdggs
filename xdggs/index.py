@@ -4,6 +4,7 @@ from collections.abc import Hashable, Mapping
 from typing import TYPE_CHECKING
 
 import numpy as np
+import pandas as pd
 import xarray as xr
 from xarray.indexes import Index, PandasIndex
 
@@ -82,6 +83,16 @@ class DGGSIndex(Index):
         if method == "nearest":
             raise ValueError("finding nearest grid cell has no meaning")
         return self._index.sel(labels, method=method, tolerance=tolerance)
+
+    def query(self, geom, *, containment=None):
+        rasterized = self._grid.geometry2cell_ids(geom, containment=containment)
+
+        geometry_index = pd.Index(rasterized)
+        new_index, _, indexer = geometry_index.join(
+            self._pd_index.index, how="inner", return_indexers=True
+        )
+
+        return self._replace(new_index), indexer
 
     def join(self, other: Self, how: JoinOptions = "inner") -> Self:
         if self.grid_info != other.grid_info:

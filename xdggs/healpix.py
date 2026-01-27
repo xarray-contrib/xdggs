@@ -342,6 +342,29 @@ class HealpixInfo(DGGSInfo):
 
         return backend_func(vertices)
 
+    def geometry2cell_ids(self, geom, *, containment=None):
+        import healpix_geo.nested
+
+        if self.indexing_scheme != "nested":
+            raise ValueError(
+                "rasterizing geometries is only supported for the 'nested' scheme"
+            )
+
+        if geom.geom_type != "Polygon":
+            raise NotImplementedError(
+                f"geometries of type {geom.geom_type!r} are not supported, yet"
+            )
+
+        coords = np.asarray(geom.exterior.coords)
+        lon_ = coords[:, 0]
+        lat_ = coords[:, 1]
+
+        ipix, _, _ = healpix_geo.nested.polygon_search(
+            lon_, lat_, depth=self.level, ellipsoid=self._format_ellipsoid(), flat=True
+        )
+
+        return ipix
+
     def zoom_to(self, cell_ids, level):
         if self.indexing_scheme == "ring":
             raise ValueError(
