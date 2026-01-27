@@ -1138,3 +1138,62 @@ def test_equals(variant):
     index2 = healpix.HealpixIndex(values2, dim=dim2, name=name, grid_info=grid_info2)
 
     assert index1.equals(index2) == expected
+
+
+@pytest.mark.parametrize(
+    "index_kind",
+    [
+        "pandas",
+        pytest.param("moc", marks=pytest.mark.skip(reason="not implemented yet")),
+    ],
+)
+def test_align(index_kind):
+    level = 2
+    grid_info = healpix.HealpixInfo(level=level, indexing_scheme="nested")
+
+    cell_ids1 = np.arange(2 * 4**level, 7 * 4**level, dtype="uint64")
+    cell_ids2 = np.arange(3 * 4**level, 9 * 4**level, dtype="uint64")
+
+    index1 = healpix.HealpixIndex(
+        cell_ids1,
+        dim="cells",
+        name="cell_ids",
+        grid_info=grid_info,
+        index_kind=index_kind,
+    )
+    index2 = healpix.HealpixIndex(
+        cell_ids2,
+        dim="cells",
+        name="cell_ids",
+        grid_info=grid_info,
+        index_kind=index_kind,
+    )
+
+    ds1 = xr.Dataset(coords=xr.Coordinates.from_xindex(index1))
+    ds2 = xr.Dataset(coords=xr.Coordinates.from_xindex(index2))
+
+    expected_cell_ids = np.arange(3 * 4**level, 7 * 4**level, dtype="uint64")
+    expected_index = healpix.HealpixIndex(
+        expected_cell_ids,
+        dim="cells",
+        name="cell_ids",
+        grid_info=grid_info,
+        index_kind=index_kind,
+    )
+    expected = xr.Dataset(coords=xr.Coordinates.from_xindex(expected_index))
+    actual1, actual2 = xr.align(ds1, ds2, join="inner")
+    xr.testing.assert_identical(actual1, expected)
+    xr.testing.assert_identical(actual2, expected)
+
+    expected_cell_ids = np.arange(2 * 4**level, 9 * 4**level, dtype="uint64")
+    expected_index = healpix.HealpixIndex(
+        expected_cell_ids,
+        dim="cells",
+        name="cell_ids",
+        grid_info=grid_info,
+        index_kind=index_kind,
+    )
+    expected = xr.Dataset(coords=xr.Coordinates.from_xindex(expected_index))
+    actual1, actual2 = xr.align(ds1, ds2, join="outer")
+    xr.testing.assert_identical(actual1, expected)
+    xr.testing.assert_identical(actual2, expected)
