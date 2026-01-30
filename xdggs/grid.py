@@ -53,6 +53,9 @@ class DGGSInfo:
     def zoom_to(self, cell_ids, level: int):
         raise NotImplementedError()
 
+    def neighbours(self, cell_ids, ring=1):
+        raise NotImplementedError()
+
 
 GridInfoType = dict[str, Any] | DGGSInfo
 
