@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.6.0 (_unreleased_)
+## 0.6.0 (2026-02-05)
 
 - Support variable-sized cells with the `"zuniq"` indexing scheme in `healpix` ({pull}`207`)
 - Fix alignment of healpix datasets ({pull}`208`)
