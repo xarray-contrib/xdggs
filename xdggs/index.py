@@ -78,10 +78,10 @@ class DGGSIndex(Index):
         else:
             return None
 
-    def sel(self, labels, method=None, tolerance=None):
+    def sel(self, labels, method=None, **options):
         if method == "nearest":
             raise ValueError("finding nearest grid cell has no meaning")
-        return self._index.sel(labels, method=method, tolerance=tolerance)
+        return self._index.sel(labels, method=method, **options)
 
     def join(self, other: Self, how: JoinOptions = "inner") -> Self:
         if self.grid_info != other.grid_info:
