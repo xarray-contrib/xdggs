@@ -637,7 +637,7 @@ class HealpixMocIndex(xr.Index):
 
         return self._replace(self._index.isel(indexer), chunksizes=new_chunksizes)
 
-    def sel(self, labels: dict[Hashable, Any]) -> IndexSelResult:
+    def sel(self, labels: dict[Hashable, Any], method: str = None) -> IndexSelResult:
         """Query the index using cell ids.
 
         Parameters
