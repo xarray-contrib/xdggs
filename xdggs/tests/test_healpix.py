@@ -1032,6 +1032,28 @@ class TestHealpixMocIndex:
         with pytest.raises(ValueError, match="Cell ids can't be negative"):
             index.sel({"cell_ids": indexer})
 
+    def test_sel_kwargs(self):
+        from healpix_geo.nested import RangeMOCIndex
+
+        grid_info = healpix.HealpixInfo(level=1, indexing_scheme="nested")
+        cell_ids = np.arange(12 * 4**grid_info.level, dtype="uint64")
+
+        index = healpix.HealpixMocIndex(
+            RangeMOCIndex.from_cell_ids(grid_info.level, cell_ids),
+            dim="cells",
+            name="cell_ids",
+            grid_info=grid_info,
+            chunksizes={"cells": None},
+        )
+
+        indexer = np.array([2, 1], dtype="uint64")
+
+        # method is ignored by the moc index
+        index.sel({"cell_ids": indexer}, method="unknown")
+
+        with pytest.raises(TypeError):
+            index.sel({"cell_ids": indexer}, tolerance=0.1)
+
 
 def test_join():
     data1 = np.array([0, 5, 7, 9], dtype="uint64")
