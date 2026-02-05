@@ -5,6 +5,7 @@
 - Support variable-sized cells with the `"zuniq"` indexing scheme in `healpix` ({pull}`207`)
 - Fix alignment of healpix datasets ({pull}`208`)
 - Refactor the keyword arguments to :py:meth:`DGGSIndex.sel`, allowing `RangeMOCIndex.sel` to succeed ({pull}`211`)
+- Support converting between different conventions ({pull}`179`)
 
 ## 0.5.0 (2025-12-12)
 
