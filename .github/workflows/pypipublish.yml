@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-artifacts:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     if: |
       github.repository == 'xarray-contrib/xdggs'
       && (
@@ -51,7 +51,7 @@ jobs:
           path: dist
 
   deploy:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     needs: build-artifacts
     if: github.event_name == 'release'
 
