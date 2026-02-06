@@ -53,7 +53,6 @@ jobs:
   deploy:
     runs-on: ubuntu-slim
     needs: build-artifacts
-    if: github.event_name == 'release'
 
     environment:
       name: pypi
@@ -67,6 +66,7 @@ jobs:
           path: dist
 
       - name: Publish package to PyPI
+        if: github.event_name == 'release'
         uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
         with:
           verbose: true
