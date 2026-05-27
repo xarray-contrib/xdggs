@@ -65,4 +65,4 @@ class Xdggs(Convention):
         # TODO: `assign_coords` + `assign_attrs` drops the index
         ds_ = ds.copy(deep=False)
         ds_[coord].attrs.update(metadata)
-        return ds_
+        return ds_.drop_indexes(coord)
