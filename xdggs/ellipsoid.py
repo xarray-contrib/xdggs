@@ -29,7 +29,15 @@ class Ellipsoid:
 
     @classmethod
     def from_dict(cls, mapping):
-        return cls(**mapping)
+        semimajor = mapping["semimajor_axis"]
+        if (semiminor := mapping.get("semiminor_axis")) is not None:
+            inverse_flattening = semimajor / (semimajor - semiminor)
+        else:
+            inverse_flattening = mapping["inverse_flattening"]
+        name = mapping.get("name")
+        return cls(
+            semimajor_axis=semimajor, inverse_flattening=inverse_flattening, name=name
+        )
 
     def to_dict(self):
         mapping = asdict(self)
