@@ -31,6 +31,7 @@ ellipsoid_attribute_translations = {
     "semi_minor_axis": "semiminor_axis",
     "earth_radius": "radius",
     "reference_ellipsoid_name": "name",
+    "inverse_flattening": "inverse_flattening",
 }
 
 
