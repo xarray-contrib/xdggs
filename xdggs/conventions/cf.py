@@ -101,11 +101,7 @@ class Cf(Convention):
         ellipsoid = extract_ellipsoid_parameters(crs.attrs)
         grid_info = self.translate_keys(
             remove_keys(crs.attrs, ellipsoid), direction="forward"
-        ) | {
-            "ellipsoid": self.translate_attribute_translations(
-                ellipsoid, direction="forward"
-            )
-        }
+        ) | {"ellipsoid": self.translate_ellipsoid(ellipsoid, direction="forward")}
         grid_name = grid_info["grid_name"]
 
         var = ds.variables[name].copy(deep=False)
