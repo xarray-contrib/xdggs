@@ -33,7 +33,7 @@ shapely = ">=2.1.1,<3"
 dask = ">=2025.7.0"
 
 [feature.tests.tasks]
-tests = "pytest -n auto --cov=xdggs"
+tests = { cmd = "pytest -n auto --cov=xdggs", cwd = ".", default-environment = "default" }
 
 [feature.nightly.pypi-options]
 extra-index-urls = [
