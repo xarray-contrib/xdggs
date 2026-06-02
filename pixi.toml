@@ -109,7 +109,11 @@ h5netcdf = ">=1.7.3,<2"
 zarr = ">=3.1.5,<4"
 
 [environments]
-nightly = { features = ["tests", "nightly"], no-default-feature = true }
+nightly = { features = [
+  "tests",
+  "nightly",
+  "ci-py313",
+], no-default-feature = true }
 ci-py311 = { features = ["tests", "ci-py311"] }
 ci-py312 = { features = ["tests", "ci-py312"] }
 ci-py313 = { features = ["tests", "ci-py313"] }
