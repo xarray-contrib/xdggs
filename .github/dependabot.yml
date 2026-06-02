@@ -5,3 +5,5 @@ updates:
     schedule:
       # Check for updates once a week
       interval: "weekly"
+    cooldown:
+      default-days: 7
