@@ -131,12 +131,14 @@ class Zarr(Convention):
         new_ds = ds.assign_coords(xr.Coordinates.from_xindex(index)).assign_attrs(
             copy.deepcopy(ds.attrs)
         )
+        # remove redundant attrs
         new_ds.attrs.pop("dggs", None)
         if convention_index is not None:
             zarr_conventions = new_ds.attrs.get("zarr_conventions", [])
             del zarr_conventions[convention_index]
             if not zarr_conventions:
                 del new_ds.attrs["zarr_conventions"]
+
         return new_ds
 
     def encode(
