@@ -35,11 +35,13 @@ dask = ">=2025.7.0"
 [feature.tests.tasks]
 tests = { cmd = "pytest -n auto --cov=xdggs", cwd = ".", default-environment = "default" }
 
-[feature.nightly.pypi-options]
-extra-index-urls = [
-  "https://pypi.anaconda.org/scientific-python-nightly-wheels/simple",
-]
-[feature.nightly.unix.pypi-dependencies]
+[feature.nightly.pypi-options.dependency-overrides]
+numpy = { version = "*", index = "https://pypi.anaconda.org/scientific-python-nightly-wheels/simple" }
+pandas = { version = "*", index = "https://pypi.anaconda.org/scientific-python-nightly-wheels/simple" }
+xarray = { version = "*", index = "https://pypi.anaconda.org/scientific-python-nightly-wheels/simple" }
+pyarrow = { version = "*", index = "https://pypi.anaconda.org/scientific-python-nightly-wheels/simple" }
+
+[feature.nightly.target.unix.pypi-dependencies]
 xdggs = { path = ".", editable = true }
 xarray = "*"
 numpy = "*"
@@ -50,7 +52,7 @@ cdshealpix = { git = "git+https://github.com/cds-astro/cds-healpix-python.git" }
 healpix-geo = { git = "git+https://github.com/eopf-dggs/healpix-geo.git", subdirectory = "python/healpix-geo" }
 astropy = { git = "git+https://github.com/astropy/astropy.git" }
 
-[feature.nightly.unix.dependencies]
+[feature.nightly.target.unix.dependencies]
 lonboard = ">=0.11.1"
 pyproj = ">=3.7.2"
 matplotlib-base = ">=3.10.5"
