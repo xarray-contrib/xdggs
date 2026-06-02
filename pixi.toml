@@ -39,7 +39,7 @@ tests = { cmd = "pytest -n auto --cov=xdggs", cwd = ".", default-environment = "
 extra-index-urls = [
   "https://pypi.anaconda.org/scientific-python-nightly-wheels/simple",
 ]
-[feature.nightly.pypi-dependencies]
+[feature.nightly.unix.pypi-dependencies]
 xdggs = { path = ".", editable = true }
 xarray = "*"
 numpy = "*"
@@ -50,7 +50,7 @@ cdshealpix = { git = "git+https://github.com/cds-astro/cds-healpix-python.git" }
 healpix-geo = { git = "git+https://github.com/eopf-dggs/healpix-geo.git", subdirectory = "python/healpix-geo" }
 astropy = { git = "git+https://github.com/astropy/astropy.git" }
 
-[feature.nightly.dependencies]
+[feature.nightly.unix.dependencies]
 lonboard = ">=0.11.1"
 pyproj = ">=3.7.2"
 matplotlib-base = ">=3.10.5"
