@@ -112,4 +112,4 @@ ci-py311 = { features = ["tests", "ci-py311"] }
 ci-py312 = { features = ["tests", "ci-py312"] }
 ci-py313 = { features = ["tests", "ci-py313"] }
 docs = { features = ["docs"] }
-dev = { features = ["tests", "dev"] }
+default = { features = ["tests", "dev"] }
