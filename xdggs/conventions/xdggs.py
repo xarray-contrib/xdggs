@@ -45,7 +45,14 @@ class Xdggs(Convention):
             # TODO: avoid serializing / deserializing cycle
             grid_info = grid_info.to_dict()
 
-        grid_name = grid_info["grid_name"]
+        try:
+            grid_name = grid_info["grid_name"]
+        except KeyError:
+            raise DecoderError(
+                "xdggs convention: no grid name found (`grid_name`)."
+                " Try choosing a different convention or verify the dataset metadata."
+            ) from None
+
         if grid_name not in GRID_REGISTRY:
             raise DecoderError(f"xdggs convention: unknown grid name: {grid_name}")
         index_cls = GRID_REGISTRY[grid_name]
