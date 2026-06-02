@@ -14,6 +14,8 @@ concurrency:
 env:
   FORCE_COLOR: 3
 
+permissions: {}
+
 jobs:
   detect-ci-trigger:
     name: detect ci trigger
@@ -24,10 +26,11 @@ jobs:
     outputs:
       triggered: ${{ steps.detect-trigger.outputs.trigger-found }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 2
-      - uses: xarray-contrib/ci-trigger@v1
+          persist-credentials: false
+      - uses: xarray-contrib/ci-trigger@10cd2bfec3484946a4058a421ddf9cfad101e715 # v1.2.1
         id: detect-trigger
         with:
           keyword: "[skip-ci]"
@@ -50,26 +53,34 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0 # Fetch all history for all branches and tags
+          persist-credentials: false
 
       - name: setup environment
-        uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e # 0.9.4
+        uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e # v0.9.4
         with:
           environments: "${{ matrix.env }}"
 
       - name: investigate env variables
+        env:
+          ENV: ${{ matrix.env }}
+          RUNNER_OS: ${{ matrix.os }}
         run: |
-          echo PYTHON_VERSION=$(pixi run -e ${{ matrix.env }} python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') >> $GITHUB_ENV
-          echo RUNNER_OS="${{ matrix.os }}"
+          echo PYTHON_VERSION=$(pixi run -e $ENV python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') >> $GITHUB_ENV
+          echo RUNNER_OS=$RUNNER_OS >> $GITHUB_ENV
 
       - name: Import xdggs
+        env:
+          ENV: ${{ matrix.env }}
         run: |
-          pixi run -e ${{ matrix.env }} python -c "import xdggs"
+          pixi run -e $ENV python -c "import xdggs"
 
       - name: run tests
         if: success()
         id: status
+        env:
+          ENV: ${{ matrix.env }}
         run: |
-          pixi run -e ${{ matrix.env }} tests
+          pixi run -e $ENV tests
