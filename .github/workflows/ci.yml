@@ -19,7 +19,7 @@ permissions: {}
 jobs:
   detect-ci-trigger:
     name: detect ci trigger
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     if: |
       github.repository_owner == 'xarray-contrib'
       && (github.event_name == 'pull_request' || github.event_name == 'push')
@@ -35,10 +35,33 @@ jobs:
         with:
           keyword: "[skip-ci]"
 
+  cache-pixi-lock:
+    runs-on: ubuntu-slim
+    needs: detect-ci-trigger
+    if: |
+      needs.detect-ci-trigger.outputs.triggered == 'false'
+      && !contains(github.event.pull_request.labels.*.name, 'skip-ci')
+    outputs:
+      cache-key: ${{ steps.pixi-lock.outputs.cache-key }}
+      pixi-version: ${{ steps.pixi-lock.outputs.pixi-version }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - uses: Parcels-code/pixi-lock/create-and-cache@38495788b79a5ff26009aecc15daa9a8310b8832 # v0.1.0
+        id: pixi-lock
+        with:
+          hash-files: |
+            pixi.toml
+            Cargo.toml
+            python/healpix-geo/pyproject.toml
+            python/healpix-geo/pixi.toml
+
   tests:
     name: ${{ matrix.os }} ${{ matrix.env }}
     runs-on: ${{ matrix.os }}
-    needs: detect-ci-trigger
+    needs: cache-pixi-lock
     if: needs.detect-ci-trigger.outputs.triggered == 'false'
     defaults:
       run:
@@ -58,10 +81,17 @@ jobs:
           fetch-depth: 0 # Fetch all history for all branches and tags
           persist-credentials: false
 
+      - uses: Parcels-code/pixi-lock/restore@38495788b79a5ff26009aecc15daa9a8310b8832 # v0.1.0
+        with:
+          cache-key: ${{ needs.cache-pixi-lock.outputs.cache-key }}
+
       - name: setup environment
         uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e # v0.9.4
         with:
           environments: "${{ matrix.env }}"
+          pixi-version: ${{ needs.cache-pixi-lock.outputs.pixi-version }}
+          cache: true
+          frozen: true
 
       - name: investigate env variables
         env:
