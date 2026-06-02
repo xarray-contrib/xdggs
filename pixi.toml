@@ -33,13 +33,15 @@ shapely = ">=2.1.1,<3"
 dask = ">=2025.7.0"
 
 [feature.tests.tasks]
-tests = "pytest -n auto --cov=xdggs"
+tests = { cmd = "pytest -n auto --cov=xdggs", cwd = ".", default-environment = "default" }
 
-[feature.nightly.pypi-options]
-extra-index-urls = [
-  "https://pypi.anaconda.org/scientific-python-nightly-wheels/simple",
-]
-[feature.nightly.pypi-dependencies]
+[feature.nightly.pypi-options.dependency-overrides]
+numpy = { version = "*", index = "https://pypi.anaconda.org/scientific-python-nightly-wheels/simple" }
+pandas = { version = "*", index = "https://pypi.anaconda.org/scientific-python-nightly-wheels/simple" }
+xarray = { version = "*", index = "https://pypi.anaconda.org/scientific-python-nightly-wheels/simple" }
+pyarrow = { version = "*", index = "https://pypi.anaconda.org/scientific-python-nightly-wheels/simple" }
+
+[feature.nightly.target.unix.pypi-dependencies]
 xdggs = { path = ".", editable = true }
 xarray = "*"
 numpy = "*"
@@ -47,10 +49,10 @@ pandas = "*"
 pyarrow = "*"
 h3ronpy = { git = "git+https://github.com/nmandery/h3ronpy.git", subdirectory = "h3ronpy" }
 cdshealpix = { git = "git+https://github.com/cds-astro/cds-healpix-python.git" }
-healpix-geo = { git = "git+https://github.com/eopf-dggs/healpix-geo.git" }
+healpix-geo = { git = "git+https://github.com/eopf-dggs/healpix-geo.git", subdirectory = "python/healpix-geo" }
 astropy = { git = "git+https://github.com/astropy/astropy.git" }
 
-[feature.nightly.dependencies]
+[feature.nightly.target.unix.dependencies]
 lonboard = ">=0.11.1"
 pyproj = ">=3.7.2"
 matplotlib-base = ">=3.10.5"
@@ -108,7 +110,11 @@ zarr = ">=3.1.5"
 cf-xarray = ">=0.11.1"
 
 [environments]
-nightly = { features = ["tests", "nightly"], no-default-feature = true }
+nightly = { features = [
+  "tests",
+  "nightly",
+  "ci-py313",
+], no-default-feature = true }
 ci-py311 = { features = ["tests", "ci-py311"] }
 ci-py312 = { features = ["tests", "ci-py312"] }
 ci-py313 = { features = ["tests", "ci-py313"] }
