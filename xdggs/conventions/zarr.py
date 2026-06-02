@@ -1,3 +1,4 @@
+import copy
 from collections.abc import Hashable
 from typing import Any, Literal
 
@@ -88,7 +89,7 @@ class Zarr(Convention):
                     " object to the `grid_info` parameter."
                 )
         # copy to avoid mutating
-        metadata = dict(grid_info)
+        metadata = copy.deepcopy(grid_info)
 
         # information:
         # - "name" is the grid name
@@ -127,13 +128,17 @@ class Zarr(Convention):
         index_cls = GRID_REGISTRY[grid_name]
         index = index_cls.from_variables({name: var}, options=index_options)
 
-        new_ds = ds.copy(deep=False).assign_coords(xr.Coordinates.from_xindex(index))
+        new_ds = ds.assign_coords(xr.Coordinates.from_xindex(index)).assign_attrs(
+            copy.deepcopy(ds.attrs)
+        )
+        # remove redundant attrs
         new_ds.attrs.pop("dggs", None)
         if convention_index is not None:
             zarr_conventions = new_ds.attrs.get("zarr_conventions", [])
             del zarr_conventions[convention_index]
             if not zarr_conventions:
                 del new_ds.attrs["zarr_conventions"]
+
         return new_ds
 
     def encode(
