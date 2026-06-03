@@ -190,6 +190,8 @@ class HealpixInfo(DGGSInfo):
         def translate_ellipsoid(value):
             if isinstance(value, (str, Sphere, Ellipsoid)):
                 return value
+            elif value is None or not value:
+                return value
 
             return parse_ellipsoid(value)
 
