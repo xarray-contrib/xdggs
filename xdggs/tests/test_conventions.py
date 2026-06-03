@@ -221,10 +221,11 @@ class TestCfConvention:
         convention = Cf()
 
         index_cls = xdggs.index.GRID_REGISTRY[grid_info["grid_name"]]
-        var = xr.Variable(dim, cell_ids, grid_info)
-        index = index_cls.from_variables({name: var}, options={})
+        index = index_cls.from_variables(
+            {name: xr.Variable(dim, cell_ids, grid_info)}, options={}
+        )
+        obj = xr.Coordinates.from_xindex(index).to_dataset()
 
-        obj = xr.Dataset(coords=xr.Coordinates({name: var}, indexes={name: index}))
         orig = obj.copy(deep=True)
 
         crs = xr.Variable((), np.int8(0), crs_attrs)
