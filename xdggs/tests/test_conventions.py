@@ -36,6 +36,8 @@ class TestXdggsConvention:
         expected = xr.Coordinates.from_xindex(index).to_dataset()
 
         obj = xr.Dataset(coords={name: var})
+        orig = obj.copy(deep=True)
+
         actual = convention.decode(
             obj,
             grid_info=None,
@@ -50,6 +52,10 @@ class TestXdggsConvention:
         actual = convention.decode(
             obj, grid_info=grid_info, name=name, index_options={}
         )
+
+        # should not modify the original dataset
+        xr.testing.assert_identical(obj, orig)
+
         xr.testing.assert_identical(actual, expected)
         assert_indexes_equal(actual[name].xindexes, expected[name].xindexes)
 
@@ -77,9 +83,13 @@ class TestXdggsConvention:
         index = index_cls.from_variables({name: var}, options={})
 
         obj = xr.Dataset(coords=xr.Coordinates({name: var}, indexes={name: index}))
+        orig = obj.copy(deep=True)
 
         # no-op
         encoded = convention.encode(obj)
+
+        # should not modify the original dataset
+        xr.testing.assert_identical(obj, orig)
 
         xr.testing.assert_identical(encoded, obj)
         assert_indexes_equal(encoded.xindexes, obj.xindexes)
@@ -125,12 +135,18 @@ class TestCfConvention:
         crs_var = xr.Variable((), np.array(0, dtype="int8"), translated_grid_info)
 
         obj = xr.Dataset(coords={name: cell_id_var, "crs": crs_var})
+        orig = obj.copy(deep=True)
+
         actual = convention.decode(
             obj,
             grid_info=None,
             name=name,
             index_options={},
         )
+
+        # should not modify the original dataset
+        xr.testing.assert_identical(obj, orig)
+
         xr.testing.assert_identical(actual, expected)
         assert_indexes_equal(actual.xindexes, expected.xindexes)
 
@@ -158,6 +174,7 @@ class TestCfConvention:
         index = index_cls.from_variables({name: var}, options={})
 
         obj = xr.Dataset(coords=xr.Coordinates({name: var}, indexes={name: index}))
+        orig = obj.copy(deep=True)
 
         translated_grid_info = self.translate(grid_info)
         crs = xr.Variable((), np.int8(0), translated_grid_info)
@@ -167,6 +184,9 @@ class TestCfConvention:
         ).to_dataset()
 
         encoded = convention.encode(obj)
+
+        # should not modify the original dataset
+        xr.testing.assert_identical(obj, orig)
 
         xr.testing.assert_identical(encoded, expected)
         assert_indexes_equal(encoded.xindexes, expected.xindexes)
@@ -258,6 +278,7 @@ class TestZarrConvention:
         index = index_cls.from_variables({name: var}, options={})
 
         obj = xr.Dataset(coords=xr.Coordinates({name: var}, indexes={name: index}))
+        orig = obj.copy(deep=True)
 
         coord = obj.dggs.coord
         dggs_metadata_object = self.translate(grid_info) | {
@@ -272,6 +293,9 @@ class TestZarrConvention:
         expected = obj.drop_indexes(coord.name).assign_attrs(metadata)
 
         encoded = convention.encode(obj)
+
+        # should not modify the original dataset
+        xr.testing.assert_identical(obj, orig)
 
         xr.testing.assert_identical(encoded, expected)
         assert_indexes_equal(encoded.xindexes, expected.xindexes)
