@@ -104,10 +104,6 @@ class TestXdggsConvention:
 
 
 class TestCfConvention:
-    def translate(self, mapping):
-        translations = {"grid_name": "grid_mapping_name", "level": "refinement_level"}
-        return {translations.get(name, name): value for name, value in mapping.items()}
-
     def index_metadata(self, grid_info):
         grid_name = grid_info["grid_name"]
 
@@ -117,19 +113,43 @@ class TestCfConvention:
         ["name", "dim"], [("cell_ids", "cells"), ("zone_ids", "zones")]
     )
     @pytest.mark.parametrize(
-        ["grid_info", "cell_ids"],
+        ["crs_attrs", "grid_info", "cell_ids"],
         (
-            (
+            pytest.param(
+                {
+                    "grid_mapping_name": "healpix",
+                    "refinement_level": 1,
+                    "indexing_scheme": "nested",
+                },
                 {"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"},
                 np.array([3, 6, 9], dtype="uint64"),
+                id="healpix",
             ),
-            (
+            pytest.param(
+                {"grid_mapping_name": "h3", "refinement_level": 4},
                 {"grid_name": "h3", "level": 4},
                 np.array([0x832830FFFFFFFFF], dtype="uint64"),
+                id="h3",
+            ),
+            pytest.param(
+                {
+                    "grid_mapping_name": "healpix",
+                    "refinement_level": 1,
+                    "indexing_scheme": "nested",
+                    "earth_radius": 6371000.0,
+                },
+                {
+                    "grid_name": "healpix",
+                    "level": 1,
+                    "indexing_scheme": "nested",
+                    "ellipsoid": {"radius": 6371000.0},
+                },
+                np.array([3, 6, 9], dtype="uint64"),
+                id="healpix-ellipsoid_params",
             ),
         ),
     )
-    def test_decode(self, grid_info, cell_ids, name, dim):
+    def test_decode(self, crs_attrs, grid_info, cell_ids, name, dim):
         convention = Cf()
 
         var = xr.Variable(dim, cell_ids, grid_info)
@@ -137,10 +157,9 @@ class TestCfConvention:
         expected = xr.Coordinates.from_xindex(index).to_dataset()
 
         metadata = self.index_metadata(grid_info)
-        translated_grid_info = self.translate(grid_info)
 
         cell_id_var = xr.Variable(dim, cell_ids, metadata)
-        crs_var = xr.Variable((), np.array(0, dtype="int8"), translated_grid_info)
+        crs_var = xr.Variable((), np.array(0, dtype="int8"), crs_attrs)
 
         obj = xr.Dataset(coords={name: cell_id_var, "crs": crs_var})
         orig = obj.copy(deep=True)
@@ -162,19 +181,43 @@ class TestCfConvention:
         ["name", "dim"], [("cell_ids", "cells"), ("zone_ids", "zones")]
     )
     @pytest.mark.parametrize(
-        ["grid_info", "cell_ids"],
+        ["crs_attrs", "grid_info", "cell_ids"],
         (
-            (
+            pytest.param(
+                {
+                    "grid_mapping_name": "healpix",
+                    "refinement_level": 1,
+                    "indexing_scheme": "nested",
+                },
                 {"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"},
                 np.array([3, 6, 9], dtype="uint64"),
+                id="healpix",
             ),
-            (
+            pytest.param(
+                {"grid_mapping_name": "h3", "refinement_level": 4},
                 {"grid_name": "h3", "level": 4},
                 np.array([0x832830FFFFFFFFF], dtype="uint64"),
+                id="h3",
+            ),
+            pytest.param(
+                {
+                    "grid_mapping_name": "healpix",
+                    "refinement_level": 1,
+                    "indexing_scheme": "nested",
+                    "earth_radius": 6371000.0,
+                },
+                {
+                    "grid_name": "healpix",
+                    "level": 1,
+                    "indexing_scheme": "nested",
+                    "ellipsoid": {"radius": 6371000.0},
+                },
+                np.array([3, 6, 9], dtype="uint64"),
+                id="healpix-ellipsoid_params",
             ),
         ),
     )
-    def test_encode(self, grid_info, cell_ids, name, dim):
+    def test_encode(self, crs_attrs, grid_info, cell_ids, name, dim):
         convention = Cf()
 
         index_cls = xdggs.index.GRID_REGISTRY[grid_info["grid_name"]]
@@ -184,8 +227,7 @@ class TestCfConvention:
         obj = xr.Dataset(coords=xr.Coordinates({name: var}, indexes={name: index}))
         orig = obj.copy(deep=True)
 
-        translated_grid_info = self.translate(grid_info)
-        crs = xr.Variable((), np.int8(0), translated_grid_info)
+        crs = xr.Variable((), np.int8(0), crs_attrs)
         index_var = xr.Variable(dim, cell_ids, self.index_metadata(grid_info))
         expected = xr.Coordinates(
             {"crs": crs, name: index_var}, indexes={}
