@@ -33,7 +33,8 @@ class TestXdggsConvention:
 
         var = xr.Variable(dim, cell_ids, grid_info)
         index = xdggs.index.DGGSIndex.from_variables({name: var}, options={})
-        expected = xr.Coordinates.from_xindex(index).to_dataset()
+        expected = xr.Coordinates.from_xindex(index).to_dataset().copy(deep=True)
+        expected[name].attrs = {}
 
         obj = xr.Dataset(coords={name: var})
         orig = obj.copy(deep=True)
