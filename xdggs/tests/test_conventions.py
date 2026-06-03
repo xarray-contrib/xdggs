@@ -85,14 +85,17 @@ class TestXdggsConvention:
         obj = xr.Dataset(coords=xr.Coordinates({name: var}, indexes={name: index}))
         orig = obj.copy(deep=True)
 
-        # no-op
+        expected = obj.drop_indexes(name).assign_coords(
+            {name: lambda ds: ds[name].assign_attrs(grid_info)}
+        )
+
         encoded = convention.encode(obj)
 
         # should not modify the original dataset
         xr.testing.assert_identical(obj, orig)
 
-        xr.testing.assert_identical(encoded, obj)
-        assert_indexes_equal(encoded.xindexes, obj.xindexes)
+        xr.testing.assert_identical(encoded, expected)
+        assert_indexes_equal(encoded.xindexes, expected.xindexes)
 
 
 class TestCfConvention:
