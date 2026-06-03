@@ -737,5 +737,13 @@ class HealpixIndex(DGGSIndex):
     def grid_info(self) -> HealpixInfo:
         return self._grid
 
+    def __repr__(self):
+        return "\n".join(
+            [
+                f"<HealpixIndex(kind={self._kind})>",
+                repr(self._grid),
+            ]
+        )
+
     def _repr_inline_(self, max_width: int):
         return f"HealpixIndex(level={self._grid.level}, indexing_scheme={self._grid.indexing_scheme}, kind={self._kind})"

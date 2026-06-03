@@ -242,5 +242,8 @@ class H3Index(DGGSIndex):
     def _replace(self, new_index: xr.Index):
         return type(self)(new_index, self._dim, self._name, self._grid)
 
+    def __repr__(self):
+        return f"<H3Index(level={self._grid.level})>"
+
     def _repr_inline_(self, max_width: int):
         return f"H3Index(level={self._grid.level})"
