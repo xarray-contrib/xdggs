@@ -45,11 +45,15 @@ class TestXdggsConvention:
             name=name,
             index_options={},
         )
+        # should not modify the original dataset
+        xr.testing.assert_identical(obj, orig)
+
         print(obj, actual, expected)
         xr.testing.assert_identical(actual, expected)
         assert_indexes_equal(actual[name].xindexes, expected[name].xindexes)
 
         obj = xr.Dataset(coords={name: (dim, cell_ids)})
+        orig = obj.copy(deep=True)
         actual = convention.decode(
             obj, grid_info=grid_info, name=name, index_options={}
         )
