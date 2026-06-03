@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.1 (_unreleased_)
+
+- Do not mutate the input dataset when decoding ({pull}`226`)
+- Properly decode ellipsoids for the CF convention ({pull}`228`)
+
 ## 0.6.0 (2026-02-05)
 
 - Support variable-sized cells with the `"zuniq"` indexing scheme in `healpix` ({pull}`207`)

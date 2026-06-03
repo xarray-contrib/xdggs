@@ -1,4 +1,4 @@
-from collections.abc import Hashable
+from collections.abc import Hashable, Sequence
 from typing import Any, Literal
 
 import numpy as np
@@ -22,6 +22,23 @@ def remove_grid_mapping(ds, name):
     return new
 
 
+def remove_keys(mapping: dict[str, Any], exclude: Sequence[str]) -> dict[str, Any]:
+    return {k: v for k, v in mapping.items() if k not in exclude}
+
+
+ellipsoid_attribute_translations = {
+    "semi_major_axis": "semimajor_axis",
+    "semi_minor_axis": "semiminor_axis",
+    "earth_radius": "radius",
+    "reference_ellipsoid_name": "name",
+    "inverse_flattening": "inverse_flattening",
+}
+
+
+def extract_ellipsoid_parameters(mapping: dict[str, Any]) -> dict[str, Any]:
+    return {k: v for k, v in mapping.items() if k in ellipsoid_attribute_translations}
+
+
 @register_convention("cf")
 class Cf(Convention):
     def translate_keys(
@@ -30,6 +47,17 @@ class Cf(Convention):
         direction: Literal["forward", "inverse"] = "forward",
     ) -> dict[str, Any]:
         translations = {"grid_mapping_name": "grid_name", "refinement_level": "level"}
+        if direction == "inverse":
+            translations = {v: k for k, v in translations.items()}
+
+        return {translations.get(key, key): value for key, value in mapping.items()}
+
+    def translate_ellipsoid(
+        self,
+        mapping: dict[str, Any],
+        direction: Literal["forward", "inverse"] = "forward",
+    ) -> dict[str, Any] | None:
+        translations = ellipsoid_attribute_translations
         if direction == "inverse":
             translations = {v: k for k, v in translations.items()}
 
@@ -70,7 +98,13 @@ class Cf(Convention):
                 )
             name = coord_names[0]
 
-        grid_info = self.translate_keys(crs.attrs, direction="forward")
+        ellipsoid = extract_ellipsoid_parameters(crs.attrs)
+        grid_info = self.translate_keys(
+            remove_keys(crs.attrs, ellipsoid), direction="forward"
+        )
+        if parsed_ellipsoid := self.translate_ellipsoid(ellipsoid, direction="forward"):
+            grid_info["ellipsoid"] = parsed_ellipsoid
+
         grid_name = grid_info["grid_name"]
 
         var = ds.variables[name].copy(deep=False)
@@ -100,8 +134,11 @@ class Cf(Convention):
 
         grid_name = infer_grid_name(ds.dggs.index)
         grid_info_dict = grid_info.to_dict()
-        metadata = self.translate_keys(grid_info_dict, direction="inverse")
+        ellipsoid = grid_info_dict.pop("ellipsoid", {})
 
+        metadata = self.translate_keys(
+            grid_info_dict, direction="inverse"
+        ) | self.translate_ellipsoid(ellipsoid, direction="inverse")
         crs = xr.Variable((), np.int8(0), metadata)
 
         additional_var_attrs = {"grid_mapping": grid_name}

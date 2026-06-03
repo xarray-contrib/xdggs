@@ -33,23 +33,34 @@ class TestXdggsConvention:
 
         var = xr.Variable(dim, cell_ids, grid_info)
         index = xdggs.index.DGGSIndex.from_variables({name: var}, options={})
-        expected = xr.Coordinates.from_xindex(index).to_dataset()
+        expected = xr.Coordinates.from_xindex(index).to_dataset().copy(deep=True)
+        expected[name].attrs = {}
 
         obj = xr.Dataset(coords={name: var})
+        orig = obj.copy(deep=True)
+
         actual = convention.decode(
             obj,
             grid_info=None,
             name=name,
             index_options={},
         )
+        # should not modify the original dataset
+        xr.testing.assert_identical(obj, orig)
+
         print(obj, actual, expected)
         xr.testing.assert_identical(actual, expected)
         assert_indexes_equal(actual[name].xindexes, expected[name].xindexes)
 
         obj = xr.Dataset(coords={name: (dim, cell_ids)})
+        orig = obj.copy(deep=True)
         actual = convention.decode(
             obj, grid_info=grid_info, name=name, index_options={}
         )
+
+        # should not modify the original dataset
+        xr.testing.assert_identical(obj, orig)
+
         xr.testing.assert_identical(actual, expected)
         assert_indexes_equal(actual[name].xindexes, expected[name].xindexes)
 
@@ -77,19 +88,22 @@ class TestXdggsConvention:
         index = index_cls.from_variables({name: var}, options={})
 
         obj = xr.Dataset(coords=xr.Coordinates({name: var}, indexes={name: index}))
+        orig = obj.copy(deep=True)
 
-        # no-op
+        expected = obj.drop_indexes(name).assign_coords(
+            {name: lambda ds: ds[name].assign_attrs(grid_info)}
+        )
+
         encoded = convention.encode(obj)
 
-        xr.testing.assert_identical(encoded, obj)
-        assert_indexes_equal(encoded.xindexes, obj.xindexes)
+        # should not modify the original dataset
+        xr.testing.assert_identical(obj, orig)
+
+        xr.testing.assert_identical(encoded, expected)
+        assert_indexes_equal(encoded.xindexes, expected.xindexes)
 
 
 class TestCfConvention:
-    def translate(self, mapping):
-        translations = {"grid_name": "grid_mapping_name", "level": "refinement_level"}
-        return {translations.get(name, name): value for name, value in mapping.items()}
-
     def index_metadata(self, grid_info):
         grid_name = grid_info["grid_name"]
 
@@ -99,19 +113,43 @@ class TestCfConvention:
         ["name", "dim"], [("cell_ids", "cells"), ("zone_ids", "zones")]
     )
     @pytest.mark.parametrize(
-        ["grid_info", "cell_ids"],
+        ["crs_attrs", "grid_info", "cell_ids"],
         (
-            (
+            pytest.param(
+                {
+                    "grid_mapping_name": "healpix",
+                    "refinement_level": 1,
+                    "indexing_scheme": "nested",
+                },
                 {"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"},
                 np.array([3, 6, 9], dtype="uint64"),
+                id="healpix",
             ),
-            (
+            pytest.param(
+                {"grid_mapping_name": "h3", "refinement_level": 4},
                 {"grid_name": "h3", "level": 4},
                 np.array([0x832830FFFFFFFFF], dtype="uint64"),
+                id="h3",
+            ),
+            pytest.param(
+                {
+                    "grid_mapping_name": "healpix",
+                    "refinement_level": 1,
+                    "indexing_scheme": "nested",
+                    "earth_radius": 6371000.0,
+                },
+                {
+                    "grid_name": "healpix",
+                    "level": 1,
+                    "indexing_scheme": "nested",
+                    "ellipsoid": {"radius": 6371000.0},
+                },
+                np.array([3, 6, 9], dtype="uint64"),
+                id="healpix-ellipsoid_params",
             ),
         ),
     )
-    def test_decode(self, grid_info, cell_ids, name, dim):
+    def test_decode(self, crs_attrs, grid_info, cell_ids, name, dim):
         convention = Cf()
 
         var = xr.Variable(dim, cell_ids, grid_info)
@@ -119,18 +157,23 @@ class TestCfConvention:
         expected = xr.Coordinates.from_xindex(index).to_dataset()
 
         metadata = self.index_metadata(grid_info)
-        translated_grid_info = self.translate(grid_info)
 
         cell_id_var = xr.Variable(dim, cell_ids, metadata)
-        crs_var = xr.Variable((), np.array(0, dtype="int8"), translated_grid_info)
+        crs_var = xr.Variable((), np.array(0, dtype="int8"), crs_attrs)
 
         obj = xr.Dataset(coords={name: cell_id_var, "crs": crs_var})
+        orig = obj.copy(deep=True)
+
         actual = convention.decode(
             obj,
             grid_info=None,
             name=name,
             index_options={},
         )
+
+        # should not modify the original dataset
+        xr.testing.assert_identical(obj, orig)
+
         xr.testing.assert_identical(actual, expected)
         assert_indexes_equal(actual.xindexes, expected.xindexes)
 
@@ -138,35 +181,63 @@ class TestCfConvention:
         ["name", "dim"], [("cell_ids", "cells"), ("zone_ids", "zones")]
     )
     @pytest.mark.parametrize(
-        ["grid_info", "cell_ids"],
+        ["crs_attrs", "grid_info", "cell_ids"],
         (
-            (
+            pytest.param(
+                {
+                    "grid_mapping_name": "healpix",
+                    "refinement_level": 1,
+                    "indexing_scheme": "nested",
+                },
                 {"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"},
                 np.array([3, 6, 9], dtype="uint64"),
+                id="healpix",
             ),
-            (
+            pytest.param(
+                {"grid_mapping_name": "h3", "refinement_level": 4},
                 {"grid_name": "h3", "level": 4},
                 np.array([0x832830FFFFFFFFF], dtype="uint64"),
+                id="h3",
+            ),
+            pytest.param(
+                {
+                    "grid_mapping_name": "healpix",
+                    "refinement_level": 1,
+                    "indexing_scheme": "nested",
+                    "earth_radius": 6371000.0,
+                },
+                {
+                    "grid_name": "healpix",
+                    "level": 1,
+                    "indexing_scheme": "nested",
+                    "ellipsoid": {"radius": 6371000.0},
+                },
+                np.array([3, 6, 9], dtype="uint64"),
+                id="healpix-ellipsoid_params",
             ),
         ),
     )
-    def test_encode(self, grid_info, cell_ids, name, dim):
+    def test_encode(self, crs_attrs, grid_info, cell_ids, name, dim):
         convention = Cf()
 
         index_cls = xdggs.index.GRID_REGISTRY[grid_info["grid_name"]]
-        var = xr.Variable(dim, cell_ids, grid_info)
-        index = index_cls.from_variables({name: var}, options={})
+        index = index_cls.from_variables(
+            {name: xr.Variable(dim, cell_ids, grid_info)}, options={}
+        )
+        obj = xr.Coordinates.from_xindex(index).to_dataset()
 
-        obj = xr.Dataset(coords=xr.Coordinates({name: var}, indexes={name: index}))
+        orig = obj.copy(deep=True)
 
-        translated_grid_info = self.translate(grid_info)
-        crs = xr.Variable((), np.int8(0), translated_grid_info)
+        crs = xr.Variable((), np.int8(0), crs_attrs)
         index_var = xr.Variable(dim, cell_ids, self.index_metadata(grid_info))
         expected = xr.Coordinates(
             {"crs": crs, name: index_var}, indexes={}
         ).to_dataset()
 
         encoded = convention.encode(obj)
+
+        # should not modify the original dataset
+        xr.testing.assert_identical(obj, orig)
 
         xr.testing.assert_identical(encoded, expected)
         assert_indexes_equal(encoded.xindexes, expected.xindexes)
@@ -258,6 +329,7 @@ class TestZarrConvention:
         index = index_cls.from_variables({name: var}, options={})
 
         obj = xr.Dataset(coords=xr.Coordinates({name: var}, indexes={name: index}))
+        orig = obj.copy(deep=True)
 
         coord = obj.dggs.coord
         dggs_metadata_object = self.translate(grid_info) | {
@@ -272,6 +344,9 @@ class TestZarrConvention:
         expected = obj.drop_indexes(coord.name).assign_attrs(metadata)
 
         encoded = convention.encode(obj)
+
+        # should not modify the original dataset
+        xr.testing.assert_identical(obj, orig)
 
         xr.testing.assert_identical(encoded, expected)
         assert_indexes_equal(encoded.xindexes, expected.xindexes)
