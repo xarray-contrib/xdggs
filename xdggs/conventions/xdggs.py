@@ -1,3 +1,4 @@
+import copy
 from collections.abc import Hashable
 from typing import Any
 
@@ -40,7 +41,7 @@ class Xdggs(Convention):
         [dim] = var.dims
 
         if grid_info is None:
-            grid_info = var.attrs
+            grid_info = copy.deepcopy(var.attrs)
         elif isinstance(grid_info, DGGSInfo):
             # TODO: avoid serializing / deserializing cycle
             grid_info = grid_info.to_dict()
@@ -57,7 +58,7 @@ class Xdggs(Convention):
             raise DecoderError(f"xdggs convention: unknown grid name: {grid_name}")
         index_cls = GRID_REGISTRY[grid_name]
 
-        var_ = var.copy(deep=True)
+        var_ = var.copy(deep=False)
         var_.attrs = grid_info
         index = index_cls.from_variables({name: var_}, options=index_options)
 
