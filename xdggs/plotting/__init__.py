@@ -166,7 +166,9 @@ def explore(
     normalized_data, stats = normalize(initial_arr, params=colorize_params)
     colors = colorize(normalized_data, colorize_params)
 
-    table = create_arrow_table(polygons, initial_arr, coords=coords)
+    table = create_arrow_table(
+        polygons, initial_arr, coordinate=cell_id_coord.name, additional_coords=coords
+    )
     layer = SolidPolygonLayer(table=table, filled=True, get_fill_color=colors)
 
     map_ = lonboard.Map(layer, **map_kwargs)

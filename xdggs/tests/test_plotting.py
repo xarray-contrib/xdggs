@@ -9,7 +9,7 @@ from xdggs.plotting.colorize import ColorizeParameters
 
 
 @pytest.mark.parametrize(
-    ["polygons", "arr", "coords", "expected"],
+    ["polygons", "arr", "name", "coords", "expected"],
     (
         pytest.param(
             Array.from_numpy(np.array([1, 2])),
@@ -22,6 +22,7 @@ from xdggs.plotting.colorize import ColorizeParameters
                 },
                 dims="cells",
             ),
+            "cell_ids",
             None,
             Table.from_pydict(
                 {
@@ -38,12 +39,37 @@ from xdggs.plotting.colorize import ColorizeParameters
             xr.DataArray(
                 [-1, 1],
                 coords={
+                    "zone_ids": ("cells", [0, 1]),
+                    "latitude": ("cells", [-5, 10]),
+                    "longitude": ("cells", [-60, -50]),
+                },
+                dims="cells",
+            ),
+            "zone_ids",
+            None,
+            Table.from_pydict(
+                {
+                    "geometry": Array.from_numpy(np.array([1, 2])),
+                    "zone_ids": Array.from_numpy(np.array([0, 1])),
+                    "data": Array.from_numpy(np.array([-1, 1])),
+                    "latitude": Array.from_numpy(np.array([-5, 10])),
+                    "longitude": Array.from_numpy(np.array([-60, -50])),
+                }
+            ),
+            id="custom_name",
+        ),
+        pytest.param(
+            Array.from_numpy(np.array([1, 2])),
+            xr.DataArray(
+                [-1, 1],
+                coords={
                     "cell_ids": ("cells", [1, 2]),
                     "latitude": ("cells", [-5, 10]),
                     "longitude": ("cells", [-60, -50]),
                 },
                 dims="cells",
             ),
+            "cell_ids",
             ["latitude"],
             Table.from_pydict(
                 {
@@ -66,6 +92,7 @@ from xdggs.plotting.colorize import ColorizeParameters
                 dims="cells",
                 name="new_data",
             ),
+            "cell_ids",
             ["longitude"],
             Table.from_pydict(
                 {
@@ -88,6 +115,7 @@ from xdggs.plotting.colorize import ColorizeParameters
                 dims="cells",
                 name="new_data",
             ),
+            "cell_ids",
             ["longitude"],
             Table.from_pydict(
                 {
@@ -101,8 +129,10 @@ from xdggs.plotting.colorize import ColorizeParameters
         ),
     ),
 )
-def test_create_arrow_table(polygons, arr, coords, expected):
-    actual = plotting.arrow.create_arrow_table(polygons, arr, coords=coords)
+def test_create_arrow_table(polygons, arr, name, coords, expected):
+    actual = plotting.arrow.create_arrow_table(
+        polygons, arr, name, additional_coords=coords
+    )
 
     assert actual == expected
 
@@ -222,6 +252,16 @@ def test_colorize(data, params, expected):
             ),
             plotting.MapWithControls,
             id="2d",
+        ),
+        pytest.param(
+            xr.DataArray(
+                [0, 1], coords={"zone_ids": ("cells", [10, 26])}, dims="cells"
+            ).dggs.decode(
+                {"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"},
+                name="zone_ids",
+            ),
+            plotting.MapWithControls,
+            id="1d-custom-name",
         ),
     ),
 )
