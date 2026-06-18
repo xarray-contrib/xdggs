@@ -253,6 +253,16 @@ def test_colorize(data, params, expected):
             plotting.MapWithControls,
             id="2d",
         ),
+        pytest.param(
+            xr.DataArray(
+                [0, 1], coords={"zone_ids": ("cells", [10, 26])}, dims="cells"
+            ).dggs.decode(
+                {"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"},
+                name="zone_ids",
+            ),
+            plotting.MapWithControls,
+            id="1d-custom-name",
+        ),
     ),
 )
 def test_explore(arr, expected_type):
