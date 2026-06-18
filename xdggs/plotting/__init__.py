@@ -167,7 +167,7 @@ def explore(
     colors = colorize(normalized_data, colorize_params)
 
     table = create_arrow_table(
-        polygons, initial_arr, coordinate=cell_id_coord.name, coords=coords
+        polygons, initial_arr, coordinate=cell_id_coord.name, additional_coords=coords
     )
     layer = SolidPolygonLayer(table=table, filled=True, get_fill_color=colors)
 
