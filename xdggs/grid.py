@@ -50,6 +50,9 @@ class DGGSInfo:
     def cell_boundaries(self, cell_ids, backend="shapely"):
         raise NotImplementedError()
 
+    def geometry2cell_ids(self, geom, *, containment=None):
+        raise NotImplementedError()
+
     def zoom_to(self, cell_ids, level: int):
         raise NotImplementedError()
 
