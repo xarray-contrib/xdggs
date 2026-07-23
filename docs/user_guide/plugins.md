@@ -2,8 +2,7 @@
 
 `xdggs` ships with built-in support for the H3 and HEALPix(+geo) grid systems. Support for additional discrete global grid systems (DGGS) is possible through community-maintained plugin packages that build on top of `xdggs`.
 
-
-## Awesome HEALPix 
+## Awesome HEALPix
 
 [`pangeo-data/awesome-HEALPix`](https://github.com/pangeo-data/awesome-HEALPix) is a curated list of awesome tools and libraries related to HEALPix, the Hierarchical Equal Area isoLatitude Pixelization of the sphere, one of the currently most supported DGGS' in `xdggs`. Originally developed for cosmological studies and the analysis of the Cosmic Microwave Background (CMB), HEALPix has since expanded into geoinformatics and Earth observation, facilitating scalable spatial data analysis (such as in [GRID4EARTH](https://grid4earth.eu/)).
 
@@ -20,7 +19,6 @@ Check out the docs:
 
 [`xdggs-dggal`](https://github.com/LandscapeGeoinformatics/xdggs-dggal) is a companion plugin adding support for DGGS grids provided by [DGGAL](https://dggal.org/) (WIP).
 
-
 ## pydggsapi
 
 [`pydggsapi`](https://github.com/LandscapeGeoinformatics/pydggsapi/) is a python FastAPI implementation for the OGC DGGS API standard. It can use `xdggs` for [Zarr-DGGS](https://github.com/zarr-conventions/dggs) datasets
@@ -28,5 +26,3 @@ Check out the docs:
 ## Awesome Discrete Global Grid Systems (DGGS)
 
 [`awesome-discrete-global-grid-systems`](https://github.com/LandscapeGeoinformatics/awesome-discrete-global-grid-systems) is a more general collection of DGGS resources for science and standards, and fun and profit.
-
-
