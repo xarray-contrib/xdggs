@@ -1,7 +1,6 @@
 import pathlib
 
 import anywidget
-import ipywidgets as ipw
 import traitlets
 
 
@@ -13,12 +12,10 @@ class MapWithControls(anywidget.AnyWidget):
     _esm = pathlib.Path(__file__).parent / "map.js"
 
     # the base map
-    map = traitlets.Instance(ipw.DOMWidget).tag(sync=True, **ipw.widget_serialization)
+    map = anywidget.WidgetTrait().tag(sync=True)
 
     # for choosing variables
-    variables = traitlets.Instance(ipw.DOMWidget).tag(
-        sync=True, **ipw.widget_serialization
-    )
+    variables = anywidget.WidgetTrait().tag(sync=True)
 
     # for choosing values along dimensions
     dimensions = traitlets.Dict(value_trait=traitlets.Int()).tag(sync=True)
@@ -26,14 +23,10 @@ class MapWithControls(anywidget.AnyWidget):
         value_trait=traitlets.List(trait=traitlets.Unicode())
     ).tag(sync=True)
 
-    sliders = traitlets.Dict(value_trait=traitlets.Instance(ipw.DOMWidget)).tag(
-        sync=True, **ipw.widget_serialization
-    )
+    sliders = traitlets.Dict(value_trait=anywidget.WidgetTrait()).tag(sync=True)
 
     # the colorbar
-    colorbar = traitlets.Instance(ipw.DOMWidget).tag(
-        sync=True, **ipw.widget_serialization
-    )
+    colorbar = anywidget.WidgetTrait().tag(sync=True)
 
     @property
     def layers(self):
