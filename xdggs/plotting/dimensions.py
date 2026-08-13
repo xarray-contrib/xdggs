@@ -8,6 +8,7 @@ root = pathlib.Path(__file__).parent
 
 class DimensionSliders(anywidget.AnyWidget):
     _esm = root / "dimensions.js"
+    _css = root / "dimensions.css"
 
     dimensions = traitlets.Dict(value_trait=traitlets.Int()).tag(sync=True)
 

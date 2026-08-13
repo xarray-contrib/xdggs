@@ -3,7 +3,7 @@ export default {
     const dimensions = model.get("dimensions");
 
     let enabled = model.get("dimension_available");
-    if (!enabled) {
+    if (!enabled || Object.entries(enabled).length == 0) {
       const enabled = Object.fromEntries(
         Object.keys(dimensions).map((name) => {
           return [name, true];
@@ -13,7 +13,7 @@ export default {
     }
 
     let values = model.get("dimension_values");
-    if (!values) {
+    if (!values || Object.entries(enabled).length == 0) {
       const values = Object.fromEntries(
         Object.keys(dimensions).map((name) => {
           return [name, 0];
@@ -29,9 +29,9 @@ export default {
     let enabled = model.get("dimension_available");
     let values = model.get("dimension_values");
 
-    el.style.setProperty("display", "grid");
-    el.style.setProperty("padding", "5px");
-    el.style.setProperty("column-gap", "10px");
+    el.classList.add("xdggs-dimension-sliders");
+    const digits = Math.max(...Object.values(dimensions)).toString().length;
+    el.style.setProperty("--xdggs-dimension-value-width", `${digits}ch`);
 
     const sliders = Object.fromEntries(
       Object.keys(dimensions).map((name) => {
@@ -75,10 +75,5 @@ export default {
         sliders[name].disabled = !value;
       });
     });
-
-    el.style.setProperty(
-      "grid-template-columns",
-      "max-content max-content max-content",
-    );
   },
 };
