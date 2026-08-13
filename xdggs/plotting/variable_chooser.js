@@ -30,6 +30,7 @@ export default {
     let variables = model.get("variables");
 
     const drop_down = document.createElement("select");
+    drop_down.classList.add("xdggs-variable-select");
     drop_down.name = "variable";
 
     let value = model.get("value");
