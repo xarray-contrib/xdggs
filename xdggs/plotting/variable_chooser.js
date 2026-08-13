@@ -1,5 +1,5 @@
 function replaceOptions({ el, variables, value }) {
-  if (!variables || variables.length == 0) {
+  if (!variables || variables.length <= 1) {
     el.disabled = true;
     return;
   }
