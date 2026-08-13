@@ -110,6 +110,7 @@ h5netcdf = ">=1.7.3"
 zarr = ">=3.1.5"
 cf-xarray = ">=0.11.1"
 marimo = ">=0.23.16,<0.24"
+watchfiles = ">=1.1.0"
 
 [environments]
 nightly = { features = [
