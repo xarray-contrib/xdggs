@@ -1,32 +1,19 @@
 import pathlib
 
 import anywidget
-import traitlets
+
+root = pathlib.Path(__file__).parent
 
 
 class MapWithControls(anywidget.AnyWidget):
-    # controls:
-    # - one dropdown (if available), otherwise disable?
-    # - a grid of sliders (use a label to align sliders and descriptions)
-    # - maybe a colorbar
-    _esm = pathlib.Path(__file__).parent / "map.js"
+    _esm = root / "map.js"
+    _css = root / "map.css"
 
-    # the base map
+    # base map
     map = anywidget.WidgetTrait().tag(sync=True)
 
-    # for choosing variables
-    variables = anywidget.WidgetTrait().tag(sync=True)
-
-    # for choosing values along dimensions
-    dimensions = traitlets.Dict(value_trait=traitlets.Int()).tag(sync=True)
-    coordinates = traitlets.Dict(
-        value_trait=traitlets.List(trait=traitlets.Unicode())
-    ).tag(sync=True)
-
-    sliders = traitlets.Dict(value_trait=anywidget.WidgetTrait()).tag(sync=True)
-
-    # the colorbar
-    colorbar = anywidget.WidgetTrait().tag(sync=True)
+    # control panel
+    control = anywidget.WidgetTrait().tag(sync=True)
 
     @property
     def layers(self):

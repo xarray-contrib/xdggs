@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from functools import partial
 from typing import TYPE_CHECKING, Any
 
-import ipywidgets
 import numpy as np
 import xarray as xr
 
@@ -16,6 +15,8 @@ from xdggs.plotting.colorize import (
     extract_colors,
     normalize,
 )
+from xdggs.plotting.control import ControlPanel
+from xdggs.plotting.dimensions import DimensionSliders
 from xdggs.plotting.map import MapWithControls
 from xdggs.plotting.variables import construct_variable_chooser
 
@@ -56,25 +57,18 @@ class Container:
     colorize_params: ColorizeParameters
 
 
-def on_slider_change(change, changed_dim, container):
+def on_slider_change(change, container):
     if isinstance(container.obj, xr.DataArray):
         arr = container.obj
     else:
-        name = container.widget.variables.value
+        name = container.widget.control.variable_chooser.value
         arr = container.obj[name]
 
-    if changed_dim not in arr.dims:
+    available = change["owner"].dimension_available
+    indexers = {dim: v for dim, v in change["new"].items() if available[dim]}
+    if not indexers:
         # should not happen
         return
-
-    indexers = {
-        dim: slider.value
-        for dim, slider in container.widget.sliders.items()
-        if dim in arr.dims and dim != changed_dim
-    } | {changed_dim: change["new"]}
-
-    for dim, slider in container.widget.sliders.items():
-        slider.disabled = dim not in arr.dims
 
     new_slice = arr.isel(indexers)
     normalized, stats = normalize(new_slice, container.colorize_params)
@@ -83,7 +77,7 @@ def on_slider_change(change, changed_dim, container):
     layer = container.layer
     layer.get_fill_color = colors
 
-    colorbar = container.widget.colorbar
+    colorbar = container.widget.control.colorbar
     for name, value in stats.items():
         setattr(colorbar, name, value)
 
@@ -96,23 +90,20 @@ def on_variable_change(change, container):
     name = change["new"]
     arr = container.obj[name]
 
-    indexers = {
-        dim: slider.value
-        for dim, slider in container.widget.sliders.items()
-        if dim in arr.dims
-    }
+    sliders = container.widget.control.dimension_sliders
+    indexers = sliders.dimension_values
 
     new_slice = arr.isel(indexers)
     normalized, stats = normalize(new_slice, container.colorize_params)
     colors = colorize(normalized, container.colorize_params)
 
-    for dim, slider in container.widget.sliders.items():
-        slider.disabled = dim not in arr.dims
+    available = {dim: dim in arr.dims for dim in container.obj.dims}
+    sliders.dimension_available = available
 
     layer = container.layer
     layer.get_fill_color = colors
 
-    colorbar = container.widget.colorbar
+    colorbar = container.widget.control.colorbar
     for name, value in stats.items():
         setattr(colorbar, name, value)
     colorbar.label = extract_label(arr)
@@ -147,7 +138,7 @@ def explore(
     polygons = grid_info.cell_boundaries(cell_ids, backend="geoarrow")
 
     variable_chooser = construct_variable_chooser(obj)
-    if isinstance(obj, xr.Dataset) and not variable_chooser.options:
+    if isinstance(obj, xr.Dataset) and not variable_chooser.variables:
         raise ValueError("cannot find spatial variables")
 
     if isinstance(obj, xr.Dataset):
@@ -161,7 +152,7 @@ def explore(
 
     label = extract_label(arr)
 
-    dimension_coordinates = {dim: format_labels(obj[dim].data) for dim in obj.dims}
+    # dimension_coordinates = {dim: format_labels(obj[dim].data) for dim in obj.dims}
 
     normalized_data, stats = normalize(initial_arr, params=colorize_params)
     colors = colorize(normalized_data, colorize_params)
@@ -173,38 +164,29 @@ def explore(
 
     map_ = lonboard.Map(layer, **map_kwargs)
 
-    sliders = {
-        dim: ipywidgets.IntSlider(
-            min=0,
-            max=obj.sizes[dim] - 1,
-            disabled=dim not in arr.dims,
-            readout=False,
-        )
-        for dim in obj.dims
-        if dim != cell_dim
-    }
-
+    dimension_sliders = DimensionSliders(
+        dimensions={dim: size - 1 for dim, size in obj.sizes.items() if dim != cell_dim}
+    )
     colorbar = Colorbar(
         colors=extract_colors(colorize_params.cmap), label=label, **stats
+    )
+    controls = ControlPanel(
+        variable_chooser=variable_chooser,
+        dimension_sliders=dimension_sliders,
+        colorbar=colorbar,
     )
 
     map_widget = MapWithControls(
         map=map_,
-        variables=variable_chooser,
-        dimensions=dimension_indices,
-        coordinates=dimension_coordinates,
-        sliders=sliders,
-        colorbar=colorbar,
+        control=controls,
     )
 
     container = Container(map_widget, layer, obj, colorize_params)
 
     # event handling
-    for dim, slider in sliders.items():
-        slider.observe(
-            partial(on_slider_change, changed_dim=dim, container=container),
-            names="value",
-        )
+    dimension_sliders.observe(
+        partial(on_slider_change, container=container), "dimension_values"
+    )
 
     variable_chooser.observe(
         partial(on_variable_change, container=container), names="value"
