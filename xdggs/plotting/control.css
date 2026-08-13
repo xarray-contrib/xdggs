@@ -1,0 +1,5 @@
+.xdggs-control-panel {
+  display: grid;
+  grid-template-columns: max-content max-content max-content;
+  column-gap: 10px;
+}
