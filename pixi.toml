@@ -50,11 +50,11 @@ pandas = "*"
 pyarrow = "*"
 h3ronpy = { git = "git+https://github.com/nmandery/h3ronpy.git", subdirectory = "h3ronpy" }
 cdshealpix = { git = "git+https://github.com/cds-astro/cds-healpix-python.git" }
-healpix-geo = { git = "git+https://github.com/eopf-dggs/healpix-geo.git", subdirectory = "python/healpix-geo" }
+healpix-geo = { git = "git+https://github.com/grid4earth/healpix-geo.git", subdirectory = "python/healpix-geo" }
 astropy = { git = "git+https://github.com/astropy/astropy.git" }
+lonboard = { git = "git+https://github.com/developmentseed/lonboard.git" }
 
 [feature.nightly.target.unix.dependencies]
-lonboard = ">=0.11.1"
 pyproj = ">=3.7.2"
 matplotlib-base = ">=3.10.5"
 arro3-core = ">=0.6.1"
