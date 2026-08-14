@@ -53,8 +53,13 @@ export default {
     model.on("change:variables", () => {
       const variables = model.get("variables");
       let value = model.get("value");
-      if (!value || !(value in variables)) {
+      if (!variables || variables.length == 0) {
+        value = "";
+      } else if (!value || !(value in variables)) {
         value = variables[0];
+      }
+
+      if (value !== model.get("value")) {
         model.set("value", value);
         model.save_changes();
       }
