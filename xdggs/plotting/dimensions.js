@@ -65,27 +65,32 @@ export default {
         el.appendChild(slider);
         el.appendChild(valueLabel);
 
+        /* name label */
         nameLabel.innerText = name;
 
+        /* slider */
         const value = values[name];
         slider.id = `xdggs-slider-${name}`;
+        slider.classList.add("xdggs-slider-container");
+
+        const sliderWidget = document.createElement("div");
+        slider.appendChild(sliderWidget);
 
         const max = dimensions[name] - 1;
 
-        noUiSlider.create(slider, {
+        noUiSlider.create(sliderWidget, {
           start: values[name],
           step: 1,
           range: { min: 0, max: dimensions[name] - 1 },
           connect: "lower",
         });
-        setDisabled(slider, !enabled[name]);
+        setDisabled(sliderWidget, !enabled[name]);
 
-        valueLabel.innerText = value;
-
-        slider.noUiSlider.on("update.xdggs", ([formatted_value]) => {
+        sliderWidget.noUiSlider.on("update.xdggs", ([formatted_value]) => {
           const value = parseInt(formatted_value);
+
           let label;
-          if (labels[name]) {
+          if (labels[name] !== undefined) {
             label = labels[name][value];
           } else {
             label = value;
@@ -99,7 +104,10 @@ export default {
           model.save_changes();
         });
 
-        return [name, slider];
+        /* value label */
+        valueLabel.innerText = value;
+
+        return [name, sliderWidget];
       }),
     );
 
