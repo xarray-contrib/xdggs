@@ -23,7 +23,7 @@ export default {
     }
 
     let values = model.get("dimension_values");
-    if (!values || Object.entries(enabled).length == 0) {
+    if (!values || Object.entries(values).length == 0) {
       const values = Object.fromEntries(
         Object.keys(dimensions).map((name) => {
           return [name, 0];
