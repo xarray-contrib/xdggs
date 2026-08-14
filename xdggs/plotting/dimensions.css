@@ -2,7 +2,7 @@
   display: grid;
   padding: 5px;
   column-gap: 10px;
-  row-gap: 2px;
+  row-gap: 5px;
   grid-template-columns: max-content max-content var(
       --xdggs-dimension-value-width
     );
@@ -14,6 +14,10 @@
   justify-self: end;
 }
 
+.xdggs-dimension-sliders > :nth-child(3n + 2) {
+  margin: 0px 5px;
+}
+
 @import url("https://esm.sh/nouislider@15.8.1/dist/nouislider.css");
 
 .xdggs-slider {
@@ -22,8 +26,6 @@
   border-radius: 2px;
   background: #d9d9d9;
   box-shadow: none;
-
-  margin: 1px 5px 1px 5px;
 
   min-width: 100px;
   max-width: 100%;
@@ -49,4 +51,23 @@
 .xdggs-slider .noUi-handle::before,
 .xdggs-slider .noUi-handle::after {
   display: none;
+}
+
+.xdggs-slider[disabled] {
+  background: #d9d9d9;
+}
+
+.xdggs-slider[disabled] .noUi-connect {
+  background: #bdbdbd;
+}
+
+.xdggs-slider[disabled] .noUi-handle {
+  background: #f0f0f0;
+  border-color: #bdbdbd;
+  box-shadow: none;
+}
+
+.xdggs-slider[disabled] .noUi-handle:hover,
+.xdggs-slider[disabled] .noUi-handle:active {
+  box-shadow: none;
 }
