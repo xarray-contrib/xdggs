@@ -38,31 +38,40 @@ export default {
     let dimensions = model.get("dimensions");
     let enabled = model.get("dimension_available");
     let values = model.get("dimension_values");
+    let labels = model.get("dimension_labels") ?? {};
 
     noUiSlider.cssClasses.target += " xdggs-slider";
 
     el.classList.add("xdggs-dimension-sliders");
     const digits = Math.max(...Object.values(dimensions)).toString().length;
-    el.style.setProperty("--xdggs-dimension-value-width", `${digits}ch`);
+    const labelChars = Math.max(
+      ...Object.values(labels).map((labelList) =>
+        Math.max(...labelList.map((label) => label.length)),
+      ),
+    );
+
+    el.style.setProperty(
+      "--xdggs-dimension-value-width",
+      `${Math.max(digits, labelChars)}ch`,
+    );
 
     const sliders = Object.fromEntries(
       Object.keys(dimensions).map((name) => {
-        const label = document.createElement("span");
+        const nameLabel = document.createElement("span");
         const slider = document.createElement("div");
         const valueLabel = document.createElement("span");
 
-        el.appendChild(label);
+        el.appendChild(nameLabel);
         el.appendChild(slider);
         el.appendChild(valueLabel);
 
-        label.innerText = name;
+        nameLabel.innerText = name;
 
         const value = values[name];
-
         slider.id = `xdggs-slider-${name}`;
 
         const max = dimensions[name] - 1;
-        console.log("range:", 0, max);
+
         noUiSlider.create(slider, {
           start: values[name],
           step: 1,
@@ -75,7 +84,14 @@ export default {
 
         slider.noUiSlider.on("update.xdggs", ([formatted_value]) => {
           const value = parseInt(formatted_value);
-          valueLabel.innerText = value;
+          let label;
+          if (labels[name]) {
+            label = labels[name][value];
+          } else {
+            label = value;
+          }
+
+          valueLabel.innerText = label;
 
           const new_values = { ...model.get("dimension_values") };
           new_values[name] = value;
