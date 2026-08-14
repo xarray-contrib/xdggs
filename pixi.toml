@@ -1,28 +1,45 @@
 [workspace]
 channels = ["conda-forge"]
 platforms = ["linux-64", "win-64", "osx-arm64"]
+preview = ["pixi-build"]
 
-[pypi-dependencies]
-xdggs = { path = ".", editable = true }
+[package]
+name = "xdggs"
+version = "9999.0.0"
+
+[package.build]
+backend = { name = "pixi-build-python", version = "0.*", channels = [
+  "https://prefix.dev/conda-forge",
+] }
+config = { noarch = true }
+
+[package.host-dependencies]
+python = "*"
+hatchling = "*"
+
+[package.run-dependencies]
+python = ">=3.12"
+xarray = ">=2025.08.0"
+numpy = ">=2.2"
+h3ronpy = ">=0.22.0"
+lonboard = ">=0.14.0"
+healpix-geo = ">=0.2.1"
+arro3-core = "*"
+pyproj = "*"
+pooch = "*"
+h5netcdf = "*"
+matplotlib-base = ">=3.10.5"
 
 [tasks]
 
 [dependencies]
-xarray = ">=2025.08.0"
+xdggs = { path = "." }
 cdshealpix = ">=0.7.1"
-h3ronpy = ">=0.22.0"
-lonboard = ">=0.9.3"
-pyproj = ">=3.3"
-matplotlib-base = ">=3.10.5"
-arro3-core = ">=0.4.0"
-pooch = ">=1.8.2"
-healpix-geo = ">=0.2.1"
 
 [feature.tests.dependencies]
 pytest = "*"
 pytest-cov = "*"
 pytest-xdist = "*"
-h5netcdf = "*"
 netcdf4 = "*"
 hypothesis = "*"
 geoarrow-pyarrow = "*"
