@@ -159,7 +159,10 @@ def explore(
 
     label = extract_label(arr)
 
-    # dimension_coordinates = {dim: format_labels(obj[dim].data) for dim in obj.dims}
+    # TODO: look up single-dimensional indexes along the dimension
+    dimension_coordinates = {
+        dim: format_labels(obj[dim].data) for dim in obj.dims if dim in obj.coords
+    }
 
     normalized_data, stats = normalize(initial_arr, params=colorize_params)
     colors = colorize(normalized_data, colorize_params)
@@ -176,6 +179,7 @@ def explore(
             dim: size - 1 for dim, size in obj.sizes.items() if dim != cell_dim
         },
         dimension_available=available_dims(arr.dims, set(obj.dims) - {cell_dim}),
+        dimension_labels=dimension_coordinates,
     )
     colorbar = Colorbar(
         colors=extract_colors(colorize_params.cmap), label=label, **stats
