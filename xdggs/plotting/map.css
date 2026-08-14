@@ -3,4 +3,5 @@
   grid-template-rows: 4fr 1fr;
   grid-template-columns: 1fr;
   height: fit-content;
+  width: fit-content;
 }
