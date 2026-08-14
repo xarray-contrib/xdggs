@@ -11,7 +11,7 @@ class VariableChooser(anywidget.AnyWidget):
     _esm = root / "variable_chooser.js"
     _css = root / "variable_chooser.css"
 
-    variables = traitlets.List(value_trait=traitlets.Unicode()).tag(sync=True)
+    variables = traitlets.List(trait=traitlets.Unicode()).tag(sync=True)
     value = traitlets.Unicode().tag(sync=True)
 
     @validate("value")
