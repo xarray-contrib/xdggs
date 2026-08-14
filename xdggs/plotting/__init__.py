@@ -49,6 +49,10 @@ def extract_label(arr):
     return label
 
 
+def available_dims(arr_dims, all_dims):
+    return {dim: dim in arr_dims for dim in all_dims}
+
+
 @dataclass
 class Container:
     widget: MapWithControls
@@ -66,6 +70,7 @@ def on_slider_change(change, container):
 
     available = change["owner"].dimension_available
     indexers = {dim: v for dim, v in change["new"].items() if available[dim]}
+
     if not indexers:
         # should not happen
         return
@@ -91,14 +96,16 @@ def on_variable_change(change, container):
     arr = container.obj[name]
 
     sliders = container.widget.control.dimension_sliders
-    indexers = sliders.dimension_values
+    sliders.dimension_available = available_dims(arr.dims, sliders.dimensions)
+    indexers = {
+        dim: v
+        for dim, v in sliders.dimension_values.items()
+        if sliders.dimension_available[dim]
+    }
 
     new_slice = arr.isel(indexers)
     normalized, stats = normalize(new_slice, container.colorize_params)
     colors = colorize(normalized, container.colorize_params)
-
-    available = {dim: dim in arr.dims for dim in container.obj.dims}
-    sliders.dimension_available = available
 
     layer = container.layer
     layer.get_fill_color = colors
@@ -165,7 +172,10 @@ def explore(
     map_ = lonboard.Map(layer, **map_kwargs)
 
     dimension_sliders = DimensionSliders(
-        dimensions={dim: size - 1 for dim, size in obj.sizes.items() if dim != cell_dim}
+        dimensions={
+            dim: size - 1 for dim, size in obj.sizes.items() if dim != cell_dim
+        },
+        dimension_available=available_dims(arr.dims, set(obj.dims) - {cell_dim}),
     )
     colorbar = Colorbar(
         colors=extract_colors(colorize_params.cmap), label=label, **stats
