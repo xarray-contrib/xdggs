@@ -1,12 +1,8 @@
 .xdggs-control-panel {
   display: grid;
   grid-template-columns: max-content max-content max-content;
-  justify-content: space-between;
-  box-sizing: box-content;
+  column-gap: 10px;
+  justify-content: center;
 
   padding: 10px;
-}
-
-.xdggs-control-panel > :nth-child(3n + 1) {
-  justify-content: start;
 }
