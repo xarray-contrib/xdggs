@@ -1,4 +1,5 @@
 .xdggs-map {
   display: grid;
-  grid-template-rows: 80% 20%;
+  grid-template-rows: 4fr 1fr;
+  height: fit-content;
 }
