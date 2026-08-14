@@ -1,3 +1,13 @@
+import * as noUiSlider from "https://esm.sh/nouislider@15.8.1";
+
+function setDisabled(slider, value) {
+  if (value) {
+    slider.noUiSlider.disable();
+  } else {
+    slider.noUiSlider.enable();
+  }
+}
+
 export default {
   initialize({ model, signal }) {
     const dimensions = model.get("dimensions");
@@ -29,6 +39,8 @@ export default {
     let enabled = model.get("dimension_available");
     let values = model.get("dimension_values");
 
+    noUiSlider.cssClasses.target += " xdggs-slider";
+
     el.classList.add("xdggs-dimension-sliders");
     const digits = Math.max(...Object.values(dimensions)).toString().length;
     el.style.setProperty("--xdggs-dimension-value-width", `${digits}ch`);
@@ -36,35 +48,46 @@ export default {
     const sliders = Object.fromEntries(
       Object.keys(dimensions).map((name) => {
         const label = document.createElement("span");
+        const slider = document.createElement("div");
+        const valueLabel = document.createElement("span");
+
+        el.appendChild(label);
+        el.appendChild(slider);
+        el.appendChild(valueLabel);
+
         label.innerText = name;
 
         const value = values[name];
 
-        let input = document.createElement("input");
-        input.setAttribute("type", "range");
-        input.setAttribute("min", 0);
-        input.setAttribute("value", values[name]);
-        input.setAttribute("max", dimensions[name]);
+        slider.id = `xdggs-slider-${name}`;
 
-        input.disabled = !enabled[name];
+        const max = dimensions[name] - 1;
+        console.log("range:", 0, max);
+        noUiSlider.create(slider, {
+          start: values[name],
+          step: 1,
+          range: { min: 0, max: dimensions[name] - 1 },
+          connect: "lower",
+        });
+        setDisabled(slider, !enabled[name]);
 
-        let valueLabel = document.createElement("span");
         valueLabel.innerText = value;
 
-        input.oninput = () => {
-          valueLabel.innerText = input.value;
+        slider.noUiSlider.on("update.xdggs", ([formatted_value]) => {
+          const value = parseInt(formatted_value);
+          valueLabel.innerText = value;
 
           const new_values = { ...model.get("dimension_values") };
-          new_values[name] = Number(input.value);
+          new_values[name] = value;
           model.set("dimension_values", new_values);
           model.save_changes();
-        };
+        });
 
         el.appendChild(label);
-        el.appendChild(input);
+        el.appendChild(slider);
         el.appendChild(valueLabel);
 
-        return [name, input];
+        return [name, slider];
       }),
     );
 
@@ -72,7 +95,7 @@ export default {
       let enabled = model.get("dimension_available");
 
       Object.entries(enabled).forEach(([name, value]) => {
-        sliders[name].disabled = !value;
+        setDisabled(sliders[name], !enabled[name]);
       });
     });
   },
