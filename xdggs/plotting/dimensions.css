@@ -1,3 +1,5 @@
+@import url("https://esm.sh/nouislider@15.8.1/dist/nouislider.css");
+
 .xdggs-dimension-sliders {
   display: grid;
   padding: 5px;
@@ -17,8 +19,6 @@
 .xdggs-dimension-sliders > :nth-child(3n + 2) {
   margin: 0px 5px;
 }
-
-@import url("https://esm.sh/nouislider@15.8.1/dist/nouislider.css");
 
 .xdggs-slider {
   height: 4px;
