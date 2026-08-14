@@ -15,4 +15,7 @@ def construct_variable_chooser(obj):
         ]
         value = options[0] if options else None
 
+    if value is None:
+        value = ""
+
     return VariableChooser(variables=options, value=value)
