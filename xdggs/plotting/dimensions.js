@@ -8,6 +8,14 @@ function setDisabled(slider, value) {
   }
 }
 
+function formatLabel(labels, index) {
+  if (labels !== undefined && labels.length != 0) {
+    return labels[index];
+  } else {
+    return index;
+  }
+}
+
 export default {
   initialize({ model, signal }) {
     const dimensions = model.get("dimensions");
@@ -89,14 +97,7 @@ export default {
         sliderWidget.noUiSlider.on("update.xdggs", ([formatted_value]) => {
           const value = parseInt(formatted_value);
 
-          let label;
-          if (labels[name] !== undefined) {
-            label = labels[name][value];
-          } else {
-            label = value;
-          }
-
-          valueLabel.innerText = label;
+          valueLabel.innerText = formatLabel(labels[name], value);
 
           const new_values = { ...model.get("dimension_values") };
           new_values[name] = value;
@@ -105,7 +106,7 @@ export default {
         });
 
         /* value label */
-        valueLabel.innerText = value;
+        valueLabel.innerText = formatLabel(labels[name], value);
 
         return [name, sliderWidget];
       }),
