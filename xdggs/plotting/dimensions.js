@@ -1,5 +1,7 @@
 import * as noUiSlider from "https://esm.sh/nouislider@15.8.1";
 
+noUiSlider.cssClasses.target += " xdggs-slider";
+
 function setDisabled(slider, value) {
   if (value) {
     slider.noUiSlider.disable();
@@ -47,8 +49,6 @@ export default {
     let enabled = model.get("dimension_available");
     let values = model.get("dimension_values");
     let labels = model.get("dimension_labels") ?? {};
-
-    noUiSlider.cssClasses.target += " xdggs-slider";
 
     el.classList.add("xdggs-dimension-sliders");
     const digits = Math.max(...Object.values(dimensions)).toString().length;
