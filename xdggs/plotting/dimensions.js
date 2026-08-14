@@ -83,10 +83,6 @@ export default {
           model.save_changes();
         });
 
-        el.appendChild(label);
-        el.appendChild(slider);
-        el.appendChild(valueLabel);
-
         return [name, slider];
       }),
     );
