@@ -1,0 +1,73 @@
+@import url("https://esm.sh/nouislider@15.8.1/dist/nouislider.css");
+
+.xdggs-dimension-sliders {
+  display: grid;
+  padding: 5px;
+  column-gap: 10px;
+  row-gap: 5px;
+  grid-template-columns: max-content max-content var(
+      --xdggs-dimension-value-width
+    );
+  align-items: center;
+  align-self: start;
+}
+
+.xdggs-dimension-sliders > :nth-child(3n) {
+  justify-self: end;
+}
+
+.xdggs-dimension-sliders > :nth-child(3n + 2) {
+  margin: 0px 5px;
+}
+
+.xdggs-slider {
+  height: 4px;
+  border: none;
+  border-radius: 2px;
+  background: #d9d9d9;
+  box-shadow: none;
+
+  min-width: 200px;
+  max-width: 100%;
+}
+
+.xdggs-slider .noUi-connect {
+  background: #2196f3;
+}
+
+.xdggs-slider .noUi-handle {
+  width: 16px;
+  height: 16px;
+  top: -6px;
+  right: -8px;
+
+  border: 1px solid #bdbdbd;
+  border-radius: 50%;
+  background: #fff;
+
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.xdggs-slider .noUi-handle::before,
+.xdggs-slider .noUi-handle::after {
+  display: none;
+}
+
+.xdggs-slider[disabled] {
+  background: #d9d9d9;
+}
+
+.xdggs-slider[disabled] .noUi-connect {
+  background: #bdbdbd;
+}
+
+.xdggs-slider[disabled] .noUi-handle {
+  background: #f0f0f0;
+  border-color: #bdbdbd;
+  box-shadow: none;
+}
+
+.xdggs-slider[disabled] .noUi-handle:hover,
+.xdggs-slider[disabled] .noUi-handle:active {
+  box-shadow: none;
+}

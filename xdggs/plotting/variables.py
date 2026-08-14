@@ -1,9 +1,9 @@
 import xarray as xr
 
+from xdggs.plotting.variable_chooser import VariableChooser
+
 
 def construct_variable_chooser(obj):
-    from ipywidgets import Dropdown
-
     if isinstance(obj, xr.DataArray):
         options = [obj.name] if obj.name is not None else []
         value = obj.name
@@ -15,9 +15,7 @@ def construct_variable_chooser(obj):
         ]
         value = options[0] if options else None
 
-    return Dropdown(
-        options=options,
-        value=value,
-        description="Variable:",
-        disabled=len(options) <= 1,
-    )
+    if value is None:
+        value = ""
+
+    return VariableChooser(variables=options, value=value)
