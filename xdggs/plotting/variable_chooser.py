@@ -16,7 +16,9 @@ class VariableChooser(anywidget.AnyWidget):
 
     @validate("value")
     def _valid_data(self, proposal: str) -> bool:
-        if proposal["value"] not in self.variables:
+        if not self.variables:
+            return None
+        elif proposal["value"] not in self.variables:
             raise traitlets.TraitError(
                 f"The selected value must be chosen from the list of variables: [{', '.join(self.variables)}]"
             )
