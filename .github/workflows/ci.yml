@@ -51,12 +51,6 @@ jobs:
 
       - uses: Parcels-code/pixi-lock/create-and-cache@1fab4c17af8243f6ca1321bc941cf2325f46c05d # v0.1.1
         id: pixi-lock
-        with:
-          hash-files: |
-            pixi.toml
-            Cargo.toml
-            python/healpix-geo/pyproject.toml
-            python/healpix-geo/pixi.toml
 
   tests:
     name: ${{ matrix.os }} ${{ matrix.env }}
