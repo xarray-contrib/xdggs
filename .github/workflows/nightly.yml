@@ -34,17 +34,38 @@ jobs:
         with:
           keyword: "[test-upstream]"
 
-  tests:
-    name: upstream-dev
-    runs-on: ubuntu-latest
+  cache-pixi-lock:
+    runs-on: ubuntu-slim
     needs: detect-ci-trigger
     if: |
       always()
+      && github.repository_owner == 'xarray-contrib'
       && (
         (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
         || needs.detect-ci-trigger.outputs.triggered == 'true'
         || contains( github.event.pull_request.labels.*.name, 'run-upstream')
       )
+    outputs:
+      cache-key: ${{ steps.pixi-lock.outputs.cache-key }}
+      pixi-version: ${{ steps.pixi-lock.outputs.pixi-version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: Parcels-code/pixi-lock/create-and-cache@1fab4c17af8243f6ca1321bc941cf2325f46c05d # v0.1.1
+        id: pixi-lock
+        with:
+          manifest-path: "ci/nightly/pixi.toml"
+          hash-files: |
+            pyproject.toml
+            pixi.toml
+            ci/nightly/pixi.toml
+
+  tests:
+    name: upstream-dev
+    runs-on: ubuntu-latest
+    needs: cache-pixi-lock
 
     defaults:
       run:
