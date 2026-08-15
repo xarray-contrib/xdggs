@@ -30,7 +30,7 @@ h3ronpy = { git = "git+https://github.com/nmandery/h3ronpy.git", subdirectory = 
 cdshealpix = { git = "git+https://github.com/cds-astro/cds-healpix-python.git" }
 healpix-geo = { git = "git+https://github.com/eopf-dggs/healpix-geo.git", subdirectory = "python/healpix-geo" }
 astropy = { git = "git+https://github.com/astropy/astropy.git" }
-lonboard = "*"
+lonboard = ">=0.14.0"
 
 [feature.tests.dependencies]
 pytest = "*"
