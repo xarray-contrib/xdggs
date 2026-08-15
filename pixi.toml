@@ -53,6 +53,7 @@ dask = ">=2025.7.0"
 
 [feature.tests.tasks]
 tests = { cmd = "pytest -n auto --cov=xdggs", cwd = ".", default-environment = "default" }
+doctests = { cmd = "pytest --doctest-modules xdggs --ignore xdggs/tests", cwd = "." }
 
 [feature.ci-py311.dependencies]
 python = "3.11.*"
