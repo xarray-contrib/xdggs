@@ -19,6 +19,7 @@ numpy = { version = "*", index = "https://pypi.anaconda.org/scientific-python-ni
 pandas = { version = "*", index = "https://pypi.anaconda.org/scientific-python-nightly-wheels/simple" }
 xarray = { version = "*", index = "https://pypi.anaconda.org/scientific-python-nightly-wheels/simple" }
 pyarrow = { version = "*", index = "https://pypi.anaconda.org/scientific-python-nightly-wheels/simple" }
+anywidget = ">=0.11.0"
 
 [pypi-dependencies]
 xdggs = { path = "../..", editable = true }
