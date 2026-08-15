@@ -10,6 +10,9 @@ matplotlib-base = "*"
 rust = "*"
 pytest-reportlog = "*"
 pooch = "*"
+h5netcdf = "*"
+hdf5 = "=2.1.0"
+h5py = "=3.16.0"
 
 [pypi-options.dependency-overrides]
 numpy = { version = "*", index = "https://pypi.anaconda.org/scientific-python-nightly-wheels/simple" }
