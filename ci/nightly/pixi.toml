@@ -39,7 +39,7 @@ shapely = ">=2.1.1,<3"
 dask = ">=2025.7.0"
 
 [feature.tests.tasks]
-tests = { cmd = "pytest -n 0 auto --cov=xdggs", cwd = "../.." }
+tests = { cmd = "pytest -n auto --cov=xdggs", cwd = "../.." }
 
 
 [environments]
