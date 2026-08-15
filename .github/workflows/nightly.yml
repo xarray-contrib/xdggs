@@ -50,6 +50,9 @@ jobs:
       run:
         shell: bash -l {0}
 
+    env:
+      MANIFEST_PATH: "ci/nightly/pixi.toml"
+
     steps:
       - name: Clone repository
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -57,24 +60,21 @@ jobs:
           fetch-depth: 0 # Fetch all history for all branches and tags
           persist-credentials: false
 
-      - name: remove lockfile
-        run: |
-          rm pixi.lock
-
       - name: setup environment
         uses: prefix-dev/setup-pixi@a09b6247153796b190642a2b53fac4241043cf6f # v0.10.0
         with:
+          manifest-path: ${{ env.MANIFEST_PATH }}
           environments: "nightly"
 
       - name: Import xdggs
         run: |
-          pixi run -e nightly python -c "import xdggs"
+          pixi run --manifest-path "$MANIFEST_PATH" -e nightly python -c "import xdggs"
 
       - name: run tests
         if: success()
         id: status
         run: |
-          pixi run -e nightly tests -rf --report-log=pytest-log.jsonl
+          pixi run --manifest-path "$MANIFEST_PATH" -e nightly tests -rf --report-log=pytest-log.jsonl
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: failure() && steps.status.outcome == 'failure'
