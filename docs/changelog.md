@@ -4,6 +4,7 @@
 
 - Do not mutate the input dataset when decoding ({pull}`226`)
 - Properly decode ellipsoids for the CF convention ({pull}`228`)
+- Rewrite the map widgets using `anywidget` ({pull}`248`)
 
 ## 0.6.0 (2026-02-05)
 

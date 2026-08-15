@@ -25,14 +25,15 @@ numpy = ">=2.2"
 h3ronpy = ">=0.22.0"
 lonboard = ">=0.14.0"
 healpix-geo = ">=0.2.1"
-arro3-core = "*"
-pyproj = "*"
-pooch = "*"
+arro3-core = ">=0.4.0"
+pyproj = ">=3.3"
+pooch = ">=1.8.2"
 h5netcdf = "*"
 # pin hdf5 and h5py to avoid errors in the docs
 hdf5 = "=2.1.0"
 h5py = "=3.16.0"
 matplotlib-base = ">=3.10.5"
+anywidget = ">=0.11.0"
 
 [tasks]
 
@@ -99,6 +100,8 @@ jupyterlab-myst = ">=2.4.2"
 h5netcdf = ">=1.7.3"
 zarr = ">=3.1.5"
 cf-xarray = ">=0.11.1"
+marimo = ">=0.23.16,<0.24"
+watchfiles = ">=1.1.0"
 
 [feature.ci.dependencies]
 python = "*"

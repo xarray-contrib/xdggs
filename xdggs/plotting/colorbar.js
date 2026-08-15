@@ -89,33 +89,26 @@ function render({ model, el }) {
     .append("svg")
     .attr("width", width)
     .attr("height", 400);
-  // axis label
-  const label = svg
-    .append("text")
-    .attr("text-anchor", "middle")
-    .attr("x", width / 2)
-    .attr("y", marginTop + 5)
-    .text(model.get("label"));
-  const labelHeight = label.node().getBBox().height;
-
   // ramp
   let image = svg
     .append("g")
-    .attr(
-      "transform",
-      `translate(${marginLeft + 1}, ${marginTop + labelHeight + labelSpacer})`,
-    )
+    .attr("transform", `translate(${marginLeft + 1}, ${marginTop})`)
     .call((image) => draw_ramp(image, colors, widget_width, rampHeight));
 
   // ticks and tick labels
   const xaxis = svg
     .append("g")
-    .attr(
-      "transform",
-      `translate(0,${marginTop + labelHeight + labelSpacer + rampHeight})`,
-    )
+    .attr("transform", `translate(0,${marginTop + rampHeight})`)
     .call(d3.axisBottom(x));
   const axisHeight = xaxis.node().getBBox().height;
+  // axis label
+  const label = svg
+    .append("text")
+    .attr("text-anchor", "middle")
+    .attr("x", width / 2)
+    .attr("y", marginTop + rampHeight + axisHeight + labelSpacer)
+    .text(model.get("label"));
+  const labelHeight = label.node().getBBox().height;
 
   // final styling
   const finalHeight =
