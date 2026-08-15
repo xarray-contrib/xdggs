@@ -35,6 +35,7 @@ jobs:
           keyword: "[test-upstream]"
 
   cache-pixi-lock:
+    name: cache pixi lock file
     runs-on: ubuntu-slim
     needs: detect-ci-trigger
     if: |
