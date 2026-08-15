@@ -32,7 +32,7 @@ pip install .
 `xdggs` is experimental and thus will switch to newer versions of dependencies if there's significant benefit.
 ```
 
-Otherwise, it will follow a rolling release policy similar to {ref}`xarray:/getting-started-guide/installing.rst#minimum-dependency-versions`:
+Otherwise, it will follow a rolling release policy similar to {ref}`xarray:mindeps_policy`:
 
 - **Python**: 30 months
 - **numpy**: 12 months
