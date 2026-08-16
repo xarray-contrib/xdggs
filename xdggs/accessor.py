@@ -82,6 +82,39 @@ class DGGSAccessor:
         -------
         obj : xarray.DataArray or xarray.Dataset
             The object with a DGGS index on the cell id coordinate.
+
+        Examples
+        --------
+        >>> import xdggs
+        >>> import xarray as xr
+        >>> import numpy as np
+
+        Dataset following the xdggs convention:
+
+        >>> ds = xr.Dataset(
+        ...     {"a": ("cells", list("abcdefghijkl"))},
+        ...     coords={
+        ...         "cell_ids": (
+        ...             "cells",
+        ...             np.arange(12, dtype="uint64"),
+        ...             {
+        ...                 "grid_name": "healpix",
+        ...                 "level": 0,
+        ...                 "indexing_scheme": "nested",
+        ...             },
+        ...         )
+        ...     },
+        ... )
+        >>> ds.dggs.decode()
+        <xarray.Dataset> Size: 144B
+        Dimensions:   (cells: 12)
+        Coordinates:
+          * cell_ids  (cells) uint64 96B 0 1 2 3 4 5 6 7 8 9 10 11
+        Dimensions without coordinates: cells
+        Data variables:
+            a         (cells) <U1 48B 'a' 'b' 'c' 'd' 'e' 'f' 'g' 'h' 'i' 'j' 'k' 'l'
+        Indexes:
+            cell_ids  HealpixIndex(level=0, indexing_scheme=nested, kind=pandas)
         """
         return conventions.decode(
             self._obj,

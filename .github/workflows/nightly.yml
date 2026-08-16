@@ -34,21 +34,49 @@ jobs:
         with:
           keyword: "[test-upstream]"
 
-  tests:
-    name: upstream-dev
-    runs-on: ubuntu-latest
+  cache-pixi-lock:
+    name: cache pixi lock file
+    runs-on: ubuntu-slim
     needs: detect-ci-trigger
     if: |
       always()
+      && github.repository_owner == 'xarray-contrib'
       && (
         (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
         || needs.detect-ci-trigger.outputs.triggered == 'true'
         || contains( github.event.pull_request.labels.*.name, 'run-upstream')
       )
 
+    env:
+      MANIFEST_PATH: "ci/nightly/pixi.toml"
+
+    outputs:
+      cache-key: ${{ steps.pixi-lock.outputs.cache-key }}
+      pixi-version: ${{ steps.pixi-lock.outputs.pixi-version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: Parcels-code/pixi-lock/create-and-cache@1fab4c17af8243f6ca1321bc941cf2325f46c05d # v0.1.1
+        id: pixi-lock
+        with:
+          manifest-path: ${{ env.MANIFEST_PATH }}
+          hash-files: |
+            pyproject.toml
+            ${{ env.MANIFEST_PATH }}
+
+  tests:
+    name: upstream-dev
+    runs-on: ubuntu-latest
+    needs: cache-pixi-lock
+
     defaults:
       run:
         shell: bash -l {0}
+
+    env:
+      MANIFEST_PATH: "ci/nightly/pixi.toml"
 
     steps:
       - name: Clone repository
@@ -57,24 +85,29 @@ jobs:
           fetch-depth: 0 # Fetch all history for all branches and tags
           persist-credentials: false
 
-      - name: remove lockfile
-        run: |
-          rm pixi.lock
+      - uses: Parcels-code/pixi-lock/restore@1fab4c17af8243f6ca1321bc941cf2325f46c05d # v0.1.1
+        with:
+          cache-key: ${{ needs.cache-pixi-lock.outputs.cache-key }}
+          manifest-path: ${{ env.MANIFEST_PATH }}
 
       - name: setup environment
         uses: prefix-dev/setup-pixi@a09b6247153796b190642a2b53fac4241043cf6f # v0.10.0
         with:
+          manifest-path: ${{ env.MANIFEST_PATH }}
           environments: "nightly"
+          pixi-version: ${{ needs.cache-pixi-lock.outputs.pixi-version }}
+          cache: true
+          frozen: true
 
       - name: Import xdggs
         run: |
-          pixi run -e nightly python -c "import xdggs"
+          pixi run --manifest-path "$MANIFEST_PATH" -e nightly python -c "import xdggs"
 
       - name: run tests
         if: success()
         id: status
         run: |
-          pixi run -e nightly tests -rf --report-log=pytest-log.jsonl
+          pixi run --manifest-path "$MANIFEST_PATH" -e nightly tests -rf --report-log=pytest-log.jsonl
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: failure() && steps.status.outcome == 'failure'

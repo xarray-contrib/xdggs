@@ -33,6 +33,7 @@ dependencies = [
   "matplotlib",
   "arro3-core>=0.4.0",
   "pooch",
+  "h5netcdf",
   "anywidget>=0.11",
 ]
 dynamic = ["version"]
