@@ -128,7 +128,7 @@ class HealpixInfo(DGGSInfo):
     }
 
     def __post_init__(self):
-        import healpix_geo
+        import healpix_geo.ellipsoid
 
         if self.indexing_scheme not in self.valid_parameters["indexing_scheme"]:
             raise ValueError(
@@ -146,7 +146,7 @@ class HealpixInfo(DGGSInfo):
         if self.ellipsoid is None or isinstance(self.ellipsoid, str):
             ellipsoid = self.ellipsoid if self.ellipsoid is not None else "sphere"
             object.__setattr__(
-                self, "ellipsoid", healpix_geo.ellipsoid.lookup(ellipsoid)
+                self, "ellipsoid", healpix_geo.ellipsoid.resolve(ellipsoid)
             )
 
     @property
