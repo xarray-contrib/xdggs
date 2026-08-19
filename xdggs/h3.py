@@ -9,16 +9,20 @@ import xarray as xr
 try:
     from h3ronpy import change_resolution
     from h3ronpy.vector import (
+        ContainmentMode,
         cells_to_coordinates,
         cells_to_wkb_polygons,
         coordinates_to_cells,
+        geometry_to_cells,
     )
 except ImportError:
     from h3ronpy.arrow import change_resolution
     from h3ronpy.arrow.vector import (
+        ContainmentMode,
         cells_to_coordinates,
         cells_to_wkb_polygons,
         coordinates_to_cells,
+        geometry_to_cells,
     )
 
 from xdggs.grid import DGGSInfo, translate_parameters
@@ -196,6 +200,22 @@ class H3Info(DGGSInfo):
         if backend_func is None:
             raise ValueError(f"invalid backend: {backend!r}")
         return backend_func(wkb)
+
+    def geometry2cell_ids(self, geom, *, containment="contains_centroid"):
+        modes = {
+            "contains_centroid": ContainmentMode.ContainsCentroid,
+            "contains_boundary": ContainmentMode.ContainsBoundary,
+            "covers": ContainmentMode.Covers,
+            "intersects_boundary": ContainmentMode.IntersectsBoundary,
+        }
+        mode = modes.get(containment)
+        if mode is None:
+            raise ValueError(
+                f"invalid mode: {containment}."
+                f" Must be one of [{', '.join(repr(m) for m in modes)}]"
+            )
+
+        return geometry_to_cells(geom, resolution=self.level)
 
     def zoom_to(self, cell_ids, level):
         if level > self.level:
