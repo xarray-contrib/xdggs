@@ -227,7 +227,7 @@ class HealpixInfo(DGGSInfo):
         if self.ellipsoid is not None:
             optional_values["ellipsoid"] = (
                 self.ellipsoid
-                if isinstance(self.ellipsoid, str)
+                if isinstance(self.ellipsoid, dict)
                 else self.ellipsoid.to_dict()
             )
 
