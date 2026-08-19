@@ -128,6 +128,8 @@ class HealpixInfo(DGGSInfo):
     }
 
     def __post_init__(self):
+        import healpix_geo
+
         if self.indexing_scheme not in self.valid_parameters["indexing_scheme"]:
             raise ValueError(
                 f"indexing scheme must be one of {self.valid_parameters['indexing_scheme']}"
@@ -140,6 +142,11 @@ class HealpixInfo(DGGSInfo):
                 raise ValueError("level must be `None` for uniq indexing schemes")
         elif self.level not in self.valid_parameters["level"]:
             raise ValueError("level must be an integer in the range of [0, 29]")
+
+        if isinstance(self.ellipsoid, str):
+            object.__setattr__(
+                self, "ellipsoid", healpix_geo.ellipsoid.lookup(self.ellipsoid)
+            )
 
     @property
     def nside(self: Self) -> int:
