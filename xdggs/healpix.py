@@ -143,10 +143,9 @@ class HealpixInfo(DGGSInfo):
         elif self.level not in self.valid_parameters["level"]:
             raise ValueError("level must be an integer in the range of [0, 29]")
 
-        if self.ellipsoid is None or isinstance(self.ellipsoid, str):
-            ellipsoid = self.ellipsoid if self.ellipsoid is not None else "sphere"
+        if isinstance(self.ellipsoid, str):
             object.__setattr__(
-                self, "ellipsoid", healpix_geo.ellipsoid.resolve(ellipsoid)
+                self, "ellipsoid", healpix_geo.ellipsoid.resolve(self.ellipsoid)
             )
 
     @property
