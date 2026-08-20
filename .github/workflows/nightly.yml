@@ -140,6 +140,6 @@ jobs:
           && steps.run-tests.outcome == 'failure'
           && github.event_name == 'schedule'
           && github.repository_owner == 'xarray-contrib'
-        uses: scientific-python/issue-from-pytest-log-action@87351a8f864e969567cda22a25a2f214cbe2340f # v1.6.0
+        uses: scientific-python/issue-from-pytest-log-action@35b4e0a9e06f8e7e261778289cf4b968b722662d # v1.6.2
         with:
           log-path: logs/pytest-log.jsonl
