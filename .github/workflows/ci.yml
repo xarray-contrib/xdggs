@@ -81,7 +81,7 @@ jobs:
           cache-key: ${{ needs.cache-pixi-lock.outputs.cache-key }}
 
       - name: setup environment
-        uses: prefix-dev/setup-pixi@a09b6247153796b190642a2b53fac4241043cf6f # v0.10.0
+        uses: prefix-dev/setup-pixi@f00437f565399d418b0acc85936d12c1fb668347 # v0.10.1
         with:
           environments: "${{ matrix.env }}"
           pixi-version: ${{ needs.cache-pixi-lock.outputs.pixi-version }}
@@ -137,7 +137,7 @@ jobs:
           cache-key: ${{ needs.cache-pixi-lock.outputs.cache-key }}
 
       - name: setup environment
-        uses: prefix-dev/setup-pixi@a09b6247153796b190642a2b53fac4241043cf6f # v0.10.0
+        uses: prefix-dev/setup-pixi@f00437f565399d418b0acc85936d12c1fb668347 # v0.10.1
         with:
           environments: "${{ matrix.env }}"
           pixi-version: ${{ needs.cache-pixi-lock.outputs.pixi-version }}
