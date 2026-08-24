@@ -19,7 +19,7 @@ hatchling = "*"
 hatch-vcs = "*"
 
 [package.run-dependencies]
-python = ">=3.11"
+python = ">=3.12"
 xarray = ">=2025.08.0"
 numpy = ">=2.2"
 h3ronpy = ">=0.22.0"
@@ -54,9 +54,6 @@ dask = ">=2025.7.0"
 [feature.tests.tasks]
 tests = { cmd = "pytest -n auto --cov=xdggs", cwd = ".", default-environment = "default" }
 doctests = { cmd = "pytest --doctest-modules xdggs --ignore xdggs/tests", cwd = "." }
-
-[feature.ci-py311.dependencies]
-python = "3.11.*"
 
 [feature.ci-py312.dependencies]
 python = "3.12.*"
@@ -112,7 +109,6 @@ python = "*"
 nightly-tests = { cmd = "pixi run --manifest-path ci/nightly/pixi.toml tests", cwd = "." }
 
 [environments]
-ci-py311 = { features = ["tests", "ci-py311"] }
 ci-py312 = { features = ["tests", "ci-py312"] }
 ci-py313 = { features = ["tests", "ci-py313"] }
 docs = { features = ["docs"] }
