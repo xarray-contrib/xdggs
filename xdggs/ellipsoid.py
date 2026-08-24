@@ -15,8 +15,8 @@ class SphereMapping(TypedDict):
     radius: float
 
 
-EllipsoidLike = EllipsoidMapping | "Ellipsoid"
-SphereLike = SphereMapping | "Sphere"
+type EllipsoidLike = EllipsoidMapping | Ellipsoid
+type SphereLike = SphereMapping | Sphere
 
 
 @dataclass
