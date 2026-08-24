@@ -46,12 +46,6 @@ class Ellipsoid:
 
         return mapping
 
-    def _serialize(self):
-        if self.name is not None:
-            return self.name
-
-        return self
-
 
 @dataclass
 class Sphere:
@@ -84,12 +78,6 @@ class Sphere:
             del mapping["name"]
 
         return mapping
-
-    def _serialize(self):
-        if self.name is not None:
-            return self.name
-
-        return self
 
 
 def parse_ellipsoid(mapping: dict[str, Any]) -> Sphere | Ellipsoid:
