@@ -1,4 +1,5 @@
 import itertools
+from dataclasses import asdict
 
 import hypothesis.extra.numpy as npst
 import hypothesis.strategies as st
@@ -204,13 +205,21 @@ class TestHealpixInfo:
         strategies.levels, strategies.indexing_schemes, ellipsoids("serialized_only")
     )
     def test_init(self, level, indexing_scheme, ellipsoid):
+        import healpix_geo.ellipsoid
+
         grid = healpix.HealpixInfo(
             level=level, indexing_scheme=indexing_scheme, ellipsoid=ellipsoid
         )
 
+        expected_ellipsoid = (
+            healpix_geo.ellipsoid.resolve(ellipsoid)
+            if isinstance(ellipsoid, str)
+            else ellipsoid
+        )
+
         assert grid.level == level
         assert grid.indexing_scheme == indexing_scheme
-        assert grid.ellipsoid == ellipsoid
+        assert grid.ellipsoid == expected_ellipsoid
 
     @given(strategies.grids())
     def test_nside(self, grid):
@@ -235,6 +244,8 @@ class TestHealpixInfo:
 
     @given(strategies.levels, strategies.indexing_schemes, ellipsoids("in_memory_only"))
     def test_to_dict(self, level, indexing_scheme, ellipsoid) -> None:
+        import healpix_geo.ellipsoid
+
         grid = healpix.HealpixInfo(
             level=level, indexing_scheme=indexing_scheme, ellipsoid=ellipsoid
         )
@@ -250,7 +261,9 @@ class TestHealpixInfo:
         assert actual["indexing_scheme"] == indexing_scheme
         if ellipsoid is not None:
             expected_ellipsoid = (
-                ellipsoid if isinstance(ellipsoid, str) else ellipsoid.to_dict()
+                healpix_geo.ellipsoid.resolve(ellipsoid)
+                if isinstance(ellipsoid, str)
+                else ellipsoid.to_dict()
             )
             assert actual["ellipsoid"] == expected_ellipsoid
 
@@ -266,10 +279,21 @@ class TestHealpixInfo:
         if ellipsoid is not None:
             mapping["ellipsoid"] = ellipsoid
 
+        expected = dict(mapping)
+        if ellipsoid is not None:
+            import healpix_geo.ellipsoid
+
+            if isinstance(ellipsoid, str):
+                expected["ellipsoid"] = healpix_geo.ellipsoid.resolve(ellipsoid)
+            elif isinstance(ellipsoid, dict):
+                expected["ellipsoid"] = ellipsoid
+            else:
+                expected["ellipsoid"] = asdict(ellipsoid)
+
         grid = healpix.HealpixInfo.from_dict(mapping)
         roundtripped = grid.to_dict()
 
-        assert roundtripped == mapping
+        assert roundtripped == expected
 
     @pytest.mark.parametrize(
         ["params", "cell_ids", "expected_coords"],
