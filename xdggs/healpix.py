@@ -103,6 +103,8 @@ def _serialize_ellipsoid(
         import healpix_geo.ellipsoid
 
         return healpix_geo.ellipsoid.resolve("sphere")
+    elif not isinstance(ellipsoid, dict):
+        return ellipsoid.to_dict()
     else:
         return ellipsoid
 
