@@ -514,7 +514,9 @@ class HealpixMocIndex(xr.Index):
             import dask
 
             [indexes] = dask.compute(
-                dask.delayed(RangeMOCIndex.from_cell_ids)(grid_info.level, chunk)
+                dask.delayed(RangeMOCIndex.from_cell_ids)(
+                    grid_info.level, chunk, ellipsoid=grid_info.ellipsoid
+                )
                 for chunk in array.astype("uint64").to_delayed()
             )
             index = reduce(RangeMOCIndex.union, indexes)
