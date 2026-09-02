@@ -527,7 +527,9 @@ class HealpixMocIndex(xr.Index):
             )
             index = reduce(RangeMOCIndex.union, indexes)
         else:
-            index = RangeMOCIndex.from_cell_ids(grid_info.level, array.astype("uint64"))
+            index = RangeMOCIndex.from_cell_ids(
+                grid_info.level, array.astype("uint64"), ellipsoid=ellipsoid
+            )
 
         chunksizes = {dim: array.chunks[0] if hasattr(array, "chunks") else None}
         return cls(
