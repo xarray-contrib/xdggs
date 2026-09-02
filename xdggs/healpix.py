@@ -506,6 +506,12 @@ class HealpixMocIndex(xr.Index):
         if array.ndim != 1:
             raise ValueError("only 1D cell ids are supported")
 
+        ellipsoid = grid_info.ellipsoid
+        if ellipsoid is None:
+            import healpix_geo.ellipsoid
+
+            ellipsoid = healpix_geo.ellipsoid.resolve("sphere")
+
         if array.size == 12 * 4**grid_info.level:
             index = RangeMOCIndex.full_domain(grid_info.level)
         elif isinstance(array, dask_array_type):
@@ -515,7 +521,7 @@ class HealpixMocIndex(xr.Index):
 
             [indexes] = dask.compute(
                 dask.delayed(RangeMOCIndex.from_cell_ids)(
-                    grid_info.level, chunk, ellipsoid=grid_info.ellipsoid
+                    grid_info.level, chunk, ellipsoid=ellipsoid
                 )
                 for chunk in array.astype("uint64").to_delayed()
             )
