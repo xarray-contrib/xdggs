@@ -1,5 +1,22 @@
+from __future__ import annotations
+
 from dataclasses import asdict, dataclass, field
-from typing import Any
+from typing import NotRequired, TypedDict, overload
+
+
+class EllipsoidMapping(TypedDict):
+    name: NotRequired[str]
+    semimajor_axis: float
+    inverse_flattening: float
+
+
+class SphereMapping(TypedDict):
+    name: NotRequired[str]
+    radius: float
+
+
+type EllipsoidLike = EllipsoidMapping | Ellipsoid
+type SphereLike = SphereMapping | Sphere
 
 
 @dataclass
@@ -46,12 +63,6 @@ class Ellipsoid:
 
         return mapping
 
-    def _serialize(self):
-        if self.name is not None:
-            return self.name
-
-        return self
-
 
 @dataclass
 class Sphere:
@@ -85,14 +96,14 @@ class Sphere:
 
         return mapping
 
-    def _serialize(self):
-        if self.name is not None:
-            return self.name
 
-        return self
+@overload
+def parse_ellipsoid(mapping: SphereMapping) -> Sphere: ...
+@overload
+def parse_ellipsoid(mapping: EllipsoidMapping) -> Ellipsoid: ...
 
 
-def parse_ellipsoid(mapping: dict[str, Any]) -> Sphere | Ellipsoid:
+def parse_ellipsoid(mapping: SphereMapping | EllipsoidMapping) -> Sphere | Ellipsoid:
     if "semimajor_axis" in mapping:
         return Ellipsoid.from_dict(mapping)
     elif "radius" in mapping:

@@ -8,7 +8,13 @@ import xarray as xr
 from healpix_geo.nested import RangeMOCIndex
 from xarray.core.indexes import IndexSelResult, PandasIndex
 
-from xdggs.ellipsoid import Ellipsoid, Sphere, parse_ellipsoid
+from xdggs.ellipsoid import (
+    Ellipsoid,
+    EllipsoidLike,
+    Sphere,
+    SphereLike,
+    parse_ellipsoid,
+)
 from xdggs.grid import DGGSInfo, translate_parameters
 from xdggs.index import DGGSIndex
 from xdggs.itertools import identity
@@ -90,6 +96,19 @@ def center_around_prime_meridian(lon, lat):
     return result
 
 
+def _serialize_ellipsoid(
+    ellipsoid: SphereLike | EllipsoidLike | None,
+) -> SphereLike | EllipsoidLike:
+    if ellipsoid is None:
+        import healpix_geo.ellipsoid
+
+        return healpix_geo.ellipsoid.resolve("sphere")
+    elif not isinstance(ellipsoid, dict):
+        return ellipsoid.to_dict()
+    else:
+        return ellipsoid
+
+
 @dataclass(frozen=True)
 class HealpixInfo(DGGSInfo):
     """
@@ -119,7 +138,7 @@ class HealpixInfo(DGGSInfo):
     indexing_scheme: Literal["nested", "ring", "zuniq"] = "nested"
     """int : The indexing scheme of the grid"""
 
-    ellipsoid: str | Sphere | Ellipsoid | None = None
+    ellipsoid: str | SphereLike | EllipsoidLike | None = None
     """The ellipsoid"""
 
     valid_parameters: ClassVar[dict[str, Any]] = {
@@ -128,6 +147,8 @@ class HealpixInfo(DGGSInfo):
     }
 
     def __post_init__(self):
+        import healpix_geo.ellipsoid
+
         if self.indexing_scheme not in self.valid_parameters["indexing_scheme"]:
             raise ValueError(
                 f"indexing scheme must be one of {self.valid_parameters['indexing_scheme']}"
@@ -140,6 +161,11 @@ class HealpixInfo(DGGSInfo):
                 raise ValueError("level must be `None` for uniq indexing schemes")
         elif self.level not in self.valid_parameters["level"]:
             raise ValueError("level must be an integer in the range of [0, 29]")
+
+        if isinstance(self.ellipsoid, str):
+            object.__setattr__(
+                self, "ellipsoid", healpix_geo.ellipsoid.resolve(self.ellipsoid)
+            )
 
     @property
     def nside(self: Self) -> int:
@@ -155,14 +181,6 @@ class HealpixInfo(DGGSInfo):
             )
         else:
             return self.indexing_scheme == "nested"
-
-    def _format_ellipsoid(self) -> str:
-        if self.ellipsoid is None:
-            return "sphere"
-        elif isinstance(self.ellipsoid, str):
-            return self.ellipsoid
-
-        return self.ellipsoid._serialize()
 
     @classmethod
     def from_dict(cls: type[T], mapping: dict[str, Any]) -> T:
@@ -218,11 +236,7 @@ class HealpixInfo(DGGSInfo):
         """
         optional_values = {}
         if self.ellipsoid is not None:
-            optional_values["ellipsoid"] = (
-                self.ellipsoid
-                if isinstance(self.ellipsoid, str)
-                else self.ellipsoid.to_dict()
-            )
+            optional_values["ellipsoid"] = _serialize_ellipsoid(self.ellipsoid)
 
         return {
             "grid_name": "healpix",
@@ -255,7 +269,9 @@ class HealpixInfo(DGGSInfo):
         }
         converter = converters[self.indexing_scheme]
 
-        return converter(cell_ids, depth=self.level, ellipsoid=self._format_ellipsoid())
+        return converter(
+            cell_ids, depth=self.level, ellipsoid=_serialize_ellipsoid(self.ellipsoid)
+        )
 
     def geographic2cell_ids(self, lon, lat):
         """
@@ -291,7 +307,9 @@ class HealpixInfo(DGGSInfo):
         }
         converter = converters[self.indexing_scheme]
 
-        return converter(lon, lat, depth=self.level, ellipsoid=self._format_ellipsoid())
+        return converter(
+            lon, lat, depth=self.level, ellipsoid=_serialize_ellipsoid(self.ellipsoid)
+        )
 
     def cell_boundaries(self, cell_ids: Any, backend="shapely") -> np.ndarray:
         """
@@ -323,7 +341,7 @@ class HealpixInfo(DGGSInfo):
         converter = converters[self.indexing_scheme]
 
         lon, lat = converter(
-            cell_ids, depth=self.level, ellipsoid=self._format_ellipsoid()
+            cell_ids, depth=self.level, ellipsoid=_serialize_ellipsoid(self.ellipsoid)
         )
 
         lon_reshaped = np.reshape(lon, (-1, 4))
