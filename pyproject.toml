@@ -54,7 +54,6 @@ version.source = "vcs"
 only-include = ["xdggs"]
 
 [tool.ruff]
-target-version = "py311"
 builtins = ["ellipsis"]
 exclude = [
   ".git",
