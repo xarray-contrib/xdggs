@@ -25,6 +25,8 @@ caption: User guide
 hidden: true
 ---
 Conventions <user_guide/conventions>
+Plugins <user_guide/plugins>
+Ecosystem <user_guide/ecosystem>
 ```
 
 ```{toctree}
