@@ -111,11 +111,9 @@ class Zarr(Convention):
             raise NotImplementedError("missing coordinate is not supported for now")
 
         # optional, but required to be `"none"` for now
-        compression = metadata.pop("compression", None)
+        compression = metadata.pop("compression", "none")
         if compression != "none":
-            raise NotImplementedError(
-                "compressed coordinates are not supported for now"
-            )
+            index_options["compression"] = compression
 
         # construct index
         metadata_ = self.translate_metadata(metadata)
