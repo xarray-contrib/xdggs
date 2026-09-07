@@ -2,6 +2,7 @@ import copy
 from collections.abc import Hashable
 from typing import Any, Literal
 
+import pandas as pd
 import xarray as xr
 
 from xdggs.conventions.base import Convention
@@ -27,6 +28,26 @@ def extract_convention_declaration(
     return None
 
 
+def _translate_metadata(
+    metadata: dict[str, Any],
+    key_translations: dict[str, str],
+    direction: Literal["forward", "inverse"] = "forward",
+) -> dict[str, Any]:
+    if direction == "inverse":
+        key_translations = {v: k for k, v in key_translations.items()}
+    return {key_translations.get(key, key): value for key, value in metadata.items()}
+
+
+dggs_attribute_translations = {
+    "name": "grid_name",
+    "refinement_level": "level",
+}
+ellipsoid_attribute_translations = {
+    "semi_major_axis": "semimajor_axis",
+    "semi_minor_axis": "semiminor_axis",
+}
+
+
 @register_convention("zarr")
 class Zarr(Convention):
     uuid = "7b255807-140c-42ca-97f6-7a1cfecdbc38"
@@ -45,16 +66,13 @@ class Zarr(Convention):
         metadata: dict[str, Any],
         direction: Literal["forward", "inverse"] = "forward",
     ) -> dict[str, Any]:
-        key_translations = {
-            "name": "grid_name",
-            "refinement_level": "level",
-        }
-        if direction == "inverse":
-            key_translations = {v: k for k, v in key_translations.items()}
-
-        return {
-            key_translations.get(key, key): value for key, value in metadata.items()
-        }
+        metadata = _translate_metadata(metadata, dggs_attribute_translations, direction)
+        ellipsoid = metadata.get("ellipsoid")
+        if ellipsoid is not None:
+            metadata["ellipsoid"] = _translate_metadata(
+                ellipsoid, ellipsoid_attribute_translations, direction
+            )
+        return metadata
 
     def decode(
         self,
@@ -105,13 +123,27 @@ class Zarr(Convention):
         if spatial_dimension is None:
             raise DecoderError("Required field `spatial_dimension` is missing or null.")
 
-        # optional, but required for now
+        if "refinement_level" not in metadata:
+            raise DecoderError("Required field `refinement_level` is missing.")
+
+        # optional
         coordinate = metadata.pop("coordinate", None)
+        if name is not None:
+            # name takes precedence over coordinate
+            coordinate = name
         if coordinate is None:
-            raise NotImplementedError("missing coordinate is not supported for now")
+            if "cell_ids" in ds.keys():
+                raise DecoderError(
+                    "Coordinate not given, but cannot overwrite existing variable 'cell_ids'."
+                )
+            # create a memory-efficient range index
+            ds = ds.assign_coords(cell_ids=pd.RangeIndex(ds.sizes[spatial_dimension]))
+            coordinate = "cell_ids"
+        elif coordinate not in ds.keys():
+            raise DecoderError(f"Coordinate variable {coordinate}, does not exist.")
 
         # optional, but required to be `"none"` for now
-        compression = metadata.pop("compression", None)
+        compression = metadata.pop("compression", "none")
         if compression != "none":
             raise NotImplementedError(
                 "compressed coordinates are not supported for now"
@@ -126,7 +158,7 @@ class Zarr(Convention):
         if grid_name not in GRID_REGISTRY:
             raise DecoderError(f"cf convention: unknown grid name: {grid_name}")
         index_cls = GRID_REGISTRY[grid_name]
-        index = index_cls.from_variables({name: var}, options=index_options)
+        index = index_cls.from_variables({coordinate: var}, options=index_options)
 
         new_ds = ds.assign_coords(xr.Coordinates.from_xindex(index)).assign_attrs(
             copy.deepcopy(ds.attrs)
