@@ -8,6 +8,7 @@ from xdggs.grid import DGGSInfo
 from xdggs.healpix.grid_info import HealpixInfo
 from xdggs.healpix.moc_index import HealpixMocIndex
 from xdggs.index import DGGSIndex
+from xdggs.typing import Compression
 from xdggs.utils import _extract_cell_id_variable, register_dggs
 
 
@@ -16,16 +17,40 @@ class HealpixIndex(DGGSIndex):
     def __init__(
         self,
         cell_ids: Any | xr.Index,
-        dim: str,
-        name: str,
-        grid_info: DGGSInfo,
+        *,
+        dim: str | None = None,
+        name: str | None = None,
+        grid_info: DGGSInfo | None = None,
         index_kind: str = "pandas",
+        compression: Compression = "none",
     ):
-        if not isinstance(grid_info, HealpixInfo):
-            raise ValueError(f"grid info object has an invalid type: {type(grid_info)}")
+        if isinstance(cell_ids, HealpixMocIndex):
+            # all information already on the moc index
+            self._index = cell_ids
+
+            self._grid_info = grid_info
+            self._dim = cell_ids.dim
+            self._name = cell_ids.name
+
+            return
+
+        if self._dim is None:
+            raise TypeError(
+                "missing required parameter when creating a healpix index from cell ids: 'dim'"
+            )
+        if self._name is None:
+            raise TypeError(
+                "missing required parameter when creating a healpix index from cell ids: 'name'"
+            )
 
         self._dim = dim
         self._name = name
+
+        if not isinstance(grid_info, HealpixInfo):
+            raise ValueError(f"grid info object has an invalid type: {type(grid_info)}")
+
+        if compression != "none" and index_kind == "pandas":
+            raise ValueError("the pandas backend does not support compressed cell ids")
 
         if isinstance(cell_ids, xr.Index):
             self._index = cell_ids
@@ -34,7 +59,11 @@ class HealpixIndex(DGGSIndex):
             self._index.index.name = name
         elif index_kind == "moc":
             self._index = HealpixMocIndex.from_array(
-                cell_ids, dim=dim, grid_info=grid_info, name=name
+                cell_ids,
+                dim=dim,
+                grid_info=grid_info,
+                name=name,
+                compression=compression,
             )
         self._kind = index_kind
 
