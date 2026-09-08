@@ -112,8 +112,11 @@ class Zarr(Convention):
 
         # optional, but required to be `"none"` for now
         compression = metadata.pop("compression", "none")
+        variables_to_drop = []
         if compression != "none":
             index_options["compression"] = compression
+            index_options["dim"] = spatial_dimension
+            variables_to_drop.append(coordinate)
 
         # construct index
         metadata_ = self.translate_metadata(metadata)
@@ -126,8 +129,10 @@ class Zarr(Convention):
         index_cls = GRID_REGISTRY[grid_name]
         index = index_cls.from_variables({name: var}, options=index_options)
 
-        new_ds = ds.assign_coords(xr.Coordinates.from_xindex(index)).assign_attrs(
-            copy.deepcopy(ds.attrs)
+        new_ds = (
+            ds.assign_coords(xr.Coordinates.from_xindex(index))
+            .drop_vars(variables_to_drop)
+            .assign_attrs(copy.deepcopy(ds.attrs))
         )
         # remove redundant attrs
         new_ds.attrs.pop("dggs", None)

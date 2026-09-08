@@ -1,5 +1,5 @@
 from collections.abc import Hashable, Mapping
-from typing import Any
+from typing import Any, Self
 
 import numpy as np
 import xarray as xr
@@ -239,6 +239,24 @@ class HealpixMocIndex(xr.Index):
             grid_info=self._grid_info,
             chunksizes=chunksizes,
         )
+
+    def equals(self, other: Self) -> bool:
+        """compare two instances of MOC-based indexes"""
+        if not isinstance(other, type(self)):
+            return False
+
+        if (
+            self._dim != other._dim
+            or self._name != other._name
+            or self._chunksizes != other._chunksizes
+            or self._compression != other._compression
+        ):
+            return False
+        if self._grid_info != other._grid_info:
+            return False
+
+        # until the range index supports comparing directly
+        return np.all(self._index.ranges() == other._index.ranges())
 
     @classmethod
     def from_variables(cls, variables, *, options):
