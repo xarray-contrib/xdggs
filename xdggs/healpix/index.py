@@ -67,11 +67,14 @@ class HealpixIndex(DGGSIndex):
         *,
         options: Mapping[str, Any],
     ) -> "HealpixIndex":
-        name, var, dim = _extract_cell_id_variable(variables)
+        name, var, var_dim = _extract_cell_id_variable(variables)
+
+        options_ = dict(options)
+        dim = options_.pop("dim", var_dim)
 
         grid_info = HealpixInfo.from_dict(var.attrs)
 
-        return cls(var.data, dim=dim, name=name, grid_info=grid_info, **options)
+        return cls(var.data, dim=dim, name=name, grid_info=grid_info, **options_)
 
     def _replace(self, new_index: xr.Index):
         return type(self)(

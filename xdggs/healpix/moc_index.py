@@ -215,7 +215,6 @@ class HealpixMocIndex(xr.Index):
                 "The MOC index currently only supports the 'nested' scheme"
             )
 
-        print(compression, array.ndim, array)
         if compression == "ranges":
             if array.ndim != 2 or array.shape[1] != 2:
                 raise ValueError(
