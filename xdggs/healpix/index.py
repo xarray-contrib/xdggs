@@ -8,7 +8,6 @@ from xdggs.grid import DGGSInfo
 from xdggs.healpix.grid_info import HealpixInfo
 from xdggs.healpix.moc_index import HealpixMocIndex
 from xdggs.index import DGGSIndex
-from xdggs.typing import Compression
 from xdggs.utils import _extract_cell_id_variable, register_dggs
 
 
@@ -16,41 +15,34 @@ from xdggs.utils import _extract_cell_id_variable, register_dggs
 class HealpixIndex(DGGSIndex):
     def __init__(
         self,
-        cell_ids: Any | xr.Index,
+        cell_ids: Any,
         *,
-        dim: str | None = None,
-        name: str | None = None,
-        grid_info: DGGSInfo | None = None,
-        index_kind: str = "pandas",
-        compression: Compression = "none",
+        dim: str,
+        name: str,
+        grid_info: DGGSInfo,
+        index_kind: str | None = None,
+        **options,
     ):
-        if isinstance(cell_ids, HealpixMocIndex):
-            # all information already on the moc index
-            self._index = cell_ids
-
-            self._grid_info = grid_info
-            self._dim = cell_ids.dim
-            self._name = cell_ids.name
-
-            return
-
-        if self._dim is None:
-            raise TypeError(
-                "missing required parameter when creating a healpix index from cell ids: 'dim'"
-            )
-        if self._name is None:
-            raise TypeError(
-                "missing required parameter when creating a healpix index from cell ids: 'name'"
-            )
-
         self._dim = dim
         self._name = name
+        self._grid = grid_info
 
         if not isinstance(grid_info, HealpixInfo):
             raise ValueError(f"grid info object has an invalid type: {type(grid_info)}")
 
-        if compression != "none" and index_kind == "pandas":
+        if isinstance(cell_ids, HealpixMocIndex):
+            if index_kind not in ("moc", None):
+                raise ValueError(
+                    f"received a moc index instance but index_kind does not match: {index_kind}"
+                )
+            index_kind = "moc"
+        elif index_kind is None:
+            index_kind = "pandas"
+
+        if index_kind == "pandas" and "compression" in options:
             raise ValueError("the pandas backend does not support compressed cell ids")
+
+        self._kind = index_kind
 
         if isinstance(cell_ids, xr.Index):
             self._index = cell_ids
@@ -59,15 +51,8 @@ class HealpixIndex(DGGSIndex):
             self._index.index.name = name
         elif index_kind == "moc":
             self._index = HealpixMocIndex.from_array(
-                cell_ids,
-                dim=dim,
-                grid_info=grid_info,
-                name=name,
-                compression=compression,
+                cell_ids, dim=dim, grid_info=grid_info, name=name, **options
             )
-        self._kind = index_kind
-
-        self._grid = grid_info
 
     def values(self):
         if self._kind == "moc":
@@ -84,15 +69,17 @@ class HealpixIndex(DGGSIndex):
     ) -> "HealpixIndex":
         name, var, dim = _extract_cell_id_variable(variables)
 
-        index_kind = options.pop("index_kind", "pandas")
+        grid_info = HealpixInfo.from_dict(var.attrs)
 
-        grid_info = HealpixInfo.from_dict(var.attrs | options)
-
-        return cls(var.data, dim, name, grid_info, index_kind=index_kind)
+        return cls(var.data, dim=dim, name=name, grid_info=grid_info, **options)
 
     def _replace(self, new_index: xr.Index):
         return type(self)(
-            new_index, self._dim, self._name, self._grid, index_kind=self._kind
+            new_index,
+            dim=self._dim,
+            name=self._name,
+            grid_info=self._grid,
+            index_kind=self._kind,
         )
 
     @property
