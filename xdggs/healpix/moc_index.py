@@ -8,6 +8,8 @@ from xarray.core.indexes import IndexSelResult
 
 from xdggs.healpix.grid_info import HealpixInfo
 from xdggs.healpix.indexing_adapters import MocRangesIndexingAdapter
+from xdggs.itertools import pairwise_tree_reduce
+from xdggs.typing import Compression
 from xdggs.utils import _extract_cell_id_variable
 
 try:
@@ -88,6 +90,46 @@ def extract_chunk(index, slice_):
     return index.isel(slice_).cell_ids()
 
 
+def _create_index_from_array(
+    array, grid_info, compression: Compression
+) -> RangeMOCIndex:
+    ellipsoid = grid_info.ellipsoid
+    if ellipsoid is None:
+        import healpix_geo.ellipsoid
+
+        ellipsoid = healpix_geo.ellipsoid.resolve("sphere")
+
+    if array.size == 12 * 4**grid_info.level:
+        # no need to look at the cell ids
+        return RangeMOCIndex.full_domain(grid_info.level, ellipsoid=ellipsoid)
+
+    create_index_funcs = {
+        "none": RangeMOCIndex.from_cell_ids,
+        "compacted": RangeMOCIndex.from_compacted,
+        "ranges": RangeMOCIndex.from_ranges,
+    }
+    create_index = create_index_funcs.get(compression)
+    if create_index is None:
+        raise ValueError(f"unknown compression scheme: {compression!r}")
+
+    if isinstance(array, dask_array_type):
+        import dask
+
+        indexes = [
+            dask.delayed(create_index)(grid_info.level, chunk, ellipsoid)
+            for chunk in array.astype("uint64").to_delayed().flatten()
+        ]
+        task = pairwise_tree_reduce(dask.delayed(RangeMOCIndex.union), indexes)
+
+        index = dask.compute(task)[0]
+    else:
+        index = create_index(
+            grid_info.level, array.astype("uint64"), ellipsoid=ellipsoid
+        )
+
+    return index
+
+
 # optionally replaces the PandasIndex within HealpixIndex
 class HealpixMocIndex(xr.Index):
     """More efficient index for healpix cell ids based on a MOC
@@ -106,12 +148,22 @@ class HealpixMocIndex(xr.Index):
         The low-level implementation of the index functionality.
     """
 
-    def __init__(self, index, *, dim, name, grid_info, chunksizes):
+    def __init__(
+        self,
+        index,
+        *,
+        dim,
+        name,
+        grid_info,
+        chunksizes,
+        compression: Compression = "none",
+    ):
         self._index = index
         self._dim = dim
         self._grid_info = grid_info
         self._name = name
         self._chunksizes = chunksizes
+        self._compression = compression
 
     @property
     def size(self):
@@ -133,7 +185,9 @@ class HealpixMocIndex(xr.Index):
         return self._chunksizes
 
     @classmethod
-    def from_array(cls, array, *, dim, name, grid_info):
+    def from_array(
+        cls, array, *, dim, name, grid_info, compression: Compression = "none"
+    ):
         """Construct an index from a raw array.
 
         Parameters
@@ -161,33 +215,17 @@ class HealpixMocIndex(xr.Index):
                 "The MOC index currently only supports the 'nested' scheme"
             )
 
-        if array.ndim != 1:
-            raise ValueError("only 1D cell ids are supported")
-
-        ellipsoid = grid_info.ellipsoid
-        if ellipsoid is None:
-            import healpix_geo.ellipsoid
-
-            ellipsoid = healpix_geo.ellipsoid.resolve("sphere")
-
-        if array.size == 12 * 4**grid_info.level:
-            index = RangeMOCIndex.full_domain(grid_info.level)
-        elif isinstance(array, dask_array_type):
-            from functools import reduce
-
-            import dask
-
-            [indexes] = dask.compute(
-                dask.delayed(RangeMOCIndex.from_cell_ids)(
-                    grid_info.level, chunk, ellipsoid=ellipsoid
+        print(compression, array.ndim, array)
+        if compression == "ranges":
+            if array.ndim != 2 or array.shape[1] != 2:
+                raise ValueError(
+                    "the range compressed coordinate must have a shape of (n, 2)"
                 )
-                for chunk in array.astype("uint64").to_delayed()
-            )
-            index = reduce(RangeMOCIndex.union, indexes)
         else:
-            index = RangeMOCIndex.from_cell_ids(
-                grid_info.level, array.astype("uint64"), ellipsoid=ellipsoid
-            )
+            if array.ndim != 1:
+                raise ValueError("only 1D cell ids are supported")
+
+        index = _create_index_from_array(array, grid_info, compression)
 
         chunksizes = {dim: array.chunks[0] if hasattr(array, "chunks") else None}
         return cls(
@@ -221,9 +259,14 @@ class HealpixMocIndex(xr.Index):
             A new Index object.
         """
         name, var, dim = _extract_cell_id_variable(variables)
-        grid_info = HealpixInfo.from_dict(var.attrs | options)
 
-        return cls.from_array(var.data, dim=dim, name=name, grid_info=grid_info)
+        options_ = dict(options)
+        compression = options_.pop("compression", "none")
+        grid_info = HealpixInfo.from_dict(var.attrs | options_)
+
+        return cls.from_array(
+            var.data, dim=dim, name=name, grid_info=grid_info, compression=compression
+        )
 
     def create_variables(
         self, variables: Mapping[Any, xr.Variable] | None = None
