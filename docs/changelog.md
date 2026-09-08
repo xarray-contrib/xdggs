@@ -6,6 +6,7 @@
 - Properly decode ellipsoids for the CF convention ({pull}`228`)
 - Rewrite the map widgets using `anywidget` ({pull}`248`)
 - Resolve ellipsoid names on user input ({pull}`257`)
+- Lazy coordinates for the healpix MOC index ({pull}`259`)
 
 ## 0.6.0 (2026-02-05)
 
