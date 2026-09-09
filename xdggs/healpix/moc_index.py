@@ -321,13 +321,15 @@ class HealpixMocIndex(xr.Index):
         if encoding is None:
             encoding = {}
 
-        coordinate_name = encoding.get("coordinate", self._name)
         compression = encoding.get("compression", self._compression)
         attrs = {"compression": compression}
         match compression:
             case "none":
+                coordinate_name = encoding.get("coordinate", self._name)
                 variable = xr.Variable(self._dim, self._index.cell_ids(), attrs)
             case "compacted":
+                coordinate_name = encoding.get("coordinate", "compacted_cell_ids")
+
                 compacted_level = encoding.get("compacted_level", None)
                 compacted_dim = encoding.get("dim", "compacted_cells")
                 if compacted_level is None:
@@ -340,6 +342,8 @@ class HealpixMocIndex(xr.Index):
 
                 variable = xr.Variable(compacted_dim, cell_ids, attrs)
             case "ranges":
+                coordinate_name = encoding.get("coordinate", "cell_ranges")
+
                 range_dim = encoding.get("dim", "range_index")
                 bounds_dim = encoding.get("bounds_dim", "bounds")
 
