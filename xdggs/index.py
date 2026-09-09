@@ -102,6 +102,9 @@ class DGGSIndex(Index):
     def _replace(self, new_index: PandasIndex):
         raise NotImplementedError()
 
+    def serialize(self, *, encoding: dict[str, Any] | None = None) -> xr.Coordinates:
+        raise NotImplementedError()
+
     def cell_centers(self) -> tuple[np.ndarray, np.ndarray]:
         return self._grid.cell_ids2geographic(self.values())
 
