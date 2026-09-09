@@ -1,6 +1,7 @@
 from collections.abc import Hashable, Mapping
 from typing import Any, Self
 
+import healpix_geo
 import numpy as np
 import xarray as xr
 from healpix_geo.nested import RangeMOCIndex
@@ -315,6 +316,39 @@ class HealpixMocIndex(xr.Index):
         var = xr.Variable(self._dim, data, attrs=attrs, encoding=encoding)
 
         return {name: var}
+
+    def serialize(self, *, encoding: dict[str, Any] | None = None) -> xr.Coordinates:
+        if encoding is None:
+            encoding = {}
+
+        coordinate_name = encoding.get("coordinate", self._name)
+        compression = encoding.get("compression", self._compression)
+        attrs = {"compression": compression}
+        match compression:
+            case "none":
+                variable = xr.Variable(self._dim, self._index.cell_ids(), attrs)
+            case "compacted":
+                compacted_level = encoding.get("compacted_level", None)
+                compacted_dim = encoding.get("dim", "compacted_cells")
+                if compacted_level is None:
+                    cell_ids = self._index.compacted_cell_ids()
+                else:
+                    cell_ids = healpix_geo.nested.to_zuniq(
+                        self._index.refine(compacted_level).cell_ids(),
+                        compacted_level,
+                    )
+
+                variable = xr.Variable(compacted_dim, cell_ids, attrs)
+            case "ranges":
+                range_dim = encoding.get("dim", "range_index")
+                bounds_dim = encoding.get("bounds_dim", "bounds")
+
+                ranges = self._index.ranges()
+                variable = xr.Variable((range_dim, bounds_dim), ranges, attrs)
+            case _:
+                raise NotImplementedError(f"unknown compression method: {compression}")
+
+        return xr.Coordinates({coordinate_name: variable}, indexes={})
 
     def isel(self, indexers):
         """Subset the index using positional indexers.
