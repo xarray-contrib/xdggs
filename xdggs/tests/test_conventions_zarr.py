@@ -101,7 +101,7 @@ def test_decode(grid_info, metadata_object, cell_ids, name, dim):
                 "name": "healpix",
                 "refinement_level": 5,
                 "indexing_scheme": "nested",
-                "coordinate": "cell_ranges",
+                "coordinate": "compacted_cell_ids",
                 "spatial_dimension": "cells",
                 "compression": "compacted",
             },
@@ -150,19 +150,21 @@ def test_decode_compression(metadata_object, grid_info, variable):
     ["name", "dim"], [("cell_ids", "cells"), ("zone_ids", "zones")]
 )
 @pytest.mark.parametrize(
-    ["grid_info", "cell_ids"],
+    ["grid_info", "metadata_object", "cell_ids"],
     (
         (
             {"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"},
+            {"name": "healpix", "refinement_level": 1, "indexing_scheme": "nested"},
             np.array([3, 6, 9], dtype="uint64"),
         ),
         (
             {"grid_name": "h3", "level": 4},
+            {"name": "h3", "refinement_level": 4},
             np.array([0x832830FFFFFFFFF], dtype="uint64"),
         ),
     ),
 )
-def test_encode(grid_info, cell_ids, name, dim):
+def test_encode(grid_info, metadata_object, cell_ids, name, dim):
     convention = Zarr()
 
     index_cls = xdggs.index.GRID_REGISTRY[grid_info["grid_name"]]
@@ -173,7 +175,7 @@ def test_encode(grid_info, cell_ids, name, dim):
     orig = obj.copy(deep=True)
 
     coord = obj.dggs.coord
-    dggs_metadata_object = translate(grid_info) | {
+    dggs_metadata_object = metadata_object | {
         "spatial_dimension": coord.dims[0],
         "coordinate": coord.name,
         "compression": "none",
@@ -182,7 +184,7 @@ def test_encode(grid_info, cell_ids, name, dim):
         "zarr_conventions": [convention.convention_metadata],
         "dggs": dggs_metadata_object,
     }
-    expected = obj.drop_indexes(coord.name).assign_attrs(metadata)
+    expected = xr.Dataset(coords={coord.name: (dim, cell_ids)}, attrs=metadata)
 
     encoded = convention.encode(obj)
 
