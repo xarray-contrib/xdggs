@@ -183,7 +183,8 @@ class Zarr(Convention):
         # - spatial_dimension
         # - compression
 
-        coordinate = ds.dggs.index._name
+        index = ds.dggs.index
+        coordinate = index._name
 
         additional_metadata = {
             "spatial_dimension": ds.dggs.index._dim,
@@ -191,7 +192,10 @@ class Zarr(Convention):
             "compression": "none",
         } | encoding
 
-        result = ds.drop_indexes(coordinate)
+        result = ds.drop_indexes(coordinate).assign_coords(
+            index.serialize(overrides=encoding)
+        )
+
         result.attrs["dggs"] = grid_info | additional_metadata
         conventions = result.attrs.setdefault("zarr_conventions", [])
         conventions.append(self.convention_metadata)
