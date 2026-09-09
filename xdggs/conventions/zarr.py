@@ -168,6 +168,9 @@ class Zarr(Convention):
         encoded : xr.Dataset
             The encoded dataset.
         """
+        if encoding is None:
+            encoding = {}
+
         grid_info = self.translate_metadata(
             ds.dggs.grid_info.to_dict(), direction="inverse"
         )
@@ -186,7 +189,7 @@ class Zarr(Convention):
             "spatial_dimension": ds.dggs.index._dim,
             "coordinate": coordinate,
             "compression": "none",
-        }
+        } | encoding
 
         result = ds.drop_indexes(coordinate)
         result.attrs["dggs"] = grid_info | additional_metadata
