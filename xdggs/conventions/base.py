@@ -1,12 +1,37 @@
 from collections.abc import Hashable
-from typing import Any
+from typing import Any, ClassVar, Literal
 
 import xarray as xr
 
 from xdggs.grid import DGGSInfo
+from xdggs.typing import TranslationTable
+
+
+def invert_translation_table(mapping: TranslationTable) -> TranslationTable:
+    return dict(
+        (
+            (value, key)
+            if isinstance(value, str)
+            else (key, invert_translation_table(value))
+        )
+        for key, value in mapping.items()
+    )
 
 
 class Convention:
+    translation_table: ClassVar[TranslationTable]
+
+    def _create_translation_table(
+        self, direction: Literal["xdggs", "self"]
+    ) -> TranslationTable:
+        match direction:
+            case "xdggs":
+                return self.translation_table
+            case "self":
+                return invert_translation_table(self.translation_table)
+            case _:
+                raise ValueError(f"unknown direction: {direction}")
+
     def decode(
         self,
         obj: xr.Dataset,

@@ -145,7 +145,7 @@ def encode(
     if converter is None:
         raise ValueError(f"unknown convention: {convention}")
 
-    return call_on_dataset(converter.encode, obj)
+    return call_on_dataset(converter.encode, obj, encoding=encoding)
 
 
 __all__ = ["register_convention", "detect_decoder", "DecoderError", "Convention"]

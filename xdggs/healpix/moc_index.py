@@ -229,7 +229,12 @@ class HealpixMocIndex(xr.Index):
 
         chunksizes = {dim: array.chunks[0] if hasattr(array, "chunks") else None}
         return cls(
-            index, dim=dim, name=name, grid_info=grid_info, chunksizes=chunksizes
+            index,
+            dim=dim,
+            name=name,
+            grid_info=grid_info,
+            chunksizes=chunksizes,
+            compression=compression,
         )
 
     def _replace(self, index, chunksizes):
@@ -323,6 +328,7 @@ class HealpixMocIndex(xr.Index):
 
         compression = encoding.get("compression", self._compression)
         attrs = {"compression": compression}
+
         match compression:
             case "none":
                 coordinate_name = encoding.get("coordinate", self._name)

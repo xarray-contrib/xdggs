@@ -1,6 +1,6 @@
 import json
 from dataclasses import dataclass
-from typing import Any, ClassVar, Literal, Self
+from typing import Any, ClassVar, Literal, Self, TypeVar
 
 import numpy as np
 
@@ -14,6 +14,8 @@ from xdggs.ellipsoid import (
 from xdggs.grid import DGGSInfo, translate_parameters
 from xdggs.itertools import identity
 from xdggs.utils import ignore_parameters
+
+T = TypeVar("T")
 
 
 def _serialize_ellipsoid(
@@ -118,6 +120,8 @@ class HealpixInfo(DGGSInfo):
         The reference ellipsoid. If not passed, a sphere is assumed.
     """
 
+    name: ClassVar[str] = "healpix"
+
     level: int | None
     """int or None : The hierarchical level of the grid"""
 
@@ -169,7 +173,7 @@ class HealpixInfo(DGGSInfo):
             return self.indexing_scheme == "nested"
 
     @classmethod
-    def from_dict[T](cls: type[T], mapping: dict[str, Any]) -> T:
+    def from_dict(cls: type[T], mapping: dict[str, Any]) -> T:
         """construct a `HealpixInfo` object from a mapping of attributes
 
         Parameters
@@ -225,7 +229,7 @@ class HealpixInfo(DGGSInfo):
             optional_values["ellipsoid"] = _serialize_ellipsoid(self.ellipsoid)
 
         return {
-            "grid_name": "healpix",
+            "grid_name": self.name,
             "level": self.level,
             "indexing_scheme": self.indexing_scheme,
         } | optional_values

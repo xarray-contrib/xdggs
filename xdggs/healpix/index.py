@@ -85,7 +85,7 @@ class HealpixIndex(DGGSIndex):
             index_kind=self._kind,
         )
 
-    def serialize(self, *, overrides: dict[str, Any] | None = None) -> xr.Coordinates:
+    def serialize(self, *, encoding: dict[str, Any] | None = None) -> xr.Coordinates:
         """Serialize the index into coordinates and metadata
 
         Parameters
@@ -93,16 +93,22 @@ class HealpixIndex(DGGSIndex):
         overrides : mapping of str to object, optional
             Overrides for the index serialization.
         """
-        if isinstance(self._index, PandasIndex):
-            variables = self._index.create_variables()
-
-            return xr.Coordinates(variables, indexes={})
+        if self._kind == "pandas":
+            return super().serialize(encoding=encoding)
         else:
-            return self._index.serialize(overrides=overrides)
+            return self._index.serialize(encoding=encoding)
 
     @property
     def grid_info(self) -> HealpixInfo:
         return self._grid
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def dim(self) -> str:
+        return self._dim
 
     def __repr__(self):
         return "\n".join(
