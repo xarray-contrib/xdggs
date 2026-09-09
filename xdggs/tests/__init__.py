@@ -26,6 +26,23 @@ except ImportError:
     has_dask = False
 
 
+try:
+    import healpix_geo
+    from packaging import version
+
+    has_healpix_geo_0_4_1 = version.parse(healpix_geo.__version__) >= version.parse(
+        "0.4.1"
+    )
+except ImportError:
+    has_healpix_geo_0_4_1 = False
+
+
+requires_dask = pytest.mark.skipif(not has_dask, reason="requires dask")
+requires_healpix_geo_0_4_1 = pytest.mark.skipif(
+    not has_healpix_geo_0_4_1, reason="requires healpix-geo >= 0.4.1"
+)
+
+
 # vendored from xarray
 class CountingScheduler:
     """Simple dask scheduler counting the number of computes.
@@ -43,9 +60,6 @@ class CountingScheduler:
                 f"Too many computes. Total: {self.total_computes} > max: {self.max_computes}."
             )
         return dask.get(dsk, keys, **kwargs)
-
-
-requires_dask = pytest.mark.skipif(not has_dask, reason="requires dask")
 
 
 def geoarrow_to_shapely(arr):
