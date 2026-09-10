@@ -227,6 +227,7 @@ class H3Info(DGGSInfo):
             table=table,
             get_hexagon=table[cell_id_column],
             filled=True,
+            extruded=False,
             get_fill_color=fill_colors,
         )
 
