@@ -1,8 +1,10 @@
+import importlib.metadata
 from contextlib import nullcontext
 
 import geoarrow.pyarrow as ga
 import pytest
 import shapely
+from packaging import version
 
 from xdggs.tests.matchers import (  # noqa: F401
     Match,
@@ -26,13 +28,14 @@ except ImportError:
     has_dask = False
 
 
-try:
-    import healpix_geo
-    from packaging import version
+def find_version(module_name: str) -> version.Version:
+    version_ = importlib.metadata.version(module_name)
 
-    has_healpix_geo_0_4_1 = version.parse(healpix_geo.__version__) >= version.parse(
-        "0.4.1"
-    )
+    return version.parse(version_)
+
+
+try:
+    has_healpix_geo_0_4_1 = find_version("healpix_geo") >= version.parse("0.4.1")
 except ImportError:
     has_healpix_geo_0_4_1 = False
 
