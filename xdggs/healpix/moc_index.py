@@ -323,6 +323,35 @@ class HealpixMocIndex(xr.Index):
         return {name: var}
 
     def serialize(self, *, encoding: dict[str, Any] | None = None) -> xr.Coordinates:
+        """serialize the index
+
+        Parameters
+        ----------
+        encoding : dict of str to object, optional
+            Additional serialization settings.
+
+            Supported settings are:
+
+            - ``"compression"``: the type of compression. For supported values see below.
+            - ``"coordinate"``: the name of the encoded coordinate. Defaults depend on the compression type.
+
+            Supported compression types:
+
+            - ``"none"``: to enumerate all cell ids. Uses the indexed coordinate's name by default.
+            - ``"compacted"``: to compact the cell ids to flat or variable sized cell ids in
+              the ``zuniq`` scheme. The default coordinate name is ``"compacted_cell_ids"``.
+              Additional settings:
+
+              - ``"dim"``: The dimension name of the compacted coordinate. Must be different
+                from the index' dimension. The default is ``"compacted_cells"``.
+              - ``"compacted_level"``: the compaction level. If an integer, must be smaller
+                than the data level. If none (the default), compacts to variably-sized cells.
+
+            - ``"ranges"``: to store the connected ranges in ``nested`` scheme at level 29. The default coordinate name is ``"cell_ranges"``. Additional settings:
+
+              - ``"dim"``: The dimension name of the range number. By default, this is ``"range_index"``.
+              - ``"bounds_dim"``: The dimension name of the range bounds. By default, this is ``"range_bounds"``.
+        """
         if encoding is None:
             encoding = {}
 
