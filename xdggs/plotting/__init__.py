@@ -138,6 +138,7 @@ def explore(
 
     # guaranteed to be 1D
     cell_id_coord = obj.dggs.coord
+    index = obj.dggs.index
     [cell_dim] = cell_id_coord.dims
 
     cell_ids = cell_id_coord.data
@@ -178,7 +179,7 @@ def explore(
         columns.update({"longitude": lon, "latitude": lat})
     columns.update({initial_arr.name or "data": initial_arr.data})
 
-    layer = grid_info._create_layer(cell_id_coord.name, columns, colors)
+    layer = index._create_layer(cell_id_coord.name, columns, colors)
 
     map_ = lonboard.Map(layer, **map_kwargs)
 

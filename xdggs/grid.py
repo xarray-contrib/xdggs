@@ -1,19 +1,11 @@
-from __future__ import annotations
-
 import operator
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Self, TypeVar
-
-import numpy as np
-import numpy.typing as npt
+from typing import Any, Self, TypeVar
 
 from xdggs.ellipsoid import Ellipsoid, Sphere, parse_ellipsoid
 from xdggs.itertools import groupby, identity
 
 T = TypeVar("T")
-
-if TYPE_CHECKING:
-    from lonboard import BaseLayer as LonboardLayer
 
 
 @dataclass(frozen=True)
@@ -60,22 +52,6 @@ class DGGSInfo:
 
     def zoom_to(self, cell_ids, level: int):
         raise NotImplementedError()
-
-    def _create_layer(
-        self,
-        cell_id_column: str,
-        columns: dict[str, npt.NDArray],
-        fill_colors: npt.NDArray[np.uint8],
-    ) -> LonboardLayer:
-        from arro3.core import Array
-        from lonboard import SolidPolygonLayer
-
-        from xdggs.plotting.arrow import create_arrow_table
-
-        polygons = self.cell_boundaries(columns[cell_id_column], backend="geoarrow")
-        table = create_arrow_table(columns | {"geometry": Array.from_arrow(polygons)})
-
-        return SolidPolygonLayer(table=table, filled=True, get_fill_colors=fill_colors)
 
 
 GridInfoType = dict[str, Any] | DGGSInfo

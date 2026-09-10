@@ -211,26 +211,6 @@ class H3Info(DGGSInfo):
 
         return np.asarray(change_resolution(cell_ids, level))
 
-    def _create_layer(
-        self,
-        cell_id_column: str,
-        columns: dict[str, npt.NDArray],
-        fill_colors: npt.NDArray[np.uint8],
-    ) -> LonboardLayer:
-        from lonboard import H3HexagonLayer
-
-        from xdggs.plotting.arrow import create_arrow_table
-
-        table = create_arrow_table(columns)
-
-        return H3HexagonLayer(
-            table=table,
-            get_hexagon=table[cell_id_column],
-            filled=True,
-            extruded=False,
-            get_fill_color=fill_colors,
-        )
-
 
 @register_dggs("h3")
 class H3Index(DGGSIndex):
@@ -264,6 +244,26 @@ class H3Index(DGGSIndex):
     @property
     def grid_info(self) -> H3Info:
         return self._grid
+
+    def _create_layer(
+        self,
+        cell_id_column: str,
+        columns: dict[str, npt.NDArray],
+        fill_colors: npt.NDArray[np.uint8],
+    ) -> LonboardLayer:
+        from lonboard import H3HexagonLayer
+
+        from xdggs.plotting.arrow import create_arrow_table
+
+        table = create_arrow_table(columns)
+
+        return H3HexagonLayer(
+            table=table,
+            get_hexagon=table[cell_id_column],
+            filled=True,
+            extruded=False,
+            get_fill_color=fill_colors,
+        )
 
     def _replace(self, new_index: xr.Index):
         return type(self)(new_index, self._dim, self._name, self._grid)
