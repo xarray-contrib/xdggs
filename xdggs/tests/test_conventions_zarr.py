@@ -108,7 +108,10 @@ def test_decode(grid_info, metadata_object, cell_ids, name, dim):
             {"grid_name": "healpix", "level": 5, "indexing_scheme": "nested"},
             xr.Variable(
                 ("compacted_cells"),
-                np.array([216172782113783808, 792633534417207296, 1224979098644774912]),
+                np.array(
+                    [216172782113783808, 792633534417207296, 1224979098644774912],
+                    dtype="uint64",
+                ),
             ),
             id="compacted-5",
         ),
@@ -283,7 +286,7 @@ def test_encode(grid_info, metadata_object, cell_ids, name, dim):
                 ("compacted_cells"),
                 np.array([216172782113783808, 792633534417207296, 1224979098644774912]),
             ),
-            id="compacted_flat-5",
+            id="compacted_flat-2",
         ),
         pytest.param(
             {
@@ -296,10 +299,22 @@ def test_encode(grid_info, metadata_object, cell_ids, name, dim):
             },
             {"coordinate": "compacted_cell_ids", "compression": "compacted"},
             {"grid_name": "healpix", "level": 5, "indexing_scheme": "nested"},
-            xr.Variable("cells", np.array([4, 5, 6, 7, 8, 10])),
+            xr.Variable(
+                "cells",
+                np.array([4, 5, 6, 7, 8, 10, 12, *range(16, 32)], dtype="uint64"),
+            ),
             xr.Variable(
                 ("compacted_cells"),
-                np.array([216172782113783808, 306244774661193728, 378302368699121664]),
+                np.array(
+                    [
+                        3377699720527872,
+                        4785074604081152,
+                        5910974510923776,
+                        7036874417766400,
+                        13510798882111488,
+                    ],
+                    dtype="uint64",
+                ),
             ),
             marks=requires_healpix_geo_0_4_1,
             id="compacted-5",
