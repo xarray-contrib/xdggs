@@ -4,26 +4,11 @@ from typing import Any, ClassVar, TypedDict
 
 import xarray as xr
 
-from xdggs.conventions.base import Convention
+from xdggs.conventions.base import Convention, translate_metadata_keys
 from xdggs.conventions.errors import DecoderError
 from xdggs.conventions.registry import register_convention
 from xdggs.typing import TranslationTable
 from xdggs.utils import GRID_REGISTRY
-
-
-def translate_metadata_keys(mapping: dict[str, Any], table: TranslationTable):
-    def _translate(key, value, table):
-        replacement = table.get(key, key)
-        if isinstance(replacement, str):
-            return replacement, value
-
-        renamed_object = {
-            _translate(subkey, subvalue, replacement)
-            for subkey, subvalue in value.items()
-        }
-        return key, renamed_object
-
-    return dict(_translate(key, value, table) for key, value in mapping.items())
 
 
 def extract_convention_declaration(

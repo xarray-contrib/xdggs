@@ -18,6 +18,21 @@ def invert_translation_table(mapping: TranslationTable) -> TranslationTable:
     )
 
 
+def translate_metadata_keys(mapping: dict[str, Any], table: TranslationTable):
+    def _translate(key, value, table):
+        replacement = table.get(key, key)
+        if isinstance(replacement, str):
+            return replacement, value
+
+        renamed_object = {
+            _translate(subkey, subvalue, replacement)
+            for subkey, subvalue in value.items()
+        }
+        return key, renamed_object
+
+    return dict(_translate(key, value, table) for key, value in mapping.items())
+
+
 class Convention:
     translation_table: ClassVar[TranslationTable]
 
