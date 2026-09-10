@@ -185,6 +185,11 @@ class HealpixMocIndex(xr.Index):
         """The size of the chunks of the indexed coordinate."""
         return self._chunksizes
 
+    @property
+    def grid_info(self) -> HealpixInfo:
+        """The grid metadata of the index."""
+        return self._grid_info
+
     @classmethod
     def from_array(
         cls, array, *, dim, name, grid_info, compression: Compression = "none"
