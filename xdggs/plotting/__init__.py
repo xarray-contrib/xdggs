@@ -179,7 +179,7 @@ def explore(
         {cell_id_coord.name: cell_ids, initial_arr.name or "data": initial_arr.data}
     )
 
-    layer = grid_info._create_layer(cell_ids, columns, colors)
+    layer = grid_info._create_layer(cell_id_coord.name, columns, colors)
 
     map_ = lonboard.Map(layer, **map_kwargs)
 

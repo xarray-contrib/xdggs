@@ -63,7 +63,7 @@ class DGGSInfo:
 
     def _create_layer(
         self,
-        cell_ids: npt.NDArray[np.integer],
+        cell_id_column: str,
         columns: dict[str, npt.NDArray],
         fill_colors: npt.NDArray[np.uint8],
     ) -> LonboardLayer:
@@ -72,7 +72,7 @@ class DGGSInfo:
 
         from xdggs.plotting.arrow import create_arrow_table
 
-        polygons = self.cell_boundaries(cell_ids, backend="geoarrow")
+        polygons = self.cell_boundaries(columns[cell_id_column], backend="geoarrow")
         table = create_arrow_table(columns | {"geometry": Array.from_arrow(polygons)})
 
         return SolidPolygonLayer(table=table, filled=True, get_fill_colors=fill_colors)

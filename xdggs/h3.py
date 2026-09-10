@@ -213,7 +213,7 @@ class H3Info(DGGSInfo):
 
     def _create_layer(
         self,
-        cell_ids: npt.NDArray[np.integer],
+        cell_id_column: str,
         columns: dict[str, npt.NDArray],
         fill_colors: npt.NDArray[np.uint8],
     ) -> LonboardLayer:
@@ -225,7 +225,7 @@ class H3Info(DGGSInfo):
 
         return H3HexagonLayer(
             table=table,
-            get_hexagon=table["cell_ids"],
+            get_hexagon=table[cell_id_column],
             filled=True,
             get_fill_color=fill_colors,
         )
