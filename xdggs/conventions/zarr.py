@@ -156,7 +156,7 @@ class Zarr(Convention):
             options = dict(metadata_)
             options.update(index_options)
             index = index_cls.from_level(
-                level, spatial_dimension, name, options=index_options
+                level, spatial_dimension, name, options=options
             )
         elif coordinate not in ds.keys():
             raise DecoderError(f"Coordinate variable {coordinate}, does not exist.")
