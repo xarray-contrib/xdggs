@@ -129,7 +129,7 @@ class DGGSIndex(Index):
         )
         table = create_arrow_table(columns | {"geometry": Array.from_arrow(polygons)})
 
-        return SolidPolygonLayer(table=table, filled=True, get_fill_colors=fill_colors)
+        return SolidPolygonLayer(table=table, filled=True, get_fill_color=fill_colors)
 
     @property
     def grid_info(self) -> DGGSInfo:
