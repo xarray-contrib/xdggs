@@ -17,16 +17,16 @@ from xdggs.plotting.colorize import ColorizeParameters
                 "geometry": np.array([1, 2]),
                 "cell_ids": np.array([0, 1]),
                 "data": np.array([-1, 1]),
-                "longitude": np.array([-5, 10]),
-                "latitude": np.array([-60, -50]),
+                "longitude": np.array([-60, -50]),
+                "latitude": np.array([-5, 10]),
             },
             Table.from_pydict(
                 {
                     "geometry": Array.from_numpy(np.array([1, 2])),
                     "cell_ids": Array.from_numpy(np.array([0, 1])),
                     "data": Array.from_numpy(np.array([-1, 1])),
-                    "latitude": Array.from_numpy(np.array([-5, 10])),
                     "longitude": Array.from_numpy(np.array([-60, -50])),
+                    "latitude": Array.from_numpy(np.array([-5, 10])),
                 }
             ),
             id="standard",
