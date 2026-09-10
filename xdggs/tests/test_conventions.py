@@ -325,35 +325,35 @@ class TestZarrConvention:
         assert_indexes_equal(actual[name].xindexes, expected[name].xindexes)
 
     def test_decode_no_coordinate(self, healpix_dataset):
-        healpix_dataset.pipe(xdggs.decode, convention="zarr")
+        Zarr().decode(healpix_dataset, grid_info=None, name=None, index_options={})
 
     @pytest.mark.parametrize("key", ["zarr_conventions", "dggs"])
     def test_raise_decode_error_missing_convention(self, key, healpix_dataset):
         healpix_dataset.attrs.pop(key)
         with pytest.raises(DecoderError):
-            healpix_dataset.pipe(xdggs.decode, convention="zarr")
+            Zarr().decode(healpix_dataset, grid_info=None, name=None, index_options={})
 
     @pytest.mark.parametrize("key", ["name", "refinement_level", "spatial_dimension"])
     def test_raise_decode_error_missing_required(self, key, healpix_dataset):
         healpix_dataset.attrs["dggs"].pop(key)
         with pytest.raises(DecoderError, match=key):
-            healpix_dataset.pipe(xdggs.decode, convention="zarr")
+            Zarr().decode(healpix_dataset, grid_info=None, name=None, index_options={})
 
     def test_raise_decode_error_no_coordinate_but_default_exists(self, healpix_dataset):
         # the default coordinate name is "cell_ids"
         healpix_dataset["cell_ids"] = ("healpix_index", np.arange(12))
         with pytest.raises(DecoderError, match="cell_ids"):
-            healpix_dataset.pipe(xdggs.decode, convention="zarr")
+            Zarr().decode(healpix_dataset, grid_info=None, name=None, index_options={})
 
     def test_raise_decode_error_coordinate_not_existing(self, healpix_dataset):
         healpix_dataset.attrs["dggs"]["coordinate"] = "healpix_index"
         with pytest.raises(DecoderError, match="does not exist"):
-            healpix_dataset.pipe(xdggs.decode, convention="zarr")
+            Zarr().decode(healpix_dataset, grid_info=None, name=None, index_options={})
 
     def test_raise_decode_error_unkown_dggs(self, healpix_dataset):
         healpix_dataset.attrs["dggs"]["name"] = "DUMMY"
         with pytest.raises(DecoderError, match="DUMMY"):
-            healpix_dataset.pipe(xdggs.decode, convention="zarr")
+            Zarr().decode(healpix_dataset, grid_info=None, name=None, index_options={})
 
     @pytest.mark.parametrize(
         ["name", "dim"], [("cell_ids", "cells"), ("zone_ids", "zones")]

@@ -3,6 +3,7 @@ from collections.abc import Hashable, Mapping
 from dataclasses import dataclass
 from typing import Any, ClassVar, Literal, Self, TypeVar
 
+import pandas as pd
 import numpy as np
 import xarray as xr
 from healpix_geo.nested import RangeMOCIndex
@@ -755,6 +756,38 @@ class HealpixIndex(DGGSIndex):
         grid_info = HealpixInfo.from_dict(var.attrs | options)
 
         return cls(var.data, dim, name, grid_info, index_kind=index_kind)
+
+    @classmethod
+    def from_level(
+        cls: type[DGGSIndex],
+        level: int,
+        dim: str,
+        name: str,
+        *,
+        options: Mapping[str, Any],
+    ) -> DGGSIndex:
+        """Create the index for the complete domain of the given level"""
+        size = 12 * 4**level
+        indexing_scheme = options.get("indexing_scheme", "nested")
+        if indexing_scheme == "zuniq":
+            start = 1 << 2 * (29 - level)
+            step = start << 1
+            stop = size * step
+            cell_ids = xr.indexes.PandasIndex(
+                pd.RangeIndex(start, stop, step, name=name), dim
+            )
+        elif indexing_scheme == "nuniq":
+            start = 4 ** (1 + level)
+            stop = start + size
+            cell_ids = xr.indexes.PandasIndex(
+                pd.RangeIndex(start, stop, name=name), dim
+            )
+        else:
+            cell_ids = xr.indexes.PandasIndex(pd.RangeIndex(size, name=name), dim)
+        dict_options = dict(options)
+        dict_options.update(level=level)
+        grid_info = HealpixInfo.from_dict(dict_options)
+        return cls(cell_ids, dim, name, grid_info)
 
     def _replace(self, new_index: xr.Index):
         return type(self)(

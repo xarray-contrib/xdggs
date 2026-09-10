@@ -3,6 +3,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any, ClassVar, Self
 
+import pandas as pd
 import numpy as np
 import xarray as xr
 
@@ -234,6 +235,30 @@ class H3Index(DGGSIndex):
         grid_info = H3Info.from_dict(var.attrs | options)
 
         return cls(var.data, dim, name, grid_info)
+
+    @classmethod
+    def from_level(
+        cls: type[DGGSIndex],
+        level: int,
+        dim: str,
+        name: str,
+        *,
+        options: Mapping[str, Any],
+    ) -> DGGSIndex:
+        """Create the index for the complete domain of the given level"""
+        # create the base_cells
+        nbase_cells = 122
+        mode = 1 << 59
+        base = np.arange(nbase_cells) << 45
+        ones = (1 << 45) - 1
+        base_cells = mode | base | ones
+        cells = h3ronpy.change_resolution(base_cells, level).to_numpy()
+        cell_ids = xr.indexes.PandasIndex(cells, dim=dim)
+        cell_ids.index.name = name
+        dict_options = dict(options)
+        dict_options.update(level=level)
+        grid_info = HealpixInfo.from_dict(dict_options)
+        return cls(cell_ids, dim, name, grid_info)
 
     @property
     def grid_info(self) -> H3Info:

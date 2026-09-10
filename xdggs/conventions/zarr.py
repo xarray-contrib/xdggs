@@ -2,7 +2,6 @@ import copy
 from collections.abc import Hashable
 from typing import Any, Literal
 
-import pandas as pd
 import xarray as xr
 
 from xdggs.conventions.base import Convention
@@ -118,6 +117,10 @@ class Zarr(Convention):
         grid_name = metadata.pop("name", None)
         if grid_name is None:
             raise DecoderError("Required field `name` is missing or null.")
+        try:
+            index_cls = GRID_REGISTRY[grid_name]
+        except KeyError:
+            raise DecoderError(f"Unknown grid name: {grid_name}") from None
 
         spatial_dimension = metadata.pop("spatial_dimension", None)
         if spatial_dimension is None:
@@ -127,39 +130,42 @@ class Zarr(Convention):
             raise DecoderError("Required field `refinement_level` is missing.")
 
         # optional
-        coordinate = metadata.pop("coordinate", None)
-        if name is not None:
-            # name takes precedence over coordinate
-            coordinate = name
-        if coordinate is None:
-            if "cell_ids" in ds.keys():
-                raise DecoderError(
-                    "Coordinate not given, but cannot overwrite existing variable 'cell_ids'."
-                )
-            # create a memory-efficient range index
-            ds = ds.assign_coords(cell_ids=pd.RangeIndex(ds.sizes[spatial_dimension]))
-            coordinate = "cell_ids"
-        elif coordinate not in ds.keys():
-            raise DecoderError(f"Coordinate variable {coordinate}, does not exist.")
-
-        # optional, but required to be `"none"` for now
         compression = metadata.pop("compression", "none")
         if compression != "none":
             raise NotImplementedError(
                 "compressed coordinates are not supported for now"
             )
 
-        # construct index
+        coordinate = metadata.pop("coordinate", None)
+        if name in ds.keys():
+            # name takes precedence over coordinate
+            coordinate = name
+        else:
+            # name becomes the new coordinate
+            name = name or "cell_ids"
+
+        # construct index based on coordinate presence
         metadata_ = self.translate_metadata(metadata)
+        if coordinate is None:
+            if name in ds.keys():
+                raise DecoderError(f"Cannot overwrite existing variable '{name}'.")
+            # create index for the entire domain at given refinement level
+            level = metadata_.pop("level")
+            if level is None:
+                raise DecoderError(f"No `coordinate` requires a `refinement_level`.")
+            options = dict(metadata_)
+            options.update(index_options)
+            index = index_cls.from_level(
+                level, spatial_dimension, name, options=index_options
+            )
+        elif coordinate not in ds.keys():
+            raise DecoderError(f"Coordinate variable {coordinate}, does not exist.")
+        else:
+            var = ds.variables[coordinate].copy(deep=False)
+            var.attrs = metadata_
+            index = index_cls.from_variables({coordinate: var}, options=index_options)
 
-        var = ds.variables[coordinate].copy(deep=False)
-        var.attrs = metadata_
-
-        if grid_name not in GRID_REGISTRY:
-            raise DecoderError(f"cf convention: unknown grid name: {grid_name}")
-        index_cls = GRID_REGISTRY[grid_name]
-        index = index_cls.from_variables({coordinate: var}, options=index_options)
-
+        # construct index
         new_ds = ds.assign_coords(xr.Coordinates.from_xindex(index)).assign_attrs(
             copy.deepcopy(ds.attrs)
         )
