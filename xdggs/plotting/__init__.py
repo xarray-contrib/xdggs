@@ -166,18 +166,17 @@ def explore(
     normalized_data, stats = normalize(initial_arr, params=colorize_params)
     colors = colorize(normalized_data, colorize_params)
 
-    columns = {
-        coord: obj.variables[coord].data for coord in coords if coord in obj.coords
-    }
+    columns = {cell_id_coord.name: cell_ids}
+    columns.update(
+        {coord: obj.variables[coord].data for coord in coords if coord in obj.coords}
+    )
 
     if ("longitude" in coords and "longitude" not in obj.coords) or (
         "latitude" in coords and "latitude" not in obj.coords
     ):
         lon, lat = grid_info.cell_ids2geographic(cell_ids)
         columns.update({"longitude": lon, "latitude": lat})
-    columns.update(
-        {cell_id_coord.name: cell_ids, initial_arr.name or "data": initial_arr.data}
-    )
+    columns.update({initial_arr.name or "data": initial_arr.data})
 
     layer = grid_info._create_layer(cell_id_coord.name, columns, colors)
 
