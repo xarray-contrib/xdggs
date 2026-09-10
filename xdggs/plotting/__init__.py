@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 import xarray as xr
 
-from xdggs.plotting.arrow import create_arrow_table
 from xdggs.plotting.colorbar import Colorbar
 from xdggs.plotting.colorize import (
     ColorizeParameters,
@@ -124,7 +123,6 @@ def explore(
     basemap: MaplibreBasemap | None = None,
 ) -> MapWithControls:
     import lonboard
-    from lonboard import SolidPolygonLayer
 
     map_kwargs = {}
     if view is not None:
@@ -135,14 +133,15 @@ def explore(
     if isinstance(colorize_params, dict):
         colorize_params = ColorizeParameters.from_dict(colorize_params)
 
+    if coords is None:
+        coords = ["longitude", "latitude"]
+
     # guaranteed to be 1D
     cell_id_coord = obj.dggs.coord
     [cell_dim] = cell_id_coord.dims
 
     cell_ids = cell_id_coord.data
     grid_info = obj.dggs.grid_info
-
-    polygons = grid_info.cell_boundaries(cell_ids, backend="geoarrow")
 
     variable_chooser = construct_variable_chooser(obj)
     if isinstance(obj, xr.Dataset) and not variable_chooser.variables:
@@ -167,10 +166,20 @@ def explore(
     normalized_data, stats = normalize(initial_arr, params=colorize_params)
     colors = colorize(normalized_data, colorize_params)
 
-    table = create_arrow_table(
-        polygons, initial_arr, coordinate=cell_id_coord.name, additional_coords=coords
+    columns = {
+        coord: obj.variables[coord].data for coord in coords if coord in obj.coords
+    }
+
+    if ("longitude" in coords and "longitude" not in obj.coords) or (
+        "latitude" in coords and "latitude" not in obj.coords
+    ):
+        lon, lat = grid_info.cell_ids2geographic(cell_ids)
+        columns.update({"longitude": lon, "latitude": lat})
+    columns.update(
+        {cell_id_coord.name: cell_ids, initial_arr.name or "data": initial_arr.data}
     )
-    layer = SolidPolygonLayer(table=table, filled=True, get_fill_color=colors)
+
+    layer = grid_info._create_layer(cell_ids, columns, colors)
 
     map_ = lonboard.Map(layer, **map_kwargs)
 
