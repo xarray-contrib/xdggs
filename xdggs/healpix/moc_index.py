@@ -369,6 +369,11 @@ class HealpixMocIndex(xr.Index):
                 compacted_dim = encoding.get("dim", "compacted_cells")
                 if compacted_level is None:
                     cell_ids = self._index.compacted_cell_ids()
+                elif compacted_level >= self.grid_info.level:
+                    raise ValueError(
+                        "The compaction level must be smaller than the data level."
+                        f" Got: {self.grid_info.level} (data) and {compacted_level} (compaction)."
+                    )
                 else:
                     cell_ids = healpix_geo.nested.to_zuniq(
                         self._index.refine(compacted_level).cell_ids(),
