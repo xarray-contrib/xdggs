@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 import json
 from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Any, ClassVar, Self
+from typing import TYPE_CHECKING, Any, ClassVar, Self
 
 import numpy as np
+import numpy.typing as npt
 import xarray as xr
 
 try:
@@ -24,6 +27,9 @@ except ImportError:
 from xdggs.grid import DGGSInfo, translate_parameters
 from xdggs.index import DGGSIndex
 from xdggs.utils import _extract_cell_id_variable, register_dggs
+
+if TYPE_CHECKING:
+    from lonboard import BaseLayer as LonboardLayer
 
 
 def polygons_shapely(wkb):
@@ -224,11 +230,11 @@ class H3Index(DGGSIndex):
 
     @classmethod
     def from_variables(
-        cls: type["H3Index"],
+        cls: type[Self],
         variables: Mapping[Any, xr.Variable],
         *,
         options: Mapping[str, Any],
-    ) -> "H3Index":
+    ) -> Self:
         name, var, dim = _extract_cell_id_variable(variables)
 
         grid_info = H3Info.from_dict(var.attrs | options)
@@ -238,6 +244,26 @@ class H3Index(DGGSIndex):
     @property
     def grid_info(self) -> H3Info:
         return self._grid
+
+    def _create_layer(
+        self,
+        cell_id_column: str,
+        columns: dict[str, npt.NDArray],
+        fill_colors: npt.NDArray[np.uint8],
+    ) -> LonboardLayer:
+        from lonboard import H3HexagonLayer
+
+        from xdggs.plotting.arrow import create_arrow_table
+
+        table = create_arrow_table(columns)
+
+        return H3HexagonLayer(
+            table=table,
+            get_hexagon=table[cell_id_column],
+            filled=True,
+            extruded=False,
+            get_fill_color=fill_colors,
+        )
 
     def _replace(self, new_index: xr.Index):
         return type(self)(new_index, self._dim, self._name, self._grid)

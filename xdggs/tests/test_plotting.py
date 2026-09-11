@@ -5,118 +5,39 @@ from arro3.core import Array, Table
 from matplotlib import colormaps
 
 from xdggs import plotting
+from xdggs.plotting.arrow import create_arrow_table
 from xdggs.plotting.colorize import ColorizeParameters
 
 
 @pytest.mark.parametrize(
-    ["polygons", "arr", "name", "coords", "expected"],
+    ["columns", "expected"],
     (
         pytest.param(
-            Array.from_numpy(np.array([1, 2])),
-            xr.DataArray(
-                [-1, 1],
-                coords={
-                    "cell_ids": ("cells", [0, 1]),
-                    "latitude": ("cells", [-5, 10]),
-                    "longitude": ("cells", [-60, -50]),
-                },
-                dims="cells",
-            ),
-            "cell_ids",
-            None,
+            {
+                "geometry": np.array([1, 2]),
+                "cell_ids": np.array([0, 1]),
+                "data": np.array([-1, 1]),
+                "longitude": np.array([-60, -50]),
+                "latitude": np.array([-5, 10]),
+            },
             Table.from_pydict(
                 {
                     "geometry": Array.from_numpy(np.array([1, 2])),
                     "cell_ids": Array.from_numpy(np.array([0, 1])),
                     "data": Array.from_numpy(np.array([-1, 1])),
-                    "latitude": Array.from_numpy(np.array([-5, 10])),
                     "longitude": Array.from_numpy(np.array([-60, -50])),
-                }
-            ),
-        ),
-        pytest.param(
-            Array.from_numpy(np.array([1, 2])),
-            xr.DataArray(
-                [-1, 1],
-                coords={
-                    "zone_ids": ("cells", [0, 1]),
-                    "latitude": ("cells", [-5, 10]),
-                    "longitude": ("cells", [-60, -50]),
-                },
-                dims="cells",
-            ),
-            "zone_ids",
-            None,
-            Table.from_pydict(
-                {
-                    "geometry": Array.from_numpy(np.array([1, 2])),
-                    "zone_ids": Array.from_numpy(np.array([0, 1])),
-                    "data": Array.from_numpy(np.array([-1, 1])),
-                    "latitude": Array.from_numpy(np.array([-5, 10])),
-                    "longitude": Array.from_numpy(np.array([-60, -50])),
-                }
-            ),
-            id="custom_name",
-        ),
-        pytest.param(
-            Array.from_numpy(np.array([1, 2])),
-            xr.DataArray(
-                [-1, 1],
-                coords={
-                    "cell_ids": ("cells", [1, 2]),
-                    "latitude": ("cells", [-5, 10]),
-                    "longitude": ("cells", [-60, -50]),
-                },
-                dims="cells",
-            ),
-            "cell_ids",
-            ["latitude"],
-            Table.from_pydict(
-                {
-                    "geometry": Array.from_numpy(np.array([1, 2])),
-                    "cell_ids": Array.from_numpy(np.array([1, 2])),
-                    "data": Array.from_numpy(np.array([-1, 1])),
                     "latitude": Array.from_numpy(np.array([-5, 10])),
                 }
             ),
+            id="standard",
         ),
         pytest.param(
-            Array.from_numpy(np.array([1, 3])),
-            xr.DataArray(
-                [-1, 1],
-                coords={
-                    "cell_ids": ("cells", [0, 1]),
-                    "latitude": ("cells", [-5, 10]),
-                    "longitude": ("cells", [-60, -50]),
-                },
-                dims="cells",
-                name="new_data",
-            ),
-            "cell_ids",
-            ["longitude"],
-            Table.from_pydict(
-                {
-                    "geometry": Array.from_numpy(np.array([1, 3])),
-                    "cell_ids": Array.from_numpy(np.array([0, 1])),
-                    "new_data": Array.from_numpy(np.array([-1, 1])),
-                    "longitude": Array.from_numpy(np.array([-60, -50])),
-                }
-            ),
-        ),
-        pytest.param(
-            Array.from_numpy(np.array([1, 3])),
-            xr.DataArray(
-                np.arange(4).reshape((2, 2))[:, 0],
-                coords={
-                    "cell_ids": ("cells", [0, 1]),
-                    "latitude": ("cells", [-5, 10]),
-                    "longitude": ("cells", [-60, -50]),
-                },
-                dims="cells",
-                name="new_data",
-            ),
-            "cell_ids",
-            ["longitude"],
+            {
+                "geometry": np.array([1, 3]),
+                "cell_ids": np.array([0, 1]),
+                "new_data": np.arange(4).reshape((2, 2))[:, 0],
+                "longitude": np.array([-60, -50]),
+            },
             Table.from_pydict(
                 {
                     "geometry": Array.from_numpy(np.array([1, 3])),
@@ -129,10 +50,8 @@ from xdggs.plotting.colorize import ColorizeParameters
         ),
     ),
 )
-def test_create_arrow_table(polygons, arr, name, coords, expected):
-    actual = plotting.arrow.create_arrow_table(
-        polygons, arr, name, additional_coords=coords
-    )
+def test_create_arrow_table(columns, expected):
+    actual = create_arrow_table(columns)
 
     assert actual == expected
 
