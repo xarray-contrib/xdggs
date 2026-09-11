@@ -1,12 +1,13 @@
 import copy
 from collections.abc import Hashable
-from typing import Any, Literal
+from typing import Any, ClassVar, TypedDict
 
 import xarray as xr
 
-from xdggs.conventions.base import Convention
+from xdggs.conventions.base import Convention, translate_metadata_keys
 from xdggs.conventions.errors import DecoderError
 from xdggs.conventions.registry import register_convention
+from xdggs.typing import TranslationTable
 from xdggs.utils import GRID_REGISTRY
 
 
@@ -27,12 +28,24 @@ def extract_convention_declaration(
     return None
 
 
+class ZarrConventionHeader(TypedDict):
+    uuid: str
+    schema_url: str
+    spec_url: str
+    name: str
+    description: str
+
+
 @register_convention("zarr")
 class Zarr(Convention):
-    uuid = "7b255807-140c-42ca-97f6-7a1cfecdbc38"
-    schema_url = "https://raw.githubusercontent.com/zarr-conventions/dggs/refs/tags/v1/schema.json"
-    spec_url = "https://github.com/zarr-conventions/dggs/blob/v1/README.md"
-    convention_metadata = {
+    uuid: ClassVar[str] = "7b255807-140c-42ca-97f6-7a1cfecdbc38"
+    schema_url: ClassVar[str] = (
+        "https://raw.githubusercontent.com/zarr-conventions/dggs/refs/tags/v1/schema.json"
+    )
+    spec_url: ClassVar[str] = (
+        "https://github.com/zarr-conventions/dggs/blob/v1/README.md"
+    )
+    convention_metadata: ClassVar[ZarrConventionHeader] = {
         "uuid": uuid,
         "schema_url": schema_url,
         "spec_url": spec_url,
@@ -40,21 +53,14 @@ class Zarr(Convention):
         "description": "Discrete Global Grid Systems convention for zarr",
     }
 
-    def translate_metadata(
-        self,
-        metadata: dict[str, Any],
-        direction: Literal["forward", "inverse"] = "forward",
-    ) -> dict[str, Any]:
-        key_translations = {
-            "name": "grid_name",
-            "refinement_level": "level",
-        }
-        if direction == "inverse":
-            key_translations = {v: k for k, v in key_translations.items()}
-
-        return {
-            key_translations.get(key, key): value for key, value in metadata.items()
-        }
+    translation_table: ClassVar[TranslationTable] = {
+        "refinement_level": "level",
+        "name": "grid_name",
+        "ellipsoid": {
+            "semi_major_axis": "semimajor_axis",
+            "semi_minor_axis": "semiminor_axis",
+        },
+    }
 
     def decode(
         self,
@@ -111,14 +117,16 @@ class Zarr(Convention):
             raise NotImplementedError("missing coordinate is not supported for now")
 
         # optional, but required to be `"none"` for now
-        compression = metadata.pop("compression", None)
+        compression = metadata.pop("compression", "none")
+        variables_to_drop = []
         if compression != "none":
-            raise NotImplementedError(
-                "compressed coordinates are not supported for now"
-            )
+            index_options["compression"] = compression
+            index_options["dim"] = spatial_dimension
+            variables_to_drop.append(coordinate)
 
         # construct index
-        metadata_ = self.translate_metadata(metadata)
+        translation_table = self._create_translation_table(direction="xdggs")
+        metadata_ = translate_metadata_keys(metadata, translation_table)
 
         var = ds.variables[coordinate].copy(deep=False)
         var.attrs = metadata_
@@ -128,8 +136,10 @@ class Zarr(Convention):
         index_cls = GRID_REGISTRY[grid_name]
         index = index_cls.from_variables({name: var}, options=index_options)
 
-        new_ds = ds.assign_coords(xr.Coordinates.from_xindex(index)).assign_attrs(
-            copy.deepcopy(ds.attrs)
+        new_ds = (
+            ds.assign_coords(xr.Coordinates.from_xindex(index))
+            .drop_vars(variables_to_drop)
+            .assign_attrs(copy.deepcopy(ds.attrs))
         )
         # remove redundant attrs
         new_ds.attrs.pop("dggs", None)
@@ -165,28 +175,41 @@ class Zarr(Convention):
         encoded : xr.Dataset
             The encoded dataset.
         """
-        grid_info = self.translate_metadata(
-            ds.dggs.grid_info.to_dict(), direction="inverse"
-        )
+        if encoding is None:
+            encoding = {}
 
-        # encoding contains:
-        # - compression type (ignored for now)
+        # prepare the output dataset
+        index = ds.dggs.index
+        coordinate = index.name
 
-        # additional keys:
-        # - coordinate
-        # - spatial_dimension
-        # - compression
+        coords = index.serialize(encoding=encoding)
+        result = ds.drop_indexes(coordinate).drop_vars(coordinate).assign_coords(coords)
 
-        coordinate = ds.dggs.index._name
+        # grid metadata
+        translation_table = self._create_translation_table(direction="self")
+        raw_grid_metadata = index.grid_info.to_dict()
+        grid_metadata = translate_metadata_keys(raw_grid_metadata, translation_table)
 
+        # additional metadata
+        variables = coords.variables
+        if len(variables) != 1:
+            raise ValueError(
+                f"expected exactly one coordinate while encoding, but got {len(variables)}."
+                " This most likely a problem with the implementation of the index. Please open an issue."
+            )
+        coord_name, coord = next(iter(variables.items()))
+        for key in raw_grid_metadata:
+            coord.attrs.pop(key, None)
+
+        compression = coord.attrs.pop("compression", "none")
         additional_metadata = {
-            "spatial_dimension": ds.dggs.index._dim,
-            "coordinate": coordinate,
-            "compression": "none",
+            "coordinate": coord_name,
+            "compression": compression,
+            "spatial_dimension": index._dim,
         }
 
-        result = ds.drop_indexes(coordinate)
-        result.attrs["dggs"] = grid_info | additional_metadata
+        # assign the metadata
+        result.attrs["dggs"] = grid_metadata | additional_metadata
         conventions = result.attrs.setdefault("zarr_conventions", [])
         conventions.append(self.convention_metadata)
 

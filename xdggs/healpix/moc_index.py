@@ -1,6 +1,7 @@
 from collections.abc import Hashable, Mapping
-from typing import Any
+from typing import Any, Self
 
+import healpix_geo
 import numpy as np
 import xarray as xr
 from healpix_geo.nested import RangeMOCIndex
@@ -8,6 +9,8 @@ from xarray.core.indexes import IndexSelResult
 
 from xdggs.healpix.grid_info import HealpixInfo
 from xdggs.healpix.indexing_adapters import MocRangesIndexingAdapter
+from xdggs.itertools import pairwise_tree_reduce
+from xdggs.typing import Compression
 from xdggs.utils import _extract_cell_id_variable
 
 try:
@@ -88,6 +91,46 @@ def extract_chunk(index, slice_):
     return index.isel(slice_).cell_ids()
 
 
+def _create_index_from_array(
+    array, grid_info, compression: Compression
+) -> RangeMOCIndex:
+    ellipsoid = grid_info.ellipsoid
+    if ellipsoid is None:
+        import healpix_geo.ellipsoid
+
+        ellipsoid = healpix_geo.ellipsoid.resolve("sphere")
+
+    if array.size == 12 * 4**grid_info.level:
+        # no need to look at the cell ids
+        return RangeMOCIndex.full_domain(grid_info.level, ellipsoid=ellipsoid)
+
+    create_index_funcs = {
+        "none": RangeMOCIndex.from_cell_ids,
+        "compacted": RangeMOCIndex.from_compacted,
+        "ranges": RangeMOCIndex.from_ranges,
+    }
+    create_index = create_index_funcs.get(compression)
+    if create_index is None:
+        raise ValueError(f"unknown compression scheme: {compression!r}")
+
+    if isinstance(array, dask_array_type):
+        import dask
+
+        indexes = [
+            dask.delayed(create_index)(grid_info.level, chunk, ellipsoid)
+            for chunk in array.astype("uint64").to_delayed().flatten()
+        ]
+        task = pairwise_tree_reduce(dask.delayed(RangeMOCIndex.union), indexes)
+
+        index = dask.compute(task)[0]
+    else:
+        index = create_index(
+            grid_info.level, array.astype("uint64"), ellipsoid=ellipsoid
+        )
+
+    return index
+
+
 # optionally replaces the PandasIndex within HealpixIndex
 class HealpixMocIndex(xr.Index):
     """More efficient index for healpix cell ids based on a MOC
@@ -106,12 +149,22 @@ class HealpixMocIndex(xr.Index):
         The low-level implementation of the index functionality.
     """
 
-    def __init__(self, index, *, dim, name, grid_info, chunksizes):
+    def __init__(
+        self,
+        index,
+        *,
+        dim,
+        name,
+        grid_info,
+        chunksizes,
+        compression: Compression = "none",
+    ):
         self._index = index
         self._dim = dim
         self._grid_info = grid_info
         self._name = name
         self._chunksizes = chunksizes
+        self._compression = compression
 
     @property
     def size(self):
@@ -132,8 +185,15 @@ class HealpixMocIndex(xr.Index):
         """The size of the chunks of the indexed coordinate."""
         return self._chunksizes
 
+    @property
+    def grid_info(self) -> HealpixInfo:
+        """The grid metadata of the index."""
+        return self._grid_info
+
     @classmethod
-    def from_array(cls, array, *, dim, name, grid_info):
+    def from_array(
+        cls, array, *, dim, name, grid_info, compression: Compression = "none"
+    ):
         """Construct an index from a raw array.
 
         Parameters
@@ -161,37 +221,25 @@ class HealpixMocIndex(xr.Index):
                 "The MOC index currently only supports the 'nested' scheme"
             )
 
-        if array.ndim != 1:
-            raise ValueError("only 1D cell ids are supported")
-
-        ellipsoid = grid_info.ellipsoid
-        if ellipsoid is None:
-            import healpix_geo.ellipsoid
-
-            ellipsoid = healpix_geo.ellipsoid.resolve("sphere")
-
-        if array.size == 12 * 4**grid_info.level:
-            index = RangeMOCIndex.full_domain(grid_info.level)
-        elif isinstance(array, dask_array_type):
-            from functools import reduce
-
-            import dask
-
-            [indexes] = dask.compute(
-                dask.delayed(RangeMOCIndex.from_cell_ids)(
-                    grid_info.level, chunk, ellipsoid=ellipsoid
+        if compression == "ranges":
+            if array.ndim != 2 or array.shape[1] != 2:
+                raise ValueError(
+                    "the range compressed coordinate must have a shape of (n, 2)"
                 )
-                for chunk in array.astype("uint64").to_delayed()
-            )
-            index = reduce(RangeMOCIndex.union, indexes)
         else:
-            index = RangeMOCIndex.from_cell_ids(
-                grid_info.level, array.astype("uint64"), ellipsoid=ellipsoid
-            )
+            if array.ndim != 1:
+                raise ValueError("only 1D cell ids are supported")
+
+        index = _create_index_from_array(array, grid_info, compression)
 
         chunksizes = {dim: array.chunks[0] if hasattr(array, "chunks") else None}
         return cls(
-            index, dim=dim, name=name, grid_info=grid_info, chunksizes=chunksizes
+            index,
+            dim=dim,
+            name=name,
+            grid_info=grid_info,
+            chunksizes=chunksizes,
+            compression=compression,
         )
 
     def _replace(self, index, chunksizes):
@@ -202,6 +250,24 @@ class HealpixMocIndex(xr.Index):
             grid_info=self._grid_info,
             chunksizes=chunksizes,
         )
+
+    def equals(self, other: Self) -> bool:
+        """compare two instances of MOC-based indexes"""
+        if not isinstance(other, type(self)):
+            return False
+
+        if (
+            self._dim != other._dim
+            or self._name != other._name
+            or self._chunksizes != other._chunksizes
+            or self._compression != other._compression
+        ):
+            return False
+        if self._grid_info != other._grid_info:
+            return False
+
+        # until the range index supports comparing directly
+        return np.all(self._index.ranges() == other._index.ranges())
 
     @classmethod
     def from_variables(cls, variables, *, options):
@@ -221,9 +287,14 @@ class HealpixMocIndex(xr.Index):
             A new Index object.
         """
         name, var, dim = _extract_cell_id_variable(variables)
-        grid_info = HealpixInfo.from_dict(var.attrs | options)
 
-        return cls.from_array(var.data, dim=dim, name=name, grid_info=grid_info)
+        options_ = dict(options)
+        compression = options_.pop("compression", "none")
+        grid_info = HealpixInfo.from_dict(var.attrs | options_)
+
+        return cls.from_array(
+            var.data, dim=dim, name=name, grid_info=grid_info, compression=compression
+        )
 
     def create_variables(
         self, variables: Mapping[Any, xr.Variable] | None = None
@@ -255,6 +326,78 @@ class HealpixMocIndex(xr.Index):
         var = xr.Variable(self._dim, data, attrs=attrs, encoding=encoding)
 
         return {name: var}
+
+    def serialize(self, *, encoding: dict[str, Any] | None = None) -> xr.Coordinates:
+        """serialize the index
+
+        Parameters
+        ----------
+        encoding : dict of str to object, optional
+            Additional serialization settings.
+
+            Supported settings are:
+
+            - ``"compression"``: the type of compression. For supported values see below.
+            - ``"coordinate"``: the name of the encoded coordinate. Defaults depend on the compression type.
+
+            Supported compression types:
+
+            - ``"none"``: to enumerate all cell ids. Uses the indexed coordinate's name by default.
+            - ``"compacted"``: to compact the cell ids to flat or variable sized cell ids in
+              the ``zuniq`` scheme. The default coordinate name is ``"compacted_cell_ids"``.
+              Additional settings:
+
+              - ``"dim"``: The dimension name of the compacted coordinate. Must be different
+                from the index' dimension. The default is ``"compacted_cells"``.
+              - ``"compacted_level"``: the compaction level. If an integer, must be smaller
+                than the data level. If none (the default), compacts to variably-sized cells.
+
+            - ``"ranges"``: to store the connected ranges in ``nested`` scheme at level 29. The default coordinate name is ``"cell_ranges"``. Additional settings:
+
+              - ``"dim"``: The dimension name of the range number. By default, this is ``"range_index"``.
+              - ``"bounds_dim"``: The dimension name of the range bounds. By default, this is ``"range_bounds"``.
+        """
+        if encoding is None:
+            encoding = {}
+
+        compression = encoding.get("compression", self._compression)
+        attrs = {"compression": compression}
+
+        match compression:
+            case "none":
+                coordinate_name = encoding.get("coordinate", self._name)
+                variable = xr.Variable(self._dim, self._index.cell_ids(), attrs)
+            case "compacted":
+                coordinate_name = encoding.get("coordinate", "compacted_cell_ids")
+
+                compacted_level = encoding.get("compacted_level", None)
+                compacted_dim = encoding.get("dim", "compacted_cells")
+                if compacted_level is None:
+                    cell_ids = self._index.compacted_cell_ids()
+                elif compacted_level >= self.grid_info.level:
+                    raise ValueError(
+                        "The compaction level must be smaller than the data level."
+                        f" Got: {self.grid_info.level} (data) and {compacted_level} (compaction)."
+                    )
+                else:
+                    cell_ids = healpix_geo.nested.to_zuniq(
+                        self._index.refine(compacted_level).cell_ids(),
+                        compacted_level,
+                    )
+
+                variable = xr.Variable(compacted_dim, cell_ids, attrs)
+            case "ranges":
+                coordinate_name = encoding.get("coordinate", "cell_ranges")
+
+                range_dim = encoding.get("dim", "range_index")
+                bounds_dim = encoding.get("bounds_dim", "bounds")
+
+                ranges = self._index.ranges()
+                variable = xr.Variable((range_dim, bounds_dim), ranges, attrs)
+            case _:
+                raise NotImplementedError(f"unknown compression method: {compression}")
+
+        return xr.Coordinates({coordinate_name: variable}, indexes={})
 
     def isel(self, indexers):
         """Subset the index using positional indexers.

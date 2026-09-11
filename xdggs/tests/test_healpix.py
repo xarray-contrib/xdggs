@@ -666,7 +666,7 @@ class TestHealpixIndex:
         strategies.grids(),
     )
     def test_init(self, cell_ids, dim, name, grid) -> None:
-        index = healpix.HealpixIndex(cell_ids, dim, name, grid)
+        index = healpix.HealpixIndex(cell_ids, dim=dim, name=name, grid_info=grid)
 
         assert index._grid == grid
         assert index._dim == dim
@@ -706,6 +706,39 @@ def test_from_variables_moc() -> None:
 
     index = healpix.HealpixIndex.from_variables(
         variables, options={"index_kind": "moc"}
+    )
+
+    assert isinstance(index._index, healpix.HealpixMocIndex)
+    assert index.grid_info.to_dict() == grid_info
+
+
+def test_from_variables_moc_ranges() -> None:
+    level = 16
+    grid_info = {"grid_name": "healpix", "level": level, "indexing_scheme": "nested"}
+    variables = {
+        "cell_ids": xr.Variable(
+            ["cells", "ranges"],
+            np.array(
+                [
+                    [30786325577728, 35184372088832],
+                    [35184372088832, 39582418599936],
+                    [39582418599936, 43980465111040],
+                    [299067162755072, 303465209266176],
+                    [303465209266176, 307863255777280],
+                    [307863255777280, 312261302288384],
+                    [312261302288384, 316659348799488],
+                    [316659348799488, 321057395310592],
+                    [321057395310592, 325455441821696],
+                    [325455441821696, 329853488332800],
+                ],
+                dtype="uint64",
+            ),
+            grid_info,
+        )
+    }
+
+    index = healpix.HealpixIndex.from_variables(
+        variables, options={"index_kind": "moc", "compression": "ranges"}
     )
 
     assert isinstance(index._index, healpix.HealpixMocIndex)

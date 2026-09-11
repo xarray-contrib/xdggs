@@ -8,53 +8,182 @@ from xdggs.tests import da, raise_if_dask_computes, requires_dask
 
 class TestHealpixMocIndex:
     @pytest.mark.parametrize(
-        ["level", "cell_ids", "max_computes"],
+        [
+            "level",
+            "cell_ids",
+            "compression",
+            "expected_size",
+            "expected_nbytes",
+            "max_computes",
+        ],
         (
             pytest.param(
-                2, np.arange(12 * 4**2, dtype="uint64"), 1, id="numpy-2-full_domain"
+                2,
+                np.arange(12 * 4**2, dtype="uint64"),
+                "none",
+                12 * 4**2,
+                16,
+                1,
+                id="numpy-2-full_domain-none",
             ),
             pytest.param(
                 2,
                 np.arange(3 * 4**2, 5 * 4**2, dtype="uint64"),
+                "none",
+                2 * 4**2,
+                16,
                 1,
-                id="numpy-2-region",
+                id="numpy-2-region-none",
             ),
             pytest.param(
                 10,
                 da.arange(12 * 4**10, chunks=(4**6,), dtype="uint64"),
+                "none",
+                12 * 4**10,
+                16,
                 0,
                 marks=requires_dask,
-                id="dask-10-full_domain",
+                id="dask-10-full_domain-none",
             ),
             pytest.param(
                 15,
                 da.arange(12 * 4**15, chunks=(4**10,), dtype="uint64"),
+                "none",
+                12 * 4**15,
+                16,
                 0,
                 marks=requires_dask,
-                id="dask-15-full_domain",
+                id="dask-15-full_domain-none",
             ),
             pytest.param(
                 10,
                 da.arange(3 * 4**10, 5 * 4**10, chunks=(4**6,), dtype="uint64"),
+                "none",
+                2 * 4**10,
+                16,
                 1,
                 marks=requires_dask,
-                id="dask-10-region",
+                id="dask-10-region-none",
+            ),
+            pytest.param(
+                15,
+                np.array(
+                    [
+                        65970697666560,
+                        74766790688768,
+                        83562883710976,
+                        602532372021248,
+                        611328465043456,
+                        620124558065664,
+                        628920651087872,
+                        637716744110080,
+                        646512837132288,
+                        655308930154496,
+                    ],
+                    dtype="uint64",
+                ),
+                "compacted",
+                10 * 4**7,
+                32,
+                0,
+                id="numpy-15-region-compacted",
+            ),
+            pytest.param(
+                15,
+                da.from_array(
+                    np.array(
+                        [
+                            65970697666560,
+                            74766790688768,
+                            83562883710976,
+                            602532372021248,
+                            611328465043456,
+                            620124558065664,
+                            628920651087872,
+                            637716744110080,
+                            646512837132288,
+                            655308930154496,
+                        ],
+                        dtype="uint64",
+                    ),
+                    chunks=(2,),
+                ),
+                "compacted",
+                10 * 4**7,
+                32,
+                1,
+                id="dask-15-region-compacted",
+            ),
+            pytest.param(
+                15,
+                np.array(
+                    [
+                        [30786325577728, 35184372088832],
+                        [35184372088832, 39582418599936],
+                        [39582418599936, 43980465111040],
+                        [299067162755072, 303465209266176],
+                        [303465209266176, 307863255777280],
+                        [307863255777280, 312261302288384],
+                        [312261302288384, 316659348799488],
+                        [316659348799488, 321057395310592],
+                        [321057395310592, 325455441821696],
+                        [325455441821696, 329853488332800],
+                    ],
+                    dtype="uint64",
+                ),
+                "ranges",
+                10 * 4**7,
+                32,
+                0,
+                id="numpy-15-region-ranges",
+            ),
+            pytest.param(
+                15,
+                da.from_array(
+                    np.array(
+                        [
+                            [30786325577728, 35184372088832],
+                            [35184372088832, 39582418599936],
+                            [39582418599936, 43980465111040],
+                            [299067162755072, 303465209266176],
+                            [303465209266176, 307863255777280],
+                            [307863255777280, 312261302288384],
+                            [312261302288384, 316659348799488],
+                            [316659348799488, 321057395310592],
+                            [321057395310592, 325455441821696],
+                            [325455441821696, 329853488332800],
+                        ],
+                        dtype="uint64",
+                    ),
+                    chunks=(2, 2),
+                ),
+                "ranges",
+                10 * 4**7,
+                32,
+                1,
+                id="dask-15-region-ranges",
             ),
         ),
     )
-    def test_from_array(self, level, cell_ids, max_computes):
+    def test_from_array(
+        self, level, cell_ids, compression, expected_size, expected_nbytes, max_computes
+    ):
         grid_info = healpix.HealpixInfo(level=level, indexing_scheme="nested")
 
         with raise_if_dask_computes(max_computes=max_computes):
             index = healpix.HealpixMocIndex.from_array(
-                cell_ids, dim="cells", name="cell_ids", grid_info=grid_info
+                cell_ids,
+                dim="cells",
+                name="cell_ids",
+                grid_info=grid_info,
+                compression=compression,
             )
 
         assert isinstance(index, healpix.HealpixMocIndex)
         chunks = index.chunksizes["cells"]
         assert chunks is None or isinstance(chunks[0], int)
-        assert index.size == cell_ids.size
-        assert index.nbytes == 16
+        assert index.size == expected_size
+        assert index.nbytes == expected_nbytes
 
     def test_from_array_unsupported_indexing_scheme(self):
         level = 1
