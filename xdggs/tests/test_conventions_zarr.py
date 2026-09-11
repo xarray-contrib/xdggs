@@ -13,10 +13,17 @@ def translate(mapping):
     return {translations.get(name, name): value for name, value in mapping.items()}
 
 
-WGS84_xdggs = {
-    "name": "WGS84",
-    "semimajor_axis": 6378137.0,
-    "inverse_flattening": 298.257223563,
+WGS84 = {
+    "xdggs": {
+        "name": "WGS84",
+        "semimajor_axis": 6378137.0,
+        "inverse_flattening": 298.257223563,
+    },
+    "zarr": {
+        "name": "WGS84",
+        "semi_major_axis": 6378137.0,
+        "inverse_flattening": 298.257223563,
+    },
 }
 
 
@@ -29,11 +36,7 @@ def healpix_dataset():
             "name": "healpix",
             "refinement_level": 0,
             "spatial_dimension": "healpix_index",
-            "ellipsoid": {
-                "name": "WGS84",
-                "semi_major_axis": 6378137.0,
-                "inverse_flattening": 298.257223563,
-            },
+            "ellipsoid": WGS84["zarr"],
         },
     }
     return xr.Dataset(data_vars=data_vars, attrs=attrs)
@@ -48,6 +51,21 @@ def healpix_dataset():
         (
             {"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"},
             {"name": "healpix", "refinement_level": 1, "indexing_scheme": "nested"},
+            np.array([3, 6, 9], dtype="uint64"),
+        ),
+        (
+            {
+                "grid_name": "healpix",
+                "level": 1,
+                "indexing_scheme": "nested",
+                "ellipsoid": WGS84["xdggs"],
+            },
+            {
+                "name": "healpix",
+                "refinement_level": 1,
+                "indexing_scheme": "nested",
+                "ellipsoid": WGS84["zarr"],
+            },
             np.array([3, 6, 9], dtype="uint64"),
         ),
         (
@@ -109,7 +127,11 @@ def test_decode_no_coordinate(healpix_dataset):
     index = HealpixIndex(
         PandasIndex(pd.RangeIndex(12, name="cell_ids"), dim="healpix_index"),
         grid_info=HealpixInfo.from_dict(
-            {"level": 0, "indexing_scheme": "nested", "ellipsoid": WGS84_xdggs}
+            {
+                "level": 0,
+                "indexing_scheme": "nested",
+                "ellipsoid": WGS84["xdggs"],
+            }
         ),
         name="cell_ids",
         dim="healpix_index",
@@ -242,6 +264,21 @@ def test_decode_compression(metadata_object, grid_info, expected_name, variable)
         (
             {"grid_name": "healpix", "level": 1, "indexing_scheme": "nested"},
             {"name": "healpix", "refinement_level": 1, "indexing_scheme": "nested"},
+            np.array([3, 6, 9], dtype="uint64"),
+        ),
+        (
+            {
+                "grid_name": "healpix",
+                "level": 1,
+                "indexing_scheme": "nested",
+                "ellipsoid": WGS84["xdggs"],
+            },
+            {
+                "name": "healpix",
+                "refinement_level": 1,
+                "indexing_scheme": "nested",
+                "ellipsoid": WGS84["zarr"],
+            },
             np.array([3, 6, 9], dtype="uint64"),
         ),
         (
