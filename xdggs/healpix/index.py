@@ -1,6 +1,7 @@
 from collections.abc import Mapping
 from typing import Any, Self
 
+import pandas as pd
 import xarray as xr
 from xarray.core.indexes import PandasIndex
 
@@ -75,6 +76,38 @@ class HealpixIndex(DGGSIndex):
         grid_info = HealpixInfo.from_dict(var.attrs)
 
         return cls(var.data, dim=dim, name=name, grid_info=grid_info, **options_)
+
+    @classmethod
+    def from_level(
+        cls: type[DGGSIndex],
+        level: int,
+        dim: str,
+        name: str,
+        *,
+        options: Mapping[str, Any],
+    ) -> DGGSIndex:
+        """Create the index for the complete domain of the given level"""
+        size = 12 * 4**level
+        indexing_scheme = options.get("indexing_scheme", "nested")
+        if indexing_scheme == "zuniq":
+            start = 1 << 2 * (29 - level)
+            step = start << 1
+            stop = size * step
+            cell_ids = xr.indexes.PandasIndex(
+                pd.RangeIndex(start, stop, step, name=name), dim
+            )
+        elif indexing_scheme == "nuniq":
+            start = 4 ** (1 + level)
+            stop = start + size
+            cell_ids = xr.indexes.PandasIndex(
+                pd.RangeIndex(start, stop, name=name), dim
+            )
+        else:
+            cell_ids = xr.indexes.PandasIndex(pd.RangeIndex(size, name=name), dim)
+        dict_options = dict(options)
+        dict_options.update(level=level)
+        grid_info = HealpixInfo.from_dict(dict_options)
+        return cls(cell_ids, dim, name, grid_info)
 
     def _replace(self, new_index: xr.Index):
         return type(self)(
