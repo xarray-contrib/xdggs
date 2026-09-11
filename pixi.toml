@@ -39,7 +39,6 @@ anywidget = ">=0.11.0"
 
 [dependencies]
 xdggs = { path = "." }
-cdshealpix = ">=0.7.1"
 
 [feature.tests.dependencies]
 pytest = "*"
