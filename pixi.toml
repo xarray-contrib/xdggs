@@ -39,7 +39,6 @@ anywidget = ">=0.11.0"
 
 [dependencies]
 xdggs = { path = "." }
-cdshealpix = ">=0.7.1"
 
 [feature.tests.dependencies]
 pytest = "*"
@@ -55,14 +54,17 @@ dask = ">=2025.7.0"
 tests = { cmd = "pytest -n auto --cov=xdggs", cwd = ".", default-environment = "default" }
 doctests = { cmd = "pytest --doctest-modules xdggs --ignore xdggs/tests", cwd = "." }
 
-[feature.ci-py312.dependencies]
+[feature.py312.dependencies]
 python = "3.12.*"
 
-[feature.ci-py313.dependencies]
+[feature.py313.dependencies]
 python = "3.13.*"
 
+# h3ronpy is not yet compatible with python 3.14
+# [feature.py314.dependencies]
+# python = "3.14.*"
+
 [feature.docs.dependencies]
-python = "3.13.*"
 sphinx = "<9"
 myst-nb = "*"
 sphinx-book-theme = "*"
@@ -83,7 +85,6 @@ autobuild-docs = { cmd = "sphinx-autobuild -b html -w warnings.log -W -Tn -j aut
 build-docs-rtd = { cmd = "python -m sphinx -b html -W -T -j auto . $READTHEDOCS_OUTPUT/html", cwd = "docs" }
 
 [feature.dev.dependencies]
-python = "3.13.*"
 ipython = "*"
 black = "*"
 isort = "*"
@@ -109,8 +110,9 @@ python = "*"
 nightly-tests = { cmd = "pixi run --manifest-path ci/nightly/pixi.toml tests", cwd = "." }
 
 [environments]
-ci-py312 = { features = ["tests", "ci-py312"] }
-ci-py313 = { features = ["tests", "ci-py313"] }
-docs = { features = ["docs"] }
-default = { features = ["tests", "dev"] }
+ci-py312 = { features = ["tests", "py312"] }
+ci-py313 = { features = ["tests", "py313"] }
+# ci-py314 = { features = ["tests", "py314"] }
+docs = { features = ["docs", "py313"] }
+default = { features = ["tests", "dev", "py313"] }
 ci = { features = ["ci"], no-default-feature = true }
