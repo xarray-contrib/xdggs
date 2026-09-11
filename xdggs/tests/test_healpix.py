@@ -402,8 +402,7 @@ class TestHealpixInfo:
 
     @given(
         *strategies.grid_and_cell_ids(
-            # a dtype casting bug in the valid range check of `cdshealpix`
-            # causes this test to fail for large levels
+            # use small levels for quicker tests
             levels=st.integers(min_value=0, max_value=10),
             indexing_schemes=st.sampled_from(["nested", "ring"]),
             dtypes=st.sampled_from(["int64"]),
