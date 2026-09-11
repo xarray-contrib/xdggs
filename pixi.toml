@@ -60,6 +60,9 @@ python = "3.12.*"
 [feature.ci-py313.dependencies]
 python = "3.13.*"
 
+[feature.ci-py314.dependencies]
+python = "3.13.*"
+
 [feature.docs.dependencies]
 python = "3.13.*"
 sphinx = "<9"
@@ -110,6 +113,7 @@ nightly-tests = { cmd = "pixi run --manifest-path ci/nightly/pixi.toml tests", c
 [environments]
 ci-py312 = { features = ["tests", "ci-py312"] }
 ci-py313 = { features = ["tests", "ci-py313"] }
+ci-py314 = { features = ["tests", "ci-py314"] }
 docs = { features = ["docs"] }
 default = { features = ["tests", "dev"] }
 ci = { features = ["ci"], no-default-feature = true }
