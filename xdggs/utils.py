@@ -37,10 +37,7 @@ def ignore_parameters(*names):
     return inner
 
 
-def call_on_dataset(func, obj, *args, kwargs=None):
-    if kwargs is None:
-        kwargs = {}
-
+def call_on_dataset(func, obj, *args, **kwargs):
     if isinstance(obj, xr.DataArray):
         ds = obj._to_temp_dataset()
     else:

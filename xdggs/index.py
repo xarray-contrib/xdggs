@@ -4,6 +4,7 @@ from collections.abc import Hashable, Mapping
 from typing import TYPE_CHECKING
 
 import numpy as np
+import numpy.typing as npt
 import xarray as xr
 from xarray.indexes import Index, PandasIndex
 
@@ -14,6 +15,7 @@ if TYPE_CHECKING:
     from collections.abc import Hashable, Mapping
     from typing import Any, Self
 
+    from lonboard import BaseLayer as LonboardLayer
     from xarray.core.types import JoinOptions
 
 
@@ -114,6 +116,28 @@ class DGGSIndex(Index):
     def _replace(self, new_index: PandasIndex):
         raise NotImplementedError()
 
+    def serialize(self, *, encoding: dict[str, Any] | None = None) -> xr.Coordinates:
+        unknown_encodings = [
+            key for key in encoding if key not in {"compression", "coordinate"}
+        ]
+        if unknown_encodings:
+            raise ValueError(
+                f"Unknown encodings: {', '.join(repr(k) for k in unknown_encodings)}"
+            )
+
+        if encoding.get("compression", "none") != "none":
+            raise ValueError(
+                'This index implementation does not support any compression other than ``"none"``'
+            )
+
+        variables = self._index.create_variables()
+        coords = xr.Coordinates(variables, indexes={})
+
+        coordinate_name = encoding.get("coordinate", self.name)
+        if coordinate_name != self.name:
+            coords = coords.rename_vars({self.name: coordinate_name})
+        return coords
+
     def cell_centers(self) -> tuple[np.ndarray, np.ndarray]:
         return self._grid.cell_ids2geographic(self.values())
 
@@ -123,6 +147,32 @@ class DGGSIndex(Index):
     def zoom_to(self, level: int) -> np.ndarray:
         return self._grid.zoom_to(self.values(), level=level)
 
+    def _create_layer(
+        self,
+        cell_id_column: str,
+        columns: dict[str, npt.NDArray],
+        fill_colors: npt.NDArray[np.uint8],
+    ) -> LonboardLayer:
+        from arro3.core import Array
+        from lonboard import SolidPolygonLayer
+
+        from xdggs.plotting.arrow import create_arrow_table
+
+        polygons = self.grid_info.cell_boundaries(
+            columns[cell_id_column], backend="geoarrow"
+        )
+        table = create_arrow_table(columns | {"geometry": Array.from_arrow(polygons)})
+
+        return SolidPolygonLayer(table=table, filled=True, get_fill_color=fill_colors)
+
     @property
     def grid_info(self) -> DGGSInfo:
         return self._grid
+
+    @property
+    def dim(self) -> str:
+        return self._dim
+
+    @property
+    def name(self) -> str:
+        return self._index.index.name

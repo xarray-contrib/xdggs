@@ -3,8 +3,8 @@ from collections.abc import Hashable, Mapping
 from dataclasses import dataclass
 from typing import Any, ClassVar, Literal, Self, TypeVar
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 import xarray as xr
 from healpix_geo.nested import RangeMOCIndex
 from xarray.core.indexes import IndexSelResult, PandasIndex

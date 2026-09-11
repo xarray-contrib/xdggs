@@ -6,6 +6,10 @@
 - Properly decode ellipsoids for the CF convention ({pull}`228`)
 - Rewrite the map widgets using `anywidget` ({pull}`248`)
 - Resolve ellipsoid names on user input ({pull}`257`)
+- Support the ellipsoids for the healpix MOC index ({pull}`258`)
+- Lazy coordinates for the healpix MOC index ({pull}`259`)
+- Support serializing indexes to zarr with compressed coordinates ({pull}`262`
+- Use `H3HexagonLayer` to visualize H3 data ({pull}`263`)
 
 ## 0.6.0 (2026-02-05)
 
