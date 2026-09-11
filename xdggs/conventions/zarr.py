@@ -162,8 +162,8 @@ class Zarr(Convention):
 
         # construct index
         new_ds = (
-            ds.assign_coords(xr.Coordinates.from_xindex(index))
-            .drop_vars(variables_to_drop)
+            ds.drop_vars(variables_to_drop)
+            .assign_coords(xr.Coordinates.from_xindex(index))
             .assign_attrs(copy.deepcopy(ds.attrs))
         )
         # remove redundant attrs

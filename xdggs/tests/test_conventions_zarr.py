@@ -13,7 +13,7 @@ def translate(mapping):
     return {translations.get(name, name): value for name, value in mapping.items()}
 
 
-WGS84 = {
+WGS84_xdggs = {
     "name": "WGS84",
     "semimajor_axis": 6378137.0,
     "inverse_flattening": 298.257223563,
@@ -107,8 +107,10 @@ def test_decode_no_coordinate(healpix_dataset):
     actual = Zarr().decode(healpix_dataset, grid_info=None, name=None, index_options={})
 
     index = HealpixIndex(
-        PandasIndex(pd.RangeIndex(12), name="cell_ids"),
-        grid_info=HealpixInfo(level=0, indexing_scheme="nested", ellipsoid=WGS84),
+        PandasIndex(pd.RangeIndex(12, name="cell_ids"), dim="healpix_index"),
+        grid_info=HealpixInfo.from_dict(
+            {"level": 0, "indexing_scheme": "nested", "ellipsoid": WGS84_xdggs}
+        ),
         name="cell_ids",
         dim="healpix_index",
     )
@@ -153,7 +155,7 @@ def test_raise_decode_error_unkown_dggs(healpix_dataset):
 
 
 @pytest.mark.parametrize(
-    ["metadata_object", "grid_info", "variable"],
+    ["metadata_object", "grid_info", "expected_name", "variable"],
     (
         pytest.param(
             {
@@ -165,6 +167,7 @@ def test_raise_decode_error_unkown_dggs(healpix_dataset):
                 "compression": "ranges",
             },
             {"grid_name": "healpix", "level": 10, "indexing_scheme": "nested"},
+            "cell_ranges",
             xr.Variable(
                 ("range_index", "bounds"),
                 np.array(
@@ -186,6 +189,7 @@ def test_raise_decode_error_unkown_dggs(healpix_dataset):
                 "compression": "compacted",
             },
             {"grid_name": "healpix", "level": 5, "indexing_scheme": "nested"},
+            "compacted_cell_ids",
             xr.Variable(
                 ("compacted_cells"),
                 np.array(
@@ -197,7 +201,7 @@ def test_raise_decode_error_unkown_dggs(healpix_dataset):
         ),
     ),
 )
-def test_decode_compression(metadata_object, grid_info, variable):
+def test_decode_compression(metadata_object, grid_info, expected_name, variable):
     convention = Zarr()
 
     name = metadata_object["coordinate"]
@@ -216,7 +220,7 @@ def test_decode_compression(metadata_object, grid_info, variable):
     var = variable.copy()
     var.attrs = grid_info
     index = xdggs.index.DGGSIndex.from_variables(
-        {"cell_ids": var},
+        {expected_name: var},
         options={
             "index_kind": "moc",
             "compression": metadata_object["compression"],

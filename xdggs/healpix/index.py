@@ -107,7 +107,7 @@ class HealpixIndex(DGGSIndex):
         dict_options = dict(options)
         dict_options.update(level=level)
         grid_info = HealpixInfo.from_dict(dict_options)
-        return cls(cell_ids, dim, name, grid_info)
+        return cls(cell_ids, dim=dim, name=name, grid_info=grid_info)
 
     def _replace(self, new_index: xr.Index):
         return type(self)(
