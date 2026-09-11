@@ -4,6 +4,7 @@ from collections.abc import Hashable, Mapping
 from typing import TYPE_CHECKING
 
 import numpy as np
+import numpy.typing as npt
 import xarray as xr
 from xarray.indexes import Index, PandasIndex
 
@@ -14,6 +15,7 @@ if TYPE_CHECKING:
     from collections.abc import Hashable, Mapping
     from typing import Any, Self
 
+    from lonboard import BaseLayer as LonboardLayer
     from xarray.core.types import JoinOptions
 
 
@@ -132,6 +134,24 @@ class DGGSIndex(Index):
 
     def zoom_to(self, level: int) -> np.ndarray:
         return self._grid.zoom_to(self.values(), level=level)
+
+    def _create_layer(
+        self,
+        cell_id_column: str,
+        columns: dict[str, npt.NDArray],
+        fill_colors: npt.NDArray[np.uint8],
+    ) -> LonboardLayer:
+        from arro3.core import Array
+        from lonboard import SolidPolygonLayer
+
+        from xdggs.plotting.arrow import create_arrow_table
+
+        polygons = self.grid_info.cell_boundaries(
+            columns[cell_id_column], backend="geoarrow"
+        )
+        table = create_arrow_table(columns | {"geometry": Array.from_arrow(polygons)})
+
+        return SolidPolygonLayer(table=table, filled=True, get_fill_color=fill_colors)
 
     @property
     def grid_info(self) -> DGGSInfo:
