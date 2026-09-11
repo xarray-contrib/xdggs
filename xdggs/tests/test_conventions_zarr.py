@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import pytest
 import xarray as xr
 
@@ -10,6 +11,13 @@ from xdggs.tests import assert_indexes_equal, requires_healpix_geo_0_4_1
 def translate(mapping):
     translations = {"grid_name": "name", "level": "refinement_level"}
     return {translations.get(name, name): value for name, value in mapping.items()}
+
+
+WGS84 = {
+    "name": "WGS84",
+    "semimajor_axis": 6378137.0,
+    "inverse_flattening": 298.257223563,
+}
 
 
 @pytest.fixture
@@ -92,7 +100,23 @@ def test_decode(grid_info, metadata_object, cell_ids, name, dim):
 
 
 def test_decode_no_coordinate(healpix_dataset):
-    Zarr().decode(healpix_dataset, grid_info=None, name=None, index_options={})
+    from xarray.indexes import PandasIndex
+
+    from xdggs.healpix import HealpixIndex, HealpixInfo
+
+    actual = Zarr().decode(healpix_dataset, grid_info=None, name=None, index_options={})
+
+    index = HealpixIndex(
+        PandasIndex(pd.RangeIndex(12), name="cell_ids"),
+        grid_info=HealpixInfo(level=0, indexing_scheme="nested", ellipsoid=WGS84),
+        name="cell_ids",
+        dim="healpix_index",
+    )
+    expected = healpix_dataset.drop_attrs().assign_coords(
+        xr.Coordinates.from_xindex(index)
+    )
+    xr.testing.assert_identical(actual, expected)
+    assert_indexes_equal(actual["cell_ids"].xindexes, expected["cell_ids"].xindexes)
 
 
 @pytest.mark.parametrize("key", ["zarr_conventions", "dggs"])
