@@ -60,8 +60,9 @@ python = "3.12.*"
 [feature.py313.dependencies]
 python = "3.13.*"
 
-[feature.py314.dependencies]
-python = "3.14.*"
+# h3ronpy is not yet compatible with python 3.14
+# [feature.py314.dependencies]
+# python = "3.14.*"
 
 [feature.docs.dependencies]
 sphinx = "<9"
@@ -111,7 +112,7 @@ nightly-tests = { cmd = "pixi run --manifest-path ci/nightly/pixi.toml tests", c
 [environments]
 ci-py312 = { features = ["tests", "py312"] }
 ci-py313 = { features = ["tests", "py313"] }
-ci-py314 = { features = ["tests", "py314"] }
-docs = { features = ["docs", "py314"] }
-default = { features = ["tests", "dev", "py314"] }
+# ci-py314 = { features = ["tests", "py314"] }
+docs = { features = ["docs", "py313"] }
+default = { features = ["tests", "dev", "py313"] }
 ci = { features = ["ci"], no-default-feature = true }
