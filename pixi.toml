@@ -64,7 +64,6 @@ python = "3.13.*"
 python = "3.14.*"
 
 [feature.docs.dependencies]
-python = "3.13.*"
 sphinx = "<9"
 myst-nb = "*"
 sphinx-book-theme = "*"
@@ -85,7 +84,6 @@ autobuild-docs = { cmd = "sphinx-autobuild -b html -w warnings.log -W -Tn -j aut
 build-docs-rtd = { cmd = "python -m sphinx -b html -W -T -j auto . $READTHEDOCS_OUTPUT/html", cwd = "docs" }
 
 [feature.dev.dependencies]
-python = "3.13.*"
 ipython = "*"
 black = "*"
 isort = "*"
@@ -114,6 +112,6 @@ nightly-tests = { cmd = "pixi run --manifest-path ci/nightly/pixi.toml tests", c
 ci-py312 = { features = ["tests", "py312"] }
 ci-py313 = { features = ["tests", "py313"] }
 ci-py314 = { features = ["tests", "py314"] }
-docs = { features = ["docs"] }
-default = { features = ["tests", "dev"] }
+docs = { features = ["docs", "py314"] }
+default = { features = ["tests", "dev", "py314"] }
 ci = { features = ["ci"], no-default-feature = true }
