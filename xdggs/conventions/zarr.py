@@ -150,7 +150,7 @@ class Zarr(Convention):
                 raise DecoderError("No `coordinate` requires a `refinement_level`.")
             options = dict(metadata_)
             options.update(index_options)
-            index = index_cls.from_level(
+            index = index_cls.full_domain(
                 level, spatial_dimension, name, options=options
             )
         elif coordinate not in ds.keys():

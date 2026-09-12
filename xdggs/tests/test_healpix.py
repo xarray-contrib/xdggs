@@ -745,6 +745,29 @@ def test_from_variables_moc_ranges() -> None:
     assert index.grid_info.to_dict() == grid_info
 
 
+full_domain_options = [
+    {"grid_name": "healpix", "indexing_scheme": "nested"},
+    {"grid_name": "healpix", "indexing_scheme": "ring"},
+    {"grid_name": "healpix", "indexing_scheme": "zuniq"},
+    {"grid_name": "healpix", "indexing_scheme": "nested", "index_kind": "moc"},
+]
+
+
+@pytest.mark.parametrize("options", full_domain_options)
+def test_full_domain(options):
+    level = 10
+    dim = "cells"
+    name = "healpix_cell_ids"
+    index = healpix.HealpixIndex.full_domain(level, dim, name, options=options)
+    assert index.dim == dim
+    assert index.name == name
+    if options.get("index_kind", "") == "moc":
+        assert isinstance(index._index, healpix.HealpixMocIndex)
+        assert index._index.size == 12 * 4**level
+    else:
+        assert index._index.index.size == 12 * 4**level
+
+
 @pytest.mark.parametrize(["old_variable", "new_variable"], variable_combinations)
 def test_replace(old_variable, new_variable) -> None:
     grid = healpix.HealpixInfo.from_dict(old_variable.attrs)

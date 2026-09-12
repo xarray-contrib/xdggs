@@ -78,14 +78,14 @@ class HealpixIndex(DGGSIndex):
         return cls(var.data, dim=dim, name=name, grid_info=grid_info, **options_)
 
     @classmethod
-    def from_level(
-        cls: type[DGGSIndex],
+    def full_domain(
+        cls,
         level: int,
         dim: str,
         name: str,
         *,
         options: Mapping[str, Any],
-    ) -> DGGSIndex:
+    ) -> Self:
         """Create the index for the complete domain of the given level"""
         size = 12 * 4**level
         indexing_scheme = options.get("indexing_scheme", "nested")
@@ -93,21 +93,24 @@ class HealpixIndex(DGGSIndex):
             start = 1 << 2 * (29 - level)
             step = start << 1
             stop = size * step
-            cell_ids = xr.indexes.PandasIndex(
-                pd.RangeIndex(start, stop, step, name=name), dim
-            )
-        elif indexing_scheme == "nuniq":
-            start = 4 ** (1 + level)
-            stop = start + size
-            cell_ids = xr.indexes.PandasIndex(
-                pd.RangeIndex(start, stop, name=name), dim
-            )
+            cell_ids = pd.RangeIndex(start, stop, step)
+            # Note: I do not understand why level must be None for zuniq
+            # with H3 we also use a multi-level index for a fixed level
+            level = None
+        # not yet supported
+        # elif indexing_scheme == "nuniq":
+        #    start = 4 ** (1 + level)
+        #    stop = start + size
+        #    cell_ids = pd.RangeIndex(start, stop)
         else:
-            cell_ids = xr.indexes.PandasIndex(pd.RangeIndex(size, name=name), dim)
+            cell_ids = pd.RangeIndex(size)
         dict_options = dict(options)
         dict_options.update(level=level)
+        index_kind = dict_options.pop("index_kind", None)
         grid_info = HealpixInfo.from_dict(dict_options)
-        return cls(cell_ids, dim=dim, name=name, grid_info=grid_info)
+        return cls(
+            cell_ids, dim=dim, name=name, grid_info=grid_info, index_kind=index_kind
+        )
 
     def _replace(self, new_index: xr.Index):
         return type(self)(

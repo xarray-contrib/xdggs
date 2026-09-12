@@ -242,14 +242,14 @@ class H3Index(DGGSIndex):
         return cls(var.data, dim, name, grid_info)
 
     @classmethod
-    def from_level(
-        cls: type[DGGSIndex],
+    def full_domain(
+        cls,
         level: int,
         dim: str,
         name: str,
         *,
         options: Mapping[str, Any],
-    ) -> DGGSIndex:
+    ) -> Self:
         """Create the index for the complete domain of the given level"""
         # create the base_cells
         nbase_cells = 122
@@ -257,9 +257,7 @@ class H3Index(DGGSIndex):
         base = np.arange(nbase_cells) << 45
         ones = (1 << 45) - 1
         base_cells = mode | base | ones
-        cells = change_resolution(base_cells, level).to_numpy()
-        cell_ids = xr.indexes.PandasIndex(cells, dim=dim)
-        cell_ids.index.name = name
+        cell_ids = change_resolution(base_cells, level).to_numpy()
         dict_options = dict(options)
         dict_options.update(level=level)
         grid_info = H3Info.from_dict(dict_options)

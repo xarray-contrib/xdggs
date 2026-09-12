@@ -143,6 +143,13 @@ def test_decode_no_coordinate(healpix_dataset):
     assert_indexes_equal(actual["cell_ids"].xindexes, expected["cell_ids"].xindexes)
 
 
+def test_decode_no_coordinate_custom_name(healpix_dataset):
+    name = "my_index"
+    ds = Zarr().decode(healpix_dataset, grid_info=None, name=name, index_options={})
+    assert "cell_ids" not in ds
+    assert name in ds
+
+
 @pytest.mark.parametrize("key", ["zarr_conventions", "dggs"])
 def test_raise_decode_error_missing_convention(key, healpix_dataset):
     healpix_dataset.attrs.pop(key)
@@ -167,6 +174,12 @@ def test_raise_decode_error_no_coordinate_but_default_exists(healpix_dataset):
 def test_raise_decode_error_coordinate_not_existing(healpix_dataset):
     healpix_dataset.attrs["dggs"]["coordinate"] = "healpix_index"
     with pytest.raises(DecoderError, match="does not exist"):
+        Zarr().decode(healpix_dataset, grid_info=None, name=None, index_options={})
+
+
+def test_raise_decode_error_no_coordinate_and_no_level(healpix_dataset):
+    healpix_dataset.attrs["dggs"]["refinement_level"] = None
+    with pytest.raises(DecoderError, match="No .* requires .*"):
         Zarr().decode(healpix_dataset, grid_info=None, name=None, index_options={})
 
 
