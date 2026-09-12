@@ -53,6 +53,18 @@ class DGGSIndex(Index):
 
         return index
 
+    @classmethod
+    def full_domain(
+        cls,
+        level: int,
+        dim: str,
+        name: str,
+        *,
+        options: Mapping[str, Any],
+    ) -> Self:
+        """Create the index for the complete domain of the given level"""
+        raise NotImplementedError("To be implemented in child class")
+
     def values(self):
         return self._index.index.values
 

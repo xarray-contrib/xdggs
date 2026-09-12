@@ -284,6 +284,16 @@ def test_from_variables(variable_name, variable, options):
     assert np.all(index._index.index.values == variable.data)
 
 
+def test_full_domain():
+    level = 2
+    dim = "cells"
+    name = "cell_ids"
+    index = h3.H3Index.full_domain(level, dim, name, options={})
+    assert index._index.index.size == 5882
+    assert index.dim == dim
+    assert index.name == name
+
+
 @pytest.mark.parametrize(["old_variable", "new_variable"], variable_combinations)
 def test_replace(old_variable, new_variable):
     name = "cell_ids"

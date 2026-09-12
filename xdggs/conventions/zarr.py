@@ -107,38 +107,63 @@ class Zarr(Convention):
         if grid_name is None:
             raise DecoderError("Required field `name` is missing or null.")
 
+        try:
+            index_cls = GRID_REGISTRY[grid_name]
+        except KeyError:
+            raise DecoderError(f"Unknown grid name: {grid_name}") from None
+
         spatial_dimension = metadata.pop("spatial_dimension", None)
         if spatial_dimension is None:
             raise DecoderError("Required field `spatial_dimension` is missing or null.")
 
-        # optional, but required for now
-        coordinate = metadata.pop("coordinate", None)
-        if coordinate is None:
-            raise NotImplementedError("missing coordinate is not supported for now")
+        if "refinement_level" not in metadata:
+            raise DecoderError("Required field `refinement_level` is missing.")
 
         # optional, but required to be `"none"` for now
         compression = metadata.pop("compression", "none")
+
+        coordinate = metadata.pop("coordinate", None)
+        if name in ds.keys():
+            # name takes precedence over coordinate
+            coordinate = name
+        else:
+            # name becomes the new coordinate
+            name = name or "cell_ids"
+
         variables_to_drop = []
         if compression != "none":
             index_options["compression"] = compression
             index_options["dim"] = spatial_dimension
             variables_to_drop.append(coordinate)
 
-        # construct index
+        # construct index based on coordinate presence
         translation_table = self._create_translation_table(direction="xdggs")
         metadata_ = translate_metadata_keys(metadata, translation_table)
 
-        var = ds.variables[coordinate].copy(deep=False)
-        var.attrs = metadata_
+        if coordinate is None:
+            if name in ds.keys():
+                raise DecoderError(f"Cannot overwrite existing variable '{name}'.")
 
-        if grid_name not in GRID_REGISTRY:
-            raise DecoderError(f"cf convention: unknown grid name: {grid_name}")
-        index_cls = GRID_REGISTRY[grid_name]
-        index = index_cls.from_variables({name: var}, options=index_options)
+            # create index for the entire domain at given refinement level
+            level = metadata_.pop("level")
+            if level is None:
+                raise DecoderError("No `coordinate` requires a `refinement_level`.")
+            options = dict(metadata_)
+            options.update(index_options)
+            index = index_cls.full_domain(
+                level, spatial_dimension, name, options=options
+            )
+        elif coordinate not in ds.keys():
+            raise DecoderError(f"Coordinate variable {coordinate}, does not exist.")
+        else:
+            var = ds.variables[coordinate].copy(deep=False)
+            var.attrs = metadata_
+            index = index_cls.from_variables({coordinate: var}, options=index_options)
 
+        # construct index
         new_ds = (
-            ds.assign_coords(xr.Coordinates.from_xindex(index))
-            .drop_vars(variables_to_drop)
+            ds.drop_vars(variables_to_drop)
+            .assign_coords(xr.Coordinates.from_xindex(index))
             .assign_attrs(copy.deepcopy(ds.attrs))
         )
         # remove redundant attrs
