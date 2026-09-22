@@ -113,9 +113,6 @@ class HealpixIndex(DGGSIndex):
                 step = start << 1
                 stop = size * step
                 cell_ids = pd.RangeIndex(start, stop, step)
-                # Note: I do not understand why level must be None for zuniq
-                # with H3 we also use a multi-level index for a fixed level
-                # level = None
             # not yet supported
             # elif indexing_scheme == "nuniq":
             #    start = 4 ** (1 + level)
