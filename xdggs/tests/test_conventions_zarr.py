@@ -179,7 +179,7 @@ def test_raise_decode_error_coordinate_not_existing(healpix_dataset):
 
 def test_raise_decode_error_no_coordinate_and_no_level(healpix_dataset):
     healpix_dataset.attrs["dggs"]["refinement_level"] = None
-    with pytest.raises(DecoderError, match="No .* requires .*"):
+    with pytest.raises(DecoderError, match="A missing .* requires .*"):
         Zarr().decode(healpix_dataset, grid_info=None, name=None, index_options={})
 
 
@@ -202,7 +202,7 @@ def test_raise_decode_error_unkown_dggs(healpix_dataset):
                 "compression": "ranges",
             },
             {"grid_name": "healpix", "level": 10, "indexing_scheme": "nested"},
-            "cell_ranges",
+            "cell_ids",
             xr.Variable(
                 ("range_index", "bounds"),
                 np.array(
@@ -224,7 +224,7 @@ def test_raise_decode_error_unkown_dggs(healpix_dataset):
                 "compression": "compacted",
             },
             {"grid_name": "healpix", "level": 5, "indexing_scheme": "nested"},
-            "compacted_cell_ids",
+            "cell_ids",
             xr.Variable(
                 ("compacted_cells"),
                 np.array(

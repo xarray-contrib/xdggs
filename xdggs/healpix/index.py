@@ -105,7 +105,10 @@ class HealpixIndex(DGGSIndex):
         else:
             cell_ids = pd.RangeIndex(size)
         dict_options = dict(options)
-        dict_options.update(level=level)
+        dict_options.pop("compression", None)
+        dict_options.pop("dim", None)
+        dict_options["level"] = level
+
         index_kind = dict_options.pop("index_kind", None)
         grid_info = HealpixInfo.from_dict(dict_options)
         return cls(

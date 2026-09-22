@@ -70,6 +70,8 @@ class Zarr(Convention):
         name: Hashable | None,
         index_options: dict[str, Any] | None,
     ) -> xr.Dataset:
+        missing_coordinate = "__xdggs_missing_coordinate__"
+
         # steps:
         # - find zarr conventions metadata (uuid, schema_url, spec_url)
         # - extract metadata object
@@ -119,16 +121,41 @@ class Zarr(Convention):
         if "refinement_level" not in metadata:
             raise DecoderError("Required field `refinement_level` is missing.")
 
+        # cases:
+        # - nothing given: fall back to cell_ids, assume full domain
+        # - `name` given: assume no compression, use name as coordinate
+        # - `coordinate` given: use coordinate as input and output for no compression / missing
+        # - `coordinate` and `compression` given (no compression):
+        #    use coordinate as input and cell_ids as output (TODO: how do we override?)
+        # - `name` and `coordinate` given (no compression):
+        #    use `name` as input and `name` as output (TODO: how do we override output?)
+        # - `name`, `coordinate`, and `compression` given:
+        #    use `name` as input and
+        #
+        # This means that `name` was probably not the best name, and we should rather call this one of:
+        # - `coordinate` and `index_coordinate`
+        # - `input_coordinate` and `output_coordinate`
+
         # optional, but required to be `"none"` for now
         compression = metadata.pop("compression", "none")
 
         coordinate = metadata.pop("coordinate", None)
-        if name in ds.keys():
-            # name takes precedence over coordinate
-            coordinate = name
+        if name in ds.variables:
+            input_coordinate = name
+        elif coordinate is not None:
+            # metadata coordinate
+            input_coordinate = coordinate
+            if coordinate not in ds.variables:
+                raise DecoderError(f"Coordinate {coordinate!r} does not exist.")
         else:
-            # name becomes the new coordinate
-            name = name or "cell_ids"
+            input_coordinate = missing_coordinate
+
+        if name is not None:
+            output_coordinate = name
+        elif input_coordinate == missing_coordinate:
+            output_coordinate = "cell_ids"
+        else:
+            output_coordinate = input_coordinate
 
         variables_to_drop = []
         if compression != "none":
@@ -140,25 +167,29 @@ class Zarr(Convention):
         translation_table = self._create_translation_table(direction="xdggs")
         metadata_ = translate_metadata_keys(metadata, translation_table)
 
-        if coordinate is None:
-            if name in ds.keys():
-                raise DecoderError(f"Cannot overwrite existing variable '{name}'.")
+        if input_coordinate not in ds.variables:
+            if output_coordinate in ds.keys():
+                raise DecoderError(
+                    f"Cannot overwrite existing variable '{output_coordinate}'."
+                )
 
             # create index for the entire domain at given refinement level
             level = metadata_.pop("level")
             if level is None:
-                raise DecoderError("No `coordinate` requires a `refinement_level`.")
+                raise DecoderError(
+                    "A missing `coordinate` requires a `refinement_level`."
+                )
             options = dict(metadata_)
             options.update(index_options)
             index = index_cls.full_domain(
-                level, spatial_dimension, name, options=options
+                level, spatial_dimension, output_coordinate, options=options
             )
-        elif coordinate not in ds.keys():
-            raise DecoderError(f"Coordinate variable {coordinate}, does not exist.")
         else:
-            var = ds.variables[coordinate].copy(deep=False)
+            var = ds.variables[input_coordinate].copy(deep=False)
             var.attrs = metadata_
-            index = index_cls.from_variables({coordinate: var}, options=index_options)
+            index = index_cls.from_variables(
+                {output_coordinate: var}, options=index_options
+            )
 
         # construct index
         new_ds = (
