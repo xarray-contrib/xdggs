@@ -761,11 +761,9 @@ def test_full_domain(options):
     index = healpix.HealpixIndex.full_domain(level, dim, name, options=options)
     assert index.dim == dim
     assert index.name == name
-    if options.get("index_kind", "") == "moc":
+    assert index.size == 12 * 4**level
+    if options.get("index_kind", "pandas") == "moc":
         assert isinstance(index._index, healpix.HealpixMocIndex)
-        assert index._index.size == 12 * 4**level
-    else:
-        assert index._index.index.size == 12 * 4**level
 
 
 @pytest.mark.parametrize(["old_variable", "new_variable"], variable_combinations)

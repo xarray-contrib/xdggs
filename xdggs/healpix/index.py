@@ -55,6 +55,13 @@ class HealpixIndex(DGGSIndex):
                 cell_ids, dim=dim, grid_info=grid_info, name=name, **options
             )
 
+    @property
+    def size(self):
+        if self._kind == "moc":
+            return self._index.size
+        else:
+            return self._index.index.size
+
     def values(self):
         if self._kind == "moc":
             return self._index._index.cell_ids()

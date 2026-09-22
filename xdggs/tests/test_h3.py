@@ -289,7 +289,7 @@ def test_full_domain():
     dim = "cells"
     name = "cell_ids"
     index = h3.H3Index.full_domain(level, dim, name, options={})
-    assert index._index.index.size == 5882
+    assert index.size == 5882
     assert index.dim == dim
     assert index.name == name
 

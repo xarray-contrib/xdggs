@@ -65,6 +65,10 @@ class DGGSIndex(Index):
         """Create the index for the complete domain of the given level"""
         raise NotImplementedError("To be implemented in child class")
 
+    @property
+    def size(self):
+        return self._index.index.size
+
     def values(self):
         return self._index.index.values
 
