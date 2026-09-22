@@ -93,6 +93,27 @@ def decode(
     if index_options is None:
         index_options = {}
 
+    options = index_options | index_kwargs
+
+    if convention is None:
+        for name, convention in _conventions.items():
+            try:
+                return call_on_dataset(
+                    partial(
+                        convention.decode,
+                        grid_info=grid_info,
+                        name=name,
+                        index_options=options,
+                    ),
+                    obj,
+                )
+            except DecoderError:
+                continue
+
+        raise DecoderError(
+            "Failed to infer a convention. Please explicitly pass a convention name."
+        )
+
     if isinstance(convention, str):
         convention = _conventions.get(convention)
         if convention is None:
@@ -107,7 +128,7 @@ def decode(
             convention.decode,
             grid_info=grid_info,
             name=name,
-            index_options=index_options | index_kwargs,
+            index_options=options,
         ),
         obj,
     )
