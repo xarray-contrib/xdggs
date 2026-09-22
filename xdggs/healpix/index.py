@@ -87,30 +87,43 @@ class HealpixIndex(DGGSIndex):
         options: Mapping[str, Any],
     ) -> Self:
         """Create the index for the complete domain of the given level"""
-        size = 12 * 4**level
         indexing_scheme = options.get("indexing_scheme", "nested")
-        if indexing_scheme == "zuniq":
-            start = 1 << 2 * (29 - level)
-            step = start << 1
-            stop = size * step
-            cell_ids = pd.RangeIndex(start, stop, step)
-            # Note: I do not understand why level must be None for zuniq
-            # with H3 we also use a multi-level index for a fixed level
-            level = None
-        # not yet supported
-        # elif indexing_scheme == "nuniq":
-        #    start = 4 ** (1 + level)
-        #    stop = start + size
-        #    cell_ids = pd.RangeIndex(start, stop)
-        else:
-            cell_ids = pd.RangeIndex(size)
-        dict_options = dict(options)
-        dict_options.pop("compression", None)
-        dict_options.pop("dim", None)
-        dict_options["level"] = level
+        index_kind = options.get("index_kind", "pandas")
 
-        index_kind = dict_options.pop("index_kind", None)
+        dict_options = {
+            k: v
+            for k, v in options.items()
+            if k not in {"compression", "dim", "index_kind"}
+        }
+        dict_options["level"] = level
         grid_info = HealpixInfo.from_dict(dict_options)
+
+        if index_kind == "moc":
+            if indexing_scheme != "nested":
+                raise ValueError("The MOC index only supports the 'nested' scheme.")
+
+            cell_ids = HealpixMocIndex.full_domain(
+                grid_info=grid_info, dim=dim, name=name, options=options
+            )
+        else:
+            size = 12 * 4**level
+
+            if indexing_scheme == "zuniq":
+                start = 1 << 2 * (29 - level)
+                step = start << 1
+                stop = size * step
+                cell_ids = pd.RangeIndex(start, stop, step)
+                # Note: I do not understand why level must be None for zuniq
+                # with H3 we also use a multi-level index for a fixed level
+                # level = None
+            # not yet supported
+            # elif indexing_scheme == "nuniq":
+            #    start = 4 ** (1 + level)
+            #    stop = start + size
+            #    cell_ids = pd.RangeIndex(start, stop)
+            else:
+                cell_ids = pd.RangeIndex(size)
+
         return cls(
             cell_ids, dim=dim, name=name, grid_info=grid_info, index_kind=index_kind
         )
