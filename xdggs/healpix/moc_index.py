@@ -21,6 +21,12 @@ except ImportError:
     dask_array_type = ()
 
 
+def default_ellipsoid():
+    import healpix_geo.ellipsoid
+
+    return healpix_geo.ellipsoid.resolve("sphere")
+
+
 def construct_chunk_ranges(chunks, until):
     start = 0
 
@@ -96,9 +102,7 @@ def _create_index_from_array(
 ) -> RangeMOCIndex:
     ellipsoid = grid_info.ellipsoid
     if ellipsoid is None:
-        import healpix_geo.ellipsoid
-
-        ellipsoid = healpix_geo.ellipsoid.resolve("sphere")
+        ellipsoid = default_ellipsoid()
 
     if array.size == 12 * 4**grid_info.level:
         # no need to look at the cell ids
@@ -294,6 +298,26 @@ class HealpixMocIndex(xr.Index):
 
         return cls.from_array(
             var.data, dim=dim, name=name, grid_info=grid_info, compression=compression
+        )
+
+    @classmethod
+    def full_domain(
+        cls, dim: str, name: str, grid_info: HealpixInfo, options: Mapping[str, Any]
+    ) -> Self:
+        """Create the index for the complete domain at the given level"""
+        ellipsoid = grid_info.ellipsoid
+        if ellipsoid is None:
+            ellipsoid = default_ellipsoid()
+
+        index = RangeMOCIndex.full_domain(grid_info.level, ellipsoid=ellipsoid)
+
+        return cls(
+            index,
+            dim=dim,
+            name=name,
+            grid_info=grid_info,
+            chunksizes={dim: None},
+            compression=options.get("compression", "none"),
         )
 
     def create_variables(

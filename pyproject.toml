@@ -23,6 +23,7 @@ classifiers = [
 requires-python = ">=3.12"
 dependencies = [
   "xarray",
+  "pandas",
   "numpy>=2.0",
   "healpix-geo>=0.3.0",
   "h3ronpy",

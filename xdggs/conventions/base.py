@@ -24,10 +24,10 @@ def translate_metadata_keys(mapping: dict[str, Any], table: TranslationTable):
         if isinstance(replacement, str):
             return replacement, value
 
-        renamed_object = {
+        renamed_object = dict(
             _translate(subkey, subvalue, replacement)
             for subkey, subvalue in value.items()
-        }
+        )
         return key, renamed_object
 
     return dict(_translate(key, value, table) for key, value in mapping.items())

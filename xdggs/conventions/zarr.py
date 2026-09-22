@@ -70,6 +70,8 @@ class Zarr(Convention):
         name: Hashable | None,
         index_options: dict[str, Any] | None,
     ) -> xr.Dataset:
+        missing_coordinate = "__xdggs_missing_coordinate__"
+
         # steps:
         # - find zarr conventions metadata (uuid, schema_url, spec_url)
         # - extract metadata object
@@ -107,38 +109,92 @@ class Zarr(Convention):
         if grid_name is None:
             raise DecoderError("Required field `name` is missing or null.")
 
+        try:
+            index_cls = GRID_REGISTRY[grid_name]
+        except KeyError:
+            raise DecoderError(f"Unknown grid name: {grid_name}") from None
+
         spatial_dimension = metadata.pop("spatial_dimension", None)
         if spatial_dimension is None:
             raise DecoderError("Required field `spatial_dimension` is missing or null.")
 
-        # optional, but required for now
-        coordinate = metadata.pop("coordinate", None)
-        if coordinate is None:
-            raise NotImplementedError("missing coordinate is not supported for now")
+        if "refinement_level" not in metadata:
+            raise DecoderError("Required field `refinement_level` is missing.")
+
+        # cases:
+        # - nothing given: fall back to cell_ids, assume full domain
+        # - `name` given: assume no compression, use name as coordinate
+        # - `coordinate` given: use coordinate as input and output for no compression / missing
+        # - `coordinate` and `compression` given (no compression):
+        #    use coordinate as input and cell_ids as output (TODO: how do we override?)
+        # - `name` and `coordinate` given (no compression):
+        #    use `name` as input and `name` as output (TODO: how do we override output?)
+        # - `name`, `coordinate`, and `compression` given:
+        #    use `name` as input and
+        #
+        # This means that `name` was probably not the best name, and we should rather call this one of:
+        # - `coordinate` and `index_coordinate`
+        # - `input_coordinate` and `output_coordinate`
 
         # optional, but required to be `"none"` for now
         compression = metadata.pop("compression", "none")
+
+        coordinate = metadata.pop("coordinate", None)
+        if name in ds.variables:
+            input_coordinate = name
+        elif coordinate is not None:
+            # metadata coordinate
+            input_coordinate = coordinate
+            if coordinate not in ds.variables:
+                raise DecoderError(f"Coordinate {coordinate!r} does not exist.")
+        else:
+            input_coordinate = missing_coordinate
+
+        if name is not None:
+            output_coordinate = name
+        elif input_coordinate == missing_coordinate:
+            output_coordinate = "cell_ids"
+        else:
+            output_coordinate = input_coordinate
+
         variables_to_drop = []
         if compression != "none":
             index_options["compression"] = compression
             index_options["dim"] = spatial_dimension
             variables_to_drop.append(coordinate)
 
-        # construct index
+        # construct index based on coordinate presence
         translation_table = self._create_translation_table(direction="xdggs")
         metadata_ = translate_metadata_keys(metadata, translation_table)
 
-        var = ds.variables[coordinate].copy(deep=False)
-        var.attrs = metadata_
+        if input_coordinate not in ds.variables:
+            if output_coordinate in ds.keys():
+                raise DecoderError(
+                    f"Cannot overwrite existing variable '{output_coordinate}'."
+                )
 
-        if grid_name not in GRID_REGISTRY:
-            raise DecoderError(f"cf convention: unknown grid name: {grid_name}")
-        index_cls = GRID_REGISTRY[grid_name]
-        index = index_cls.from_variables({name: var}, options=index_options)
+            # create index for the entire domain at given refinement level
+            level = metadata_.pop("level")
+            if level is None:
+                raise DecoderError(
+                    "A missing `coordinate` requires a `refinement_level`."
+                )
+            options = dict(metadata_)
+            options.update(index_options)
+            index = index_cls.full_domain(
+                level, spatial_dimension, output_coordinate, options=options
+            )
+        else:
+            var = ds.variables[input_coordinate].copy(deep=False)
+            var.attrs = metadata_
+            index = index_cls.from_variables(
+                {output_coordinate: var}, options=index_options
+            )
 
+        # construct index
         new_ds = (
-            ds.assign_coords(xr.Coordinates.from_xindex(index))
-            .drop_vars(variables_to_drop)
+            ds.drop_vars(variables_to_drop)
+            .assign_coords(xr.Coordinates.from_xindex(index))
             .assign_attrs(copy.deepcopy(ds.attrs))
         )
         # remove redundant attrs

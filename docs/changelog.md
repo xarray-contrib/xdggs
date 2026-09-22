@@ -10,6 +10,7 @@
 - Lazy coordinates for the healpix MOC index ({pull}`259`)
 - Support serializing indexes to zarr with compressed coordinates ({pull}`262`
 - Use `H3HexagonLayer` to visualize H3 data ({pull}`263`)
+- Support missing coordinates for the zarr convention and fail on missing required properties ({pull}`260`)
 
 ## 0.6.0 (2026-02-05)
 

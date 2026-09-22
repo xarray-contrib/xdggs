@@ -104,12 +104,15 @@ class HealpixInfo(DGGSInfo):
 
     Parameters
     ----------
-    level : int
+    level : int | None
         Grid hierarchical level. A higher value corresponds to a finer grid resolution
         with smaller cell areas. The number of cells covering the whole sphere usually
         grows exponentially with increasing level values, ranging from 5-100 cells at
         level 0 to millions or billions of cells at level 10+ (the exact numbers depends
         on the specific grid).
+
+        For indexing schemes that support variable-sized cells, ``level`` may be
+        integer-valued to indicate constant-sized cells, otherwise it must be ``None``.
     indexing_scheme : {"nested", "ring", "zuniq", "nuniq"}, default: "nested"
         The indexing scheme of the healpix grid.
 
@@ -146,9 +149,11 @@ class HealpixInfo(DGGSInfo):
         elif self.indexing_scheme == "nuniq":
             raise ValueError("the indexing scheme `nuniq` is currently not supported")
 
-        if self.indexing_scheme in {"zuniq", "nuniq"}:
-            if self.level is not None:
-                raise ValueError("level must be `None` for uniq indexing schemes")
+        if self.level is None:
+            if self.indexing_scheme in {"nested", "ring"}:
+                raise ValueError(
+                    "'nested' and 'ring' do not support variable-sized cells. Level cannot be ``None``."
+                )
         elif self.level not in self.valid_parameters["level"]:
             raise ValueError("level must be an integer in the range of [0, 29]")
 

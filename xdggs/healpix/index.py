@@ -1,6 +1,7 @@
 from collections.abc import Mapping
 from typing import Any, Self
 
+import pandas as pd
 import xarray as xr
 from xarray.core.indexes import PandasIndex
 
@@ -54,6 +55,13 @@ class HealpixIndex(DGGSIndex):
                 cell_ids, dim=dim, grid_info=grid_info, name=name, **options
             )
 
+    @property
+    def size(self):
+        if self._kind == "moc":
+            return self._index.size
+        else:
+            return self._index.index.size
+
     def values(self):
         if self._kind == "moc":
             return self._index._index.cell_ids()
@@ -75,6 +83,54 @@ class HealpixIndex(DGGSIndex):
         grid_info = HealpixInfo.from_dict(var.attrs)
 
         return cls(var.data, dim=dim, name=name, grid_info=grid_info, **options_)
+
+    @classmethod
+    def full_domain(
+        cls,
+        level: int,
+        dim: str,
+        name: str,
+        *,
+        options: Mapping[str, Any],
+    ) -> Self:
+        """Create the index for the complete domain of the given level"""
+        indexing_scheme = options.get("indexing_scheme", "nested")
+        index_kind = options.get("index_kind", "pandas")
+
+        dict_options = {
+            k: v
+            for k, v in options.items()
+            if k not in {"compression", "dim", "index_kind"}
+        }
+        dict_options["level"] = level
+        grid_info = HealpixInfo.from_dict(dict_options)
+
+        if index_kind == "moc":
+            if indexing_scheme != "nested":
+                raise ValueError("The MOC index only supports the 'nested' scheme.")
+
+            cell_ids = HealpixMocIndex.full_domain(
+                grid_info=grid_info, dim=dim, name=name, options=options
+            )
+        else:
+            size = 12 * 4**level
+
+            if indexing_scheme == "zuniq":
+                start = 1 << 2 * (29 - level)
+                step = start << 1
+                stop = size * step
+                cell_ids = pd.RangeIndex(start, stop, step)
+            # not yet supported
+            # elif indexing_scheme == "nuniq":
+            #    start = 4 ** (1 + level)
+            #    stop = start + size
+            #    cell_ids = pd.RangeIndex(start, stop)
+            else:
+                cell_ids = pd.RangeIndex(size)
+
+        return cls(
+            cell_ids, dim=dim, name=name, grid_info=grid_info, index_kind=index_kind
+        )
 
     def _replace(self, new_index: xr.Index):
         return type(self)(
