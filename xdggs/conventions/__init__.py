@@ -96,7 +96,7 @@ def decode(
     options = index_options | index_kwargs
 
     if convention is None:
-        for name, convention in _conventions.items():
+        for _, convention in _conventions.items():
             try:
                 return call_on_dataset(
                     partial(
