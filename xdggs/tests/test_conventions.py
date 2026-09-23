@@ -313,7 +313,9 @@ def test_decode():
 def test_decode_infer(ds):
     from xdggs.healpix import HealpixInfo
 
-    decoded = ds.pipe(conventions.decode)
+    decoded = ds.pipe(
+        conventions._infer_convention, grid_info=None, name=None, options={}
+    )
     assert isinstance(decoded.xindexes["cell_ids"].grid_info, HealpixInfo)
 
 
