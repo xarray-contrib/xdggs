@@ -109,7 +109,6 @@ def decode(
                 )
             except DecoderError as e:
                 print(str(e))
-                continue
 
         raise DecoderError(
             "Failed to infer a convention. Please explicitly pass a convention name."
