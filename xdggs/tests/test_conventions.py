@@ -249,7 +249,7 @@ def test_decode():
 
     # TODO: improve unknown index message
     with pytest.raises(DecoderError, match="test"):
-        ds.pipe(conventions.decode)
+        ds.pipe(conventions.decode, convention="xdggs")
 
 
 @pytest.mark.parametrize(
@@ -321,4 +321,4 @@ def test_decode_indexed():
     grid_info = {"grid_name": "test", "level": 2}
     ds = xr.Dataset(coords={"cell_ids": ("cells", [0, 1], grid_info)})
     with pytest.raises(DecoderError, match="test"):
-        ds.set_xindex("cell_ids").pipe(conventions.decode)
+        ds.set_xindex("cell_ids").pipe(conventions.decode, convention="xdggs")

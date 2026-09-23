@@ -47,7 +47,7 @@ def decode(
     grid_info: GridInfoType | None = None,
     *,
     name: Hashable | None = None,
-    convention: str = "xdggs",
+    convention: str | None = None,
     index_options: dict[str, Any] | None = None,
     **index_kwargs: dict[str, Any],
 ) -> xr.Dataset | xr.DataArray:
