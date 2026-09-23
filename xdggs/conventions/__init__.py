@@ -169,8 +169,8 @@ def encode(
     return call_on_dataset(converter.encode, obj, encoding=encoding)
 
 
+register_convention("xdggs")(xdggs.Xdggs)
 register_convention("zarr")(zarr.Zarr)
 register_convention("cf")(cf.Cf)
-register_convention("xdggs")(xdggs.Xdggs)
 
 __all__ = ["register_convention", "detect_decoder", "DecoderError", "Convention"]
