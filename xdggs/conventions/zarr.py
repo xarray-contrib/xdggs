@@ -6,7 +6,6 @@ import xarray as xr
 
 from xdggs.conventions.base import Convention, translate_metadata_keys
 from xdggs.conventions.errors import DecoderError
-from xdggs.conventions.registry import register_convention
 from xdggs.typing import TranslationTable
 from xdggs.utils import GRID_REGISTRY
 
@@ -36,7 +35,6 @@ class ZarrConventionHeader(TypedDict):
     description: str
 
 
-@register_convention("zarr")
 class Zarr(Convention):
     uuid: ClassVar[str] = "7b255807-140c-42ca-97f6-7a1cfecdbc38"
     schema_url: ClassVar[str] = (

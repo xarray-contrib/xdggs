@@ -107,7 +107,8 @@ def decode(
                     ),
                     obj,
                 )
-            except DecoderError:
+            except DecoderError as e:
+                print(str(e))
                 continue
 
         raise DecoderError(
@@ -168,5 +169,9 @@ def encode(
 
     return call_on_dataset(converter.encode, obj, encoding=encoding)
 
+
+register_convention("zarr")(zarr.Zarr)
+register_convention("cf")(cf.Cf)
+register_convention("xdggs")(xdggs.Xdggs)
 
 __all__ = ["register_convention", "detect_decoder", "DecoderError", "Convention"]
