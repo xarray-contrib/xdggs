@@ -969,3 +969,18 @@ def test_align(index_kind):
     actual1, actual2 = xr.align(ds1, ds2, join="outer")
     xr.testing.assert_identical(actual1, expected)
     xr.testing.assert_identical(actual2, expected)
+
+
+@pytest.mark.parametrize("index_kind", ["pandas", "moc"])
+def test_sel(index_kind):
+    index = healpix.HealpixIndex.full_domain(
+        dim="cells",
+        name="cell_ids",
+        metadata=healpix.HealpixInfo(level=2, indexing_scheme="nested"),
+        options={"index_kind": index_kind},
+    )
+
+    ds = xr.Coordinates.from_xindex(index).to_dataset()
+
+    actual = ds.sel({"cell_ids": np.arange(10, 20, dtype="uint64")})
+    assert isinstance(actual.xindexes["cell_ids"], healpix.HealpixIndex)

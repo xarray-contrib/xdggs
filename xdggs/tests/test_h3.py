@@ -439,3 +439,18 @@ def test_equals(variant):
     index2 = h3.H3Index(values2, dim=dim2, name=name, grid_info=grid_info2)
 
     assert index1.equals(index2) == expected
+
+
+def test_sel():
+    grid_info = h3.H3Info(level=1)
+
+    index = h3.H3Index(
+        np.array([0x832833FFFFFFFFF, 0x832834FFFFFFFFF, 0x832835FFFFFFFFF]),
+        dim="cells",
+        name="cell_ids",
+        grid_info=grid_info,
+    )
+    ds = xr.Coordinates.from_xindex(index).to_dataset()
+    result = ds.sel({"cell_ids": np.array([0x832833FFFFFFFFF, 0x832834FFFFFFFFF])})
+
+    assert isinstance(result.xindexes["cell_ids"], h3.H3Index)
