@@ -87,23 +87,20 @@ class HealpixIndex(DGGSIndex):
     @classmethod
     def full_domain(
         cls,
-        level: int,
+        grid_info: Mapping[str, Any] | HealpixInfo,
         dim: str,
         name: str,
         *,
         options: Mapping[str, Any],
     ) -> Self:
         """Create the index for the complete domain of the given level"""
-        indexing_scheme = options.get("indexing_scheme", "nested")
-        index_kind = options.get("index_kind", "pandas")
+        if isinstance(grid_info, Mapping):
+            grid_info = HealpixInfo(**grid_info)
 
-        dict_options = {
-            k: v
-            for k, v in options.items()
-            if k not in {"compression", "dim", "index_kind"}
-        }
-        dict_options["level"] = level
-        grid_info = HealpixInfo.from_dict(dict_options)
+        indexing_scheme = grid_info.indexing_scheme
+        level = grid_info.level
+
+        index_kind = options.get("index_kind", "pandas")
 
         if index_kind == "moc":
             if indexing_scheme != "nested":

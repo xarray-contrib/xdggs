@@ -56,13 +56,14 @@ class DGGSIndex(Index):
     @classmethod
     def full_domain(
         cls,
-        level: int,
+        grid_info: DGGSInfo,
         dim: str,
         name: str,
         *,
         options: Mapping[str, Any],
     ) -> Self:
-        """Create the index for the complete domain of the given level"""
+        """Create the index for the complete domain of the given grid."""
+
         raise NotImplementedError("To be implemented in child class")
 
     @property
