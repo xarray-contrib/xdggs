@@ -6,7 +6,6 @@ import xarray as xr
 
 from xdggs.conventions.base import Convention, translate_metadata_keys
 from xdggs.conventions.errors import DecoderError
-from xdggs.conventions.registry import register_convention
 from xdggs.typing import TranslationTable
 from xdggs.utils import GRID_REGISTRY
 
@@ -36,7 +35,6 @@ class ZarrConventionHeader(TypedDict):
     description: str
 
 
-@register_convention("zarr")
 class Zarr(Convention):
     uuid: ClassVar[str] = "7b255807-140c-42ca-97f6-7a1cfecdbc38"
     schema_url: ClassVar[str] = (
@@ -86,13 +84,13 @@ class Zarr(Convention):
         if grid_info is None:
             if convention is None:
                 raise DecoderError(
-                    "The zarr dggs convention was not declared. Aborting parsing"
+                    "zarr convention: The zarr dggs convention was not declared. Aborting parsing"
                 )
 
             grid_info = ds.attrs.get("dggs")
             if grid_info is None:
                 raise DecoderError(
-                    "No metadata found. Please make sure the dataset follows"
+                    "zarr convention: No metadata found. Please make sure the dataset follows"
                     " the zarr dggs convention or pass a convention metadata"
                     " object to the `grid_info` parameter."
                 )
@@ -107,19 +105,27 @@ class Zarr(Convention):
         # required
         grid_name = metadata.pop("name", None)
         if grid_name is None:
-            raise DecoderError("Required field `name` is missing or null.")
+            raise DecoderError(
+                "zarr convention: Required field `name` is missing or null."
+            )
 
         try:
             index_cls = GRID_REGISTRY[grid_name]
         except KeyError:
-            raise DecoderError(f"Unknown grid name: {grid_name}") from None
+            raise DecoderError(
+                f"zarr convention: Unknown grid name: {grid_name}"
+            ) from None
 
         spatial_dimension = metadata.pop("spatial_dimension", None)
         if spatial_dimension is None:
-            raise DecoderError("Required field `spatial_dimension` is missing or null.")
+            raise DecoderError(
+                "zarr convention: Required field `spatial_dimension` is missing or null."
+            )
 
         if "refinement_level" not in metadata:
-            raise DecoderError("Required field `refinement_level` is missing.")
+            raise DecoderError(
+                "zarr convention: Required field `refinement_level` is missing."
+            )
 
         # cases:
         # - nothing given: fall back to cell_ids, assume full domain

@@ -10,12 +10,34 @@ from xdggs.conventions.registry import _conventions, register_convention
 from xdggs.utils import call_on_dataset
 
 if TYPE_CHECKING:
-    from collections.abc import Hashable
+    from collections.abc import Hashable, Mapping
     from typing import Any
 
     import xarray as xr
 
     from xdggs.grid import GridInfoType
+
+
+def _infer_convention[T: (xr.Dataset, xr.DataArray)](
+    obj: T, grid_info: GridInfoType | None, name: str, options: Mapping[str, Any]
+) -> T:
+    for _, convention in _conventions.items():
+        try:
+            return call_on_dataset(
+                partial(
+                    convention.decode,
+                    grid_info=grid_info,
+                    name=name,
+                    index_options=options,
+                ),
+                obj,
+            )
+        except DecoderError as e:
+            print(str(e))
+
+    raise DecoderError(
+        "Failed to infer a convention. Please explicitly pass a convention name."
+    )
 
 
 @overload
@@ -47,7 +69,7 @@ def decode(
     grid_info: GridInfoType | None = None,
     *,
     name: Hashable | None = None,
-    convention: str = "xdggs",
+    convention: str | None = None,
     index_options: dict[str, Any] | None = None,
     **index_kwargs: dict[str, Any],
 ) -> xr.Dataset | xr.DataArray:
@@ -93,6 +115,11 @@ def decode(
     if index_options is None:
         index_options = {}
 
+    options = index_options | index_kwargs
+
+    if convention is None:
+        return _infer_convention(obj, grid_info, name, options)
+
     if isinstance(convention, str):
         convention = _conventions.get(convention)
         if convention is None:
@@ -107,20 +134,10 @@ def decode(
             convention.decode,
             grid_info=grid_info,
             name=name,
-            index_options=index_options | index_kwargs,
+            index_options=options,
         ),
         obj,
     )
-
-
-def detect_decoder(obj, grid_info, name):
-    for name, convention in _conventions.items():
-        try:
-            return convention.decode(obj, grid_info=grid_info, name=name)
-        except DecoderError:
-            pass
-
-    raise ValueError("cannot detect a matching convention")
 
 
 @overload
@@ -148,4 +165,8 @@ def encode(
     return call_on_dataset(converter.encode, obj, encoding=encoding)
 
 
-__all__ = ["register_convention", "detect_decoder", "DecoderError", "Convention"]
+register_convention("xdggs")(xdggs.Xdggs)
+register_convention("zarr")(zarr.Zarr)
+register_convention("cf")(cf.Cf)
+
+__all__ = ["register_convention", "DecoderError", "Convention"]
