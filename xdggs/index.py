@@ -99,7 +99,12 @@ class DGGSIndex(Index):
     def sel(self, labels, method=None, **options):
         if method == "nearest":
             raise ValueError("finding nearest grid cell has no meaning")
-        return self._index.sel(labels, method=method, **options)
+        result = self._index.sel(labels, method=method, **options)
+        wrapped_index = result.indexes.get(self.name)
+        if wrapped_index is not None:
+            result.indexes[self.name] = self._replace(wrapped_index)
+
+        return result
 
     def join(self, other: Self, how: JoinOptions = "inner") -> Self:
         if self.grid_info != other.grid_info:
