@@ -30,7 +30,6 @@ repos:
     rev: 26.5.1
     hooks:
       - id: black-jupyter
-        language_version: ">=3.13"
   - repo: https://github.com/keewis/blackdoc
     rev: v0.4.6
     hooks:
