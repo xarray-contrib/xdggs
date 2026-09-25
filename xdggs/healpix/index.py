@@ -95,7 +95,7 @@ class HealpixIndex(DGGSIndex):
     ) -> Self:
         """Create the index for the complete domain of the given level"""
         if isinstance(grid_info, Mapping):
-            grid_info = HealpixInfo(**grid_info)
+            grid_info = HealpixInfo.from_dict(grid_info)
 
         indexing_scheme = grid_info.indexing_scheme
         level = grid_info.level

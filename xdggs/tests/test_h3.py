@@ -285,10 +285,12 @@ def test_from_variables(variable_name, variable, options):
 
 
 def test_full_domain():
-    level = 2
+    grid_info = h3.H3Info(level=2)
     dim = "cells"
     name = "cell_ids"
-    index = h3.H3Index.full_domain(level, dim, name, options={})
+
+    index = h3.H3Index.full_domain(grid_info, dim, name, options={})
+
     assert index.size == 5882
     assert index.dim == dim
     assert index.name == name

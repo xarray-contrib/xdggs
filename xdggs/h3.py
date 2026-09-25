@@ -252,7 +252,7 @@ class H3Index(DGGSIndex):
     ) -> Self:
         """Create the index for the complete domain of the given level"""
         if isinstance(grid_info, Mapping):
-            grid_info = H3Info(**grid_info)
+            grid_info = H3Info.from_dict(grid_info)
 
         # create the base_cells
         level = grid_info.level
