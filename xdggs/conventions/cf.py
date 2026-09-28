@@ -6,7 +6,6 @@ import xarray as xr
 
 from xdggs.conventions.base import Convention
 from xdggs.conventions.errors import DecoderError
-from xdggs.conventions.registry import register_convention
 from xdggs.conventions.utils import infer_grid_name
 from xdggs.utils import GRID_REGISTRY
 
@@ -39,7 +38,6 @@ def extract_ellipsoid_parameters(mapping: dict[str, Any]) -> dict[str, Any]:
     return {k: v for k, v in mapping.items() if k in ellipsoid_attribute_translations}
 
 
-@register_convention("cf")
 class Cf(Convention):
     def translate_keys(
         self,

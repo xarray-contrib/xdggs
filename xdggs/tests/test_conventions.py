@@ -7,6 +7,7 @@ from xdggs import conventions
 from xdggs.conventions.cf import Cf
 from xdggs.conventions.errors import DecoderError
 from xdggs.conventions.xdggs import Xdggs
+from xdggs.conventions.zarr import Zarr
 from xdggs.tests import assert_indexes_equal
 
 
@@ -248,11 +249,78 @@ def test_decode():
 
     # TODO: improve unknown index message
     with pytest.raises(DecoderError, match="test"):
-        ds.pipe(conventions.decode)
+        ds.pipe(conventions.decode, convention="xdggs")
+
+
+@pytest.mark.parametrize(
+    "ds",
+    (
+        pytest.param(
+            xr.Dataset(
+                coords={
+                    "cell_ids": (
+                        "cells",
+                        [0, 1],
+                        {
+                            "grid_name": "healpix",
+                            "level": 2,
+                            "indexing_scheme": "nested",
+                        },
+                    )
+                }
+            ),
+            id="xdggs",
+        ),
+        pytest.param(
+            xr.Dataset(
+                coords={
+                    "cell_ids": (
+                        "cells",
+                        [0, 1],
+                        {"standard_name": "healpix_index", "units": 1},
+                    ),
+                    "crs": (
+                        (),
+                        0,
+                        {
+                            "grid_mapping_name": "healpix",
+                            "level": 2,
+                            "indexing_scheme": "nested",
+                        },
+                    ),
+                }
+            ),
+            id="cf",
+        ),
+        pytest.param(
+            xr.Dataset(
+                coords={"cell_ids": ("cells", [0, 1])},
+                attrs={
+                    "zarr_conventions": [dict(Zarr.convention_metadata)],
+                    "dggs": {
+                        "name": "healpix",
+                        "refinement_level": 5,
+                        "indexing_scheme": "nested",
+                        "spatial_dimension": "cells",
+                        "coordinate": "cell_ids",
+                    },
+                },
+            ),
+            id="zarr",
+        ),
+    ),
+)
+def test_decode_infer(ds):
+    from xdggs.healpix import HealpixInfo
+
+    decoded = ds.pipe(
+        conventions._infer_convention, grid_info=None, name=None, options={}
+    )
+    assert isinstance(decoded.xindexes["cell_ids"].grid_info, HealpixInfo)
 
 
 def test_decode_indexed():
     grid_info = {"grid_name": "test", "level": 2}
     ds = xr.Dataset(coords={"cell_ids": ("cells", [0, 1], grid_info)})
     with pytest.raises(DecoderError, match="test"):
-        ds.set_xindex("cell_ids").pipe(conventions.decode)
+        ds.set_xindex("cell_ids").pipe(conventions.decode, convention="xdggs")

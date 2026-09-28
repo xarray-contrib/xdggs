@@ -6,13 +6,11 @@ import xarray as xr
 
 from xdggs.conventions.base import Convention
 from xdggs.conventions.errors import DecoderError
-from xdggs.conventions.registry import register_convention
 from xdggs.conventions.utils import infer_grid_name
 from xdggs.grid import DGGSInfo
 from xdggs.utils import GRID_REGISTRY
 
 
-@register_convention("xdggs")
 class Xdggs(Convention):
     def decode(
         self,

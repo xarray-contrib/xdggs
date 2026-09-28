@@ -11,6 +11,7 @@ from xdggs.index import DGGSIndex
 from xdggs.plotting import explore
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
     from typing import Any
 
     from lonboard.basemap import MaplibreBasemap
@@ -45,11 +46,11 @@ class DGGSAccessor:
 
     def decode(
         self,
-        grid_info=None,
+        grid_info: Mapping[str, object] | DGGSInfo | None = None,
         *,
-        name="cell_ids",
-        convention="xdggs",
-        index_options=None,
+        name: str = "cell_ids",
+        convention: str | None = None,
+        index_options: Mapping[str, Any] | None = None,
         **index_kwargs,
     ) -> xr.Dataset | xr.DataArray:
         """decode the DGGS cell ids
@@ -62,19 +63,23 @@ class DGGSAccessor:
         name : str, optional
             The name of the coordinate containing the cell ids. The default name
             depends on the convention.
-        convention : str, default: "xdggs"
+        convention : str, optional
             The name of the metadata convention. Built-in conventions are:
 
-            - "xdggs": the existing xdggs convention. ``name`` points to the
-              coordinate containing cell ids, and which has all the grid
-              metadata. The ``name`` parameter defaults to ``"cell_ids"``.
-            - "cf": the upcoming CF convention standardization. While the
+            - "zarr": the zarr dggs convention. All metadata is contained in a
+              single nested JSON object that lives in the group attributes.
+            - "cf": the DGGS section from the CF conventions. While the
               convention extension is specialized on ``healpix`` for now, the
               decoder can work with other DGGS as well. For this, all metadata
               lives on a variable with a ``grid_mapping_name`` attribute, and
               the cell ids coordinate is indicated by the ``coordinates``
               attribute on data variables / other coordinates (this can be
               overridden by the ``name`` parameter).
+            - "xdggs": the existing xdggs convention. ``name`` points to the
+              coordinate containing cell ids, and which has all the grid
+              metadata. The ``name`` parameter defaults to ``"cell_ids"``.
+
+            If not passed, will try to infer the convention in the order listed here.
         index_options, **index_kwargs : dict, optional
             Additional options to forward to the index.
 
