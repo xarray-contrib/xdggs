@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.6.1 (_unreleased_)
+## 0.7.0 (2026-09-28)
 
 - Do not mutate the input dataset when decoding ({pull}`226`)
 - Properly decode ellipsoids for the CF convention ({pull}`228`)
