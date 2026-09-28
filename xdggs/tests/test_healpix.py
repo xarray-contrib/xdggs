@@ -745,24 +745,23 @@ def test_from_variables_moc_ranges() -> None:
     assert index.grid_info.to_dict() == grid_info
 
 
-full_domain_options = [
-    {"grid_name": "healpix", "indexing_scheme": "nested"},
-    {"grid_name": "healpix", "indexing_scheme": "ring"},
-    {"grid_name": "healpix", "indexing_scheme": "zuniq"},
-    {"grid_name": "healpix", "indexing_scheme": "nested", "index_kind": "moc"},
-]
-
-
-@pytest.mark.parametrize("options", full_domain_options)
-def test_full_domain(options):
+@pytest.mark.parametrize(
+    ["index_kind", "indexing_scheme"],
+    (("pandas", "nested"), ("pandas", "ring"), ("pandas", "zuniq"), ("moc", "nested")),
+)
+def test_full_domain(index_kind, indexing_scheme):
     level = 10
     dim = "cells"
     name = "healpix_cell_ids"
-    index = healpix.HealpixIndex.full_domain(level, dim, name, options=options)
+    grid_info = healpix.HealpixInfo(level=level, indexing_scheme=indexing_scheme)
+    index = healpix.HealpixIndex.full_domain(
+        grid_info, dim, name, options={"index_kind": index_kind}
+    )
+
     assert index.dim == dim
     assert index.name == name
     assert index.size == 12 * 4**level
-    if options.get("index_kind", "pandas") == "moc":
+    if index_kind == "moc":
         assert isinstance(index._index, healpix.HealpixMocIndex)
 
 
@@ -969,3 +968,18 @@ def test_align(index_kind):
     actual1, actual2 = xr.align(ds1, ds2, join="outer")
     xr.testing.assert_identical(actual1, expected)
     xr.testing.assert_identical(actual2, expected)
+
+
+@pytest.mark.parametrize("index_kind", ["pandas", "moc"])
+def test_sel(index_kind):
+    index = healpix.HealpixIndex.full_domain(
+        dim="cells",
+        name="cell_ids",
+        grid_info=healpix.HealpixInfo(level=2, indexing_scheme="nested"),
+        options={"index_kind": index_kind},
+    )
+
+    ds = xr.Coordinates.from_xindex(index).to_dataset()
+
+    actual = ds.sel({"cell_ids": np.arange(10, 20, dtype="uint64")})
+    assert isinstance(actual.xindexes["cell_ids"], healpix.HealpixIndex)

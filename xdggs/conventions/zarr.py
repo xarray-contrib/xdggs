@@ -180,15 +180,13 @@ class Zarr(Convention):
                 )
 
             # create index for the entire domain at given refinement level
-            level = metadata_.pop("level")
+            level = metadata_.get("level")
             if level is None:
                 raise DecoderError(
                     "A missing `coordinate` requires a `refinement_level`."
                 )
-            options = dict(metadata_)
-            options.update(index_options)
             index = index_cls.full_domain(
-                level, spatial_dimension, output_coordinate, options=options
+                metadata_, spatial_dimension, output_coordinate, options=index_options
             )
         else:
             var = ds.variables[input_coordinate].copy(deep=False)

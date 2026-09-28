@@ -12,6 +12,7 @@
 - Use `H3HexagonLayer` to visualize H3 data ({pull}`263`)
 - Support missing coordinates for the zarr convention and fail on missing required properties ({pull}`260`)
 - Infer a suitable convention if none given ({pull}`269`)
+- Wrap all returned indexes in a `DGGSIndex` instance ({pull}`270`)
 
 ## 0.6.0 (2026-02-05)
 
