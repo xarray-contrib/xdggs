@@ -1,6 +1,10 @@
 # Changelog
 
-## 0.6.1 (_unreleased_)
+## 0.7.0 (2026-09-29)
+
+:::{note}
+The dependency on `anywidget=0.11` results in conflicts with `lonboard<0.17.0` due to an upper-bound on `anywidget` in `lonboard` when installing from PyPI (conda-forge is fine). To work around this, additionally install `lonboard>=0.17.0b0`.
+:::
 
 - Do not mutate the input dataset when decoding ({pull}`226`)
 - Properly decode ellipsoids for the CF convention ({pull}`228`)

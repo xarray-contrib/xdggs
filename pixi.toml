@@ -109,6 +109,13 @@ python = "*"
 [feature.ci.tasks]
 nightly-tests = { cmd = "pixi run --manifest-path ci/nightly/pixi.toml tests", cwd = "." }
 
+[feature.build-wheels.dependencies]
+python = "3.14.*"
+python-build = "*"
+
+[feature.build-wheels.tasks]
+build-wheels = { cmd = "python -m build", cwd = "." }
+
 [environments]
 ci-py312 = { features = ["tests", "py312"] }
 ci-py313 = { features = ["tests", "py313"] }
@@ -116,3 +123,4 @@ ci-py313 = { features = ["tests", "py313"] }
 docs = { features = ["docs", "py313"] }
 default = { features = ["tests", "dev", "py313"] }
 ci = { features = ["ci"], no-default-feature = true }
+build-wheels = { features = ["build-wheels"], no-default-feature = true }
