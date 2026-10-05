@@ -25,6 +25,7 @@ caption: User guide
 hidden: true
 ---
 Conventions <user_guide/conventions>
+Rasters and static plots <user_guide/rasters>
 Plugins <user_guide/plugins>
 Ecosystem <user_guide/ecosystem>
 ```

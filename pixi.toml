@@ -49,6 +49,18 @@ hypothesis = "*"
 geoarrow-pyarrow = "*"
 shapely = ">=2.1.1,<3"
 dask = ">=2025.7.0"
+# optional rendering backends
+cartopy = "*"
+rioxarray = "*"
+rasterio = "*"
+numpy_groupies = "*"
+affine = "*"
+scipy = "*"
+
+[feature.tests.pypi-dependencies]
+# FIXME: use a released version once GRID4EARTH/healpix-plot ships the CRS-aware
+# sampling grids and `healpix_plot.raster`
+healpix-plot = { git = "https://github.com/GRID4EARTH/healpix-plot", branch = "crs-sampling-grid" }
 
 [feature.tests.tasks]
 tests = { cmd = "pytest -n auto --cov=xdggs", cwd = ".", default-environment = "default" }

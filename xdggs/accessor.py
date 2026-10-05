@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
+import numpy as np
 import numpy.typing as npt
 import xarray as xr
 
@@ -12,7 +13,6 @@ from xdggs.plotting import explore
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
-    from typing import Any
 
     from lonboard.basemap import MaplibreBasemap
     from lonboard.experimental.view import BaseView
@@ -327,6 +327,120 @@ class DGGSAccessor:
             coords=coords,
             view=view,
             basemap=basemap,
+        )
+
+    def to_raster(
+        self,
+        sampling_grid: Any = "native",
+        *,
+        interpolation: str = "nearest",
+    ) -> xr.Dataset | xr.DataArray:
+        """Resample the data onto a georeferenced raster.
+
+        Requires a rendering backend for the grid: ``healpix-plot`` for
+        HEALPix. Other grids are not supported yet. The result can be written
+        to a GeoTIFF with ``rioxarray`` (``result.rio.to_raster(path)``) and
+        converted back with :py:func:`xdggs.from_raster`.
+
+        Parameters
+        ----------
+        sampling_grid : str, dict or sampling grid object, default: "native"
+            The target pixel grid:
+
+            - ``"native"``: a grid in the grid's native projection with exactly
+              one pixel per cell, covering the bounding box of the cells. The
+              conversion is lossless. For HEALPix, the pixels are squares
+              rotated by 45° in ``+proj=healpix`` (requires ``level >= 1``).
+            - dict: parameters of a regular longitude / latitude grid, passed to
+              the backend (for HEALPix, ``shape``, ``resolution`` and
+              ``center``; see ``healpix_plot.SamplingGrid``).
+            - a backend sampling grid object, for example
+              ``healpix_plot.AffineSamplingGrid`` with a ``crs``.
+        interpolation : {"nearest"}, default: "nearest"
+            How to fill the pixels. Each pixel takes the value of the cell
+            containing its centre.
+
+        Returns
+        -------
+        raster : xarray.DataArray or xarray.Dataset
+            The data with the cell dimension replaced by ``y`` and ``x``. Pixels
+            whose cell is missing from the data are set to ``NaN``. If
+            ``rioxarray`` is installed, the CRS and the affine transform are
+            written with the ``rio`` accessor, otherwise they are stored in
+            the ``crs_wkt`` and ``transform`` attributes. Coordinates along
+            the cell dimension are dropped.
+
+        See Also
+        --------
+        xdggs.from_raster
+        """
+        from xdggs.rendering import to_raster
+
+        return to_raster(
+            self._obj, sampling_grid=sampling_grid, interpolation=interpolation
+        )
+
+    def plot(
+        self,
+        *,
+        projection: Any = "Mollweide",
+        sampling_grid: Any = None,
+        ax: Any = None,
+        **kwargs,
+    ):
+        """Plot the data on a static map using matplotlib and cartopy.
+
+        Requires a rendering backend for the grid: ``healpix-plot`` for
+        HEALPix. Other grids are not supported yet.
+
+        Parameters
+        ----------
+        projection : str or cartopy.crs.Projection, default: "Mollweide"
+            The map projection. Strings are names of cartopy projections, or
+            ``"HEALPix"`` for the HEALPix projection on the grid's ellipsoid.
+            Ignored if ``ax`` is given.
+        sampling_grid : str, dict or sampling grid object, optional
+            The grid the data is resampled to before drawing; see
+            :py:meth:`DataArray.dggs.to_raster`. Defaults to ``"native"`` (the
+            cells themselves) for the HEALPix projection, and a longitude /
+            latitude image of 1024 x 1024 pixels otherwise.
+        ax : cartopy.mpl.geoaxes.GeoAxes, optional
+            The axes to draw on. If not given, a new figure is created.
+        **kwargs
+            Passed on to the backend, for HEALPix ``healpix_plot.plot``
+            (``cmap``, ``vmin``, ``vmax``, ``norm``, ``colorbar``, ``title``,
+            ``view``, ...).
+
+        Returns
+        -------
+        mappable : matplotlib.cm.ScalarMappable
+            The image or mesh drawn on the map.
+
+        Notes
+        -----
+        Plotting currently is restricted to 1D `DataArray` objects.
+        """
+        from xdggs.rendering import get_rendering_backend
+
+        if not isinstance(self._obj, xr.DataArray):
+            raise TypeError(
+                "plotting is only supported for DataArray objects, select a variable first"
+            )
+        if self._obj.ndim != 1:
+            raise ValueError(
+                "plotting is only supported for 1D data, select along"
+                f" {[dim for dim in self._obj.dims if dim not in self.coord.dims]} first"
+            )
+
+        grid_info = self.grid_info
+        return get_rendering_backend(grid_info).plot(
+            grid_info,
+            np.asarray(self.coord.data),
+            np.asarray(self._obj.data),
+            projection=projection,
+            sampling_grid=sampling_grid,
+            ax=ax,
+            **kwargs,
         )
 
     def encode(self, convention: str, *, encoding: dict[str, Any] | None = None):
