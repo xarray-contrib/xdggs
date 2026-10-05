@@ -119,6 +119,18 @@ class TestToRasterGeneric:
         assert "latitude" not in actual.coords
         np.testing.assert_equal(actual["time"].data, [1, 2])
 
+    def test_lazy(self):
+        pytest.importorskip("dask")
+        from xarray.tests import raise_if_dask_computes
+
+        arr = healpix_dataarray(level=0, cell_ids=np.arange(5, dtype="uint64"))
+        stacked = xr.concat([arr, 2 * arr], dim="time")
+
+        with raise_if_dask_computes():
+            actual = stacked.chunk({"time": 1}).dggs.to_raster()
+
+        xr.testing.assert_identical(actual.compute(), stacked.dggs.to_raster())
+
     def test_dataset(self):
         arr = healpix_dataarray(level=0, cell_ids=np.arange(5, dtype="uint64"))
         ds = xr.Dataset({"a": arr, "b": 2 * arr, "scalar": 1})
