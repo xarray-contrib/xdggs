@@ -13,6 +13,7 @@ Top-level functions
    :toctree: generated
 
    decode
+   from_raster
 
 Grid parameter objects
 ======================
@@ -67,6 +68,14 @@ Data inference
    Dataset.dggs.cell_boundaries
    Dataset.dggs.assign_latlon_coords
 
+Rasters
+-------
+.. autosummary::
+   :toctree: generated
+   :template: autosummary/accessor_method.rst
+
+   Dataset.dggs.to_raster
+
 DataArray
 =========
 
@@ -115,6 +124,15 @@ Plotting
    :template: autosummary/accessor_method.rst
 
    DataArray.dggs.explore
+   DataArray.dggs.plot
+
+Rasters
+-------
+.. autosummary::
+   :toctree: generated
+   :template: autosummary/accessor_method.rst
+
+   DataArray.dggs.to_raster
 
 Tutorial
 ========

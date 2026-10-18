@@ -26,6 +26,14 @@ cd xdggs
 pip install .
 ```
 
+## Optional dependencies
+
+Rasterising and static (matplotlib / cartopy) plots need a rendering backend for the grid. For HEALPix this is [`healpix-plot`](https://github.com/GRID4EARTH/healpix-plot); writing GeoTIFF files additionally needs [`rioxarray`](https://corteva.github.io/rioxarray):
+
+```shell
+pip install "xdggs[plot,raster]"
+```
+
 ## Minimum dependency policy
 
 ```{warning}
