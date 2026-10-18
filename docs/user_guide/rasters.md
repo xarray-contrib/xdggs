@@ -12,7 +12,7 @@
 The `sampling_grid` parameter selects the pixels:
 
 - `"native"` (the default for `to_raster`): exactly one pixel per cell in the grid's native projection. For HEALPix, this is `+proj=healpix`, where every cell is a square rotated by 45°. The conversion is lossless and can be reversed with {py:func}`xdggs.from_raster`.
-- a dict such as `{"shape": (720, 360)}`: a regular longitude / latitude grid. This is what most tools expect, but cells are duplicated or skipped depending on the resolution.
+- a dict such as `{"shape": (360, 720)}`: a regular longitude / latitude grid. This is what most tools expect, but cells are duplicated or skipped depending on the resolution.
 - a sampling grid object of the backend, for example `healpix_plot.AffineSamplingGrid(transform, shape, crs)` to sample on the pixels of any projected raster.
 
 ## Writing a GeoTIFF

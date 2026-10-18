@@ -225,7 +225,7 @@ class TestHealpixPlot:
     def test_latlon_grid(self):
         arr = healpix_dataarray(level=4)
 
-        raster = arr.dggs.to_raster({"shape": (36, 18)})
+        raster = arr.dggs.to_raster({"shape": (18, 36)})
 
         assert raster.sizes == {"y": 18, "x": 36}
         assert not raster.isnull().any()
@@ -252,7 +252,7 @@ class TestHealpixPlot:
         pytest.importorskip("rioxarray")
 
         arr = healpix_dataarray(level=1)
-        raster = arr.dggs.to_raster({"shape": (72, 36)})
+        raster = arr.dggs.to_raster({"shape": (36, 72)})
 
         with pytest.raises(ValueError, match="more than one pixel"):
             xdggs.from_raster(raster, arr.dggs.grid_info)
