@@ -1,5 +1,9 @@
 # Changelog
 
+## unreleased
+
+- Rasterise DGGS data (`DataArray.dggs.to_raster`, `xdggs.from_raster`) and draw static maps (`DataArray.dggs.plot`) through optional, per-grid rendering backends; HEALPix uses `healpix-plot`
+
 ## 0.7.0 (2026-09-29)
 
 :::{note}

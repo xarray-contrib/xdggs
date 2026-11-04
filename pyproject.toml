@@ -37,6 +37,10 @@ dependencies = [
 ]
 dynamic = ["version"]
 
+[project.optional-dependencies]
+plot = ["healpix-plot", "cartopy"]
+raster = ["healpix-plot", "rioxarray"]
+
 [project.urls]
 Documentation = "https://xdggs.readthedocs.io"
 Repository = "https://github.com/xarray-contrib/xdggs"
